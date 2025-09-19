@@ -1,0 +1,18 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .button:hover {
+    background-color: #4338ca; /* Một màu tối hơn một chút của --color-primary */
+  }

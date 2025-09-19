@@ -43,3 +43,17 @@
     display: grid;
     gap: var(--spacing-2); /* Khoảng cách giữa các item nhỏ hơn */
   }
+
+  /* ... (giữ lại các style cũ) ... */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+  }
+  
+  /* Ghi đè margin-bottom mặc định của h2 khi nó nằm trong header */
+  .section-header h2 {
+    margin-bottom: 0;
+  }

@@ -1,5 +1,6 @@
 import { GoalCard } from './components/GoalCard.jsx';
 import { SavingHistoryItem } from './components/SavingHistoryItem.jsx';
+import { AddButton } from './components/AddButton.jsx';
 import './App.css';
 export function App() {
   // --- DỮ LIỆU GIẢ (MOCK DATA) ---
@@ -48,7 +49,10 @@ export function App() {
       </header>
       <main>
         <section className='goals-section'>
-          <h2>Your Goals</h2>
+        <div className="section-header">
+            <h2>Mục Tiêu Của Bạn</h2>
+            <AddButton>Thêm Giao Dịch</AddButton>
+          </div>
           <div className='goals-list'>
             {mockGoals.map((goal) => 
               <GoalCard
@@ -60,8 +64,12 @@ export function App() {
           </div>
         </section>
 
+
         <section className="history-section">
-          <h2>Lịch sử giao dịch</h2>
+          <div className="section-header">
+            <h2>Lịch sử giao dịch</h2>
+            <AddButton>Thêm Giao Dịch</AddButton>
+          </div>
           {/* Thay đổi className ở dòng dưới */}
           <div className="history-list"> 
             {mockSavings.map((transaction) => (
