@@ -1,7 +1,82 @@
+import { GoalCard } from './components/GoalCard.jsx';
+import { SavingHistoryItem } from './components/SavingHistoryItem.jsx';
+import './App.css';
 export function App() {
+  // --- DỮ LIỆU GIẢ (MOCK DATA) ---
+  const mockSavings = [
+    {
+      id: 's1',
+      amount: 50,
+      description: 'Tiền thưởng dự án',
+      date: '2025-09-18',
+      category: 'Thu nhập',
+    },
+    {
+      id: 's2',
+      amount: 25,
+      description: 'Bán sách cũ',
+      date: '2025-09-15',
+      category: 'Bán đồ',
+    },
+    {
+      id: 's3',
+      amount: 10,
+      description: 'Được tặng',
+      date: '2025-09-12',
+      category: 'Quà tặng',
+    },
+  ];
+
+  const mockGoals = [
+    {
+      id: 'g1',
+      title: 'Mua tai nghe mới',
+      targetAmount: 300,
+    },
+    {
+      id: 'g2',
+      title: 'Đi du lịch Đà Lạt',
+      targetAmount: 1000,
+    },
+  ];
+  // --------------------------------
+  
   return (
-    <div>
-      <h1>Savvy App</h1>
-    </div>
+    <div className='app-container'>
+      <header className='app-header'>
+        <h1>Savvy</h1>
+      </header>
+      <main>
+        <section className='goals-section'>
+          <h2>Your Goals</h2>
+          <div className='goals-list'>
+            {mockGoals.map((goal) => 
+              <GoalCard
+                key={goal.id}
+                title={goal.title}
+                targetAmount={goal.targetAmount}
+              />
+            )}
+          </div>
+        </section>
+
+        <section className="history-section">
+          <h2>Lịch sử giao dịch</h2>
+          {/* Thay đổi className ở dòng dưới */}
+          <div className="history-list"> 
+            {mockSavings.map((transaction) => (
+              <SavingHistoryItem
+                key={transaction.id}
+                amount={transaction.amount}
+                description={transaction.description}
+                date={transaction.date}
+                category={transaction.category}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+    </div> 
   );
 }
+

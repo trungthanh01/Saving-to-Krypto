@@ -1,0 +1,27 @@
+/* Sử dụng các biến CSS toàn cục đã định nghĩa trong index.css */
+
+.card {
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-4);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .cardContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .title {
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  
+  .amount {
+    font-size: 1rem; /* 16px */
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
