@@ -40,7 +40,7 @@
 ### **Giai đoạn 2: "Thổi Hồn" cho Ứng Dụng (Adding State & Interactivity)**
 *Mục tiêu: Làm cho ứng dụng trở nên "sống động" bằng cách quản lý trạng thái và xử lý sự kiện người dùng.*
 
-- [ ] **Task 2.1: Quản lý State với React Hooks**
+- [x] **Task 2.1: Quản lý State với React Hooks**
   - **Mục đích:** Chuyển từ dữ liệu giả sang trạng thái động của ứng dụng.
   - **Hành động:** Sử dụng hook useState trong App.jsx để quản lý mảng savings và goals.
 - [ ] **Task 2.2: Xây dựng Chức năng 'Add Saving'**
