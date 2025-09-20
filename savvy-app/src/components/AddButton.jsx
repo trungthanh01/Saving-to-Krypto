@@ -3,8 +3,7 @@ export function AddButton({children, onClick}){
     return(
     <button 
         className={styles.button} 
-        onClick={onClick}>
-            {children}
+        onClick={onClick}>{children}
     </button>
     )
 }

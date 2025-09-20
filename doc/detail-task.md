@@ -43,7 +43,7 @@
 - [x] **Task 2.1: Quản lý State với React Hooks**
   - **Mục đích:** Chuyển từ dữ liệu giả sang trạng thái động của ứng dụng.
   - **Hành động:** Sử dụng hook useState trong App.jsx để quản lý mảng savings và goals.
-- [ ] **Task 2.2: Xây dựng Chức năng 'Add Saving'**
+- [x] **Task 2.2: Xây dựng Chức năng 'Add Saving'**
   - **Mục đích:** Cho phép người dùng thêm một khoản tiết kiệm mới.
   - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một khoản tiết kiệm mới vào state.
 - [ ] **Task 2.3: Tính toán và cập nhật thanh tiến trình**

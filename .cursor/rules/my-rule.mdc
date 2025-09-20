@@ -83,3 +83,7 @@ Kiểm thử & Gỡ lỗi (Testing & Debugging):
 Các bài test cho từng component: đặt trong thư mục của component đó (ví dụ: src/components/Button/Button.test.js)
 
 Các kịch bản gỡ lỗi: scripts/debugging/
+
+## **#6. Nguồn kiến thức
+(Đặc biệt ưu tiên) Sử dụng kiến thức từ thư viện React thông qua link sau: https://react.dev/learn 
+Những kiến thức trong này sẽ giúp code của tôi và bạn clean hơn và có hệ thống hơn
