@@ -65,7 +65,7 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
               type="text"
               id="description"
               name="description"
-              placeholder="VD: Tiền lương tháng 9"
+              placeholder="VD: Đầu tư tháng 9"
               required
             />
           </div>

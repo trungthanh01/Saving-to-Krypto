@@ -25,3 +25,16 @@
     font-weight: 500;
     color: var(--color-text-secondary);
   }
+  .progressBar {
+    background-color: #e2e8f0; /* Màu nền của thanh */
+    border-radius: 999px;
+    height: 8px;
+    margin-top: 8px;
+  }
+
+  .progress {
+    background-color: var(--color-primary); /* Màu của tiến trình */
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
+  }

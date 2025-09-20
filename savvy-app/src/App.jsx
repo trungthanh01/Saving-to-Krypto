@@ -72,6 +72,9 @@ const initialGoals = [
         ...savings
       ])
     }
+    const totalSavings = savings.reduce((sum, currentsaving)=>{
+      return sum + currentsaving.amount
+    },0) // '0' là số khởi điểm của sum
     return (
       <div className='app-container'>
         <header className='app-header'>
@@ -91,6 +94,7 @@ const initialGoals = [
                   key={goal.id}
                   title={goal.title}
                   targetAmount={goal.targetAmount}
+                  currentsaving={totalSavings}
                 />
               )}
             </div>
