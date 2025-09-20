@@ -52,7 +52,7 @@
 - [x] **Task 2.4: Xây dựng Chức năng 'Add Goal'**
   - **Mục đích:** Cho phép người dùng thêm mục tiêu mới.
   - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một mục tiêu mới vào state.
-- [ ] **Task 2.5: Xây dựng Chức năng 'Add Saving'**
+- [x] **Task 2.5: Xây dựng Chức năng 'Add Saving'**
   - **Mục đích:** Cho phép user thêm tiền tiết kiệ vào goals.
   - **Hành động:** Tạo modal, form và viết hàm xử lý logic để thêm tiền vào Goal, form bao gồm input số tiền + option chọn tên mục tiêu + lưu, update progressbar mỗi khi tiền được thêm vào.
 - [ ] **Task 2.6: Xây dựng Chức năng Xóa**
