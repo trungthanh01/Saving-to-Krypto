@@ -49,7 +49,7 @@
 - [x] **Task 2.3: Tính toán và cập nhật thanh tiến trình**
   - **Mục đích:** Phản ánh đúng tiến độ tiết kiệm trên các GoalCard.
   - **Hành động:** Viết logic tính tổng tiền tiết kiệm và truyền xuống component GoalCard để tính toán phần trăm hoàn thành.
-- [ ] **Task 2.4: Xây dựng Chức năng 'Add Goal'**
+- [x] **Task 2.4: Xây dựng Chức năng 'Add Goal'**
   - **Mục đích:** Cho phép người dùng thêm mục tiêu mới.
   - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một mục tiêu mới vào state.
 - [ ] **Task 2.5: Xây dựng Chức năng Xóa**

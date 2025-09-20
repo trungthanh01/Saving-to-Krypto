@@ -4,6 +4,7 @@ import { AddButton } from './components/AddButton.jsx';
 import {AddSavingForm} from './components/AddSavingForm.jsx'
 import './App.css';
 import {useState} from 'react'
+import { AddGoalForm } from './components/AddGoalForm.jsx';
 
   // --- DỮ LIỆU GIẢ (MOCK DATA) ---
    
@@ -49,7 +50,7 @@ const initialGoals = [
     const [savings, setSavings] = useState(initialSavings)
     const [goals, setGoals] = useState(initialGoals)
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
-
+    const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     function handleOpenSavingModal(){
       setIsAddSavingModalOpen(true)
       console.log('Mở modal thêm giao dịch')
@@ -75,6 +76,24 @@ const initialGoals = [
     const totalSavings = savings.reduce((sum, currentsaving)=>{
       return sum + currentsaving.amount
     },0) // '0' là số khởi điểm của sum
+
+    function handleOpenGoalModal(){
+      setIsAddGoalModalOpen(true)
+    }
+    function handleCloseAddGoalModal(){
+      setIsAddGoalModalOpen(false)
+    }
+    function handleAddGoal(newGoalData){
+      const newCompleteGoal = {
+        ...newGoalData,
+        id: `g_${new Date().getTime()}`
+      }
+      setGoals([
+        newCompleteGoal,
+        ...goals
+      ])
+    }
+    
     return (
       <div className='app-container'>
         <header className='app-header'>
@@ -84,8 +103,11 @@ const initialGoals = [
           <section className='goals-section'>
           <div className="section-header">
               <h2>Mục Tiêu Của Bạn</h2>
-              <AddButton onClick={handleOpenSavingModal}>
+              <AddButton >
                 Thêm Giao Dịch
+              </AddButton>
+              <AddButton onClick={handleOpenGoalModal}>
+                Thêm Mục Tiêu
               </AddButton>
             </div>
             <div className='goals-list'>
@@ -104,7 +126,7 @@ const initialGoals = [
           <section className="history-section">
             <div className="section-header">
               <h2>Lịch sử giao dịch</h2>
-              <AddButton>Thêm Giao Dịch</AddButton>
+              <AddButton onClick={handleOpenSavingModal}>Thêm Giao Dịch</AddButton>
             </div>
             <div className="history-list"> 
               {savings.map((transaction) => (
@@ -122,6 +144,11 @@ const initialGoals = [
             isOpen={isAddSavingModalOpen}
             onClose={handleCloseSavingModal}
             onAddSaving={handleAddSaving}
+          />
+          <AddGoalForm
+            isOpen={isAddGoalModalOpen}
+            onClose={handleCloseAddGoalModal}
+            onAddGoal={handleAddGoal}
           />
         </main>
       </div> 
