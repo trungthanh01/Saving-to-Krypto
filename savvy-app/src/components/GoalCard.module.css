@@ -8,11 +8,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
   
-  .cardContent {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
    
   .title {
     font-size: 1.125rem; /* 18px */
@@ -21,9 +16,11 @@
   }
   
   .amount {
-    font-size: 1rem; /* 16px */
+    font-size: 1.125rem; /* 16px */
     font-weight: 500;
     color: var(--color-text-secondary);
+    text-align: right;
+    margin-bottom: var(--spacing-2);
   }
   .progressBar {
     background-color: #e2e8f0; /* Màu nền của thanh */
@@ -38,3 +35,15 @@
     border-radius: 999px;
     transition: width 0.3s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
   }
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.title {
+  /* Bỏ margin-bottom nếu có */
+  margin: 0;
+}

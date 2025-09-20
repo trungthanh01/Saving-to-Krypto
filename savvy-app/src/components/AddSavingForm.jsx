@@ -13,7 +13,6 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
   async function handleAddSavingAction(formData) {
     const amount = formData.get('amount');
     const description = formData.get('description');
-    const category = formData.get('category');
 
     // Validation
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
@@ -28,7 +27,6 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
     const newSaving = {
       amount: Number(amount),
       description: description,
-      category: category,
     };
 
     onAddSaving(newSaving); // Gửi dữ liệu lên component cha
@@ -41,7 +39,7 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <header className={styles.header}>
-          <h2>Thêm giao dịch mới</h2>
+          <h2>Thêm Tiền Tiết Kiệm</h2>
           <button className={styles.closeButton} onClick={onClose}>
             &times;
           </button>
@@ -69,15 +67,7 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
               required
             />
           </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="category">Danh mục</label>
-            <select id="category" name="category" defaultValue="Thu nhập">
-              <option value="Thu nhập">Thu nhập</option>
-              <option value="Bán đồ">Bán đồ</option>
-              <option value="Quà tặng">Quà tặng</option>
-              <option value="Khác">Khác</option>
-            </select>
-          </div>
+          
           <div className={styles.formActions}>
             <AddButton>Lưu</AddButton>
           </div>

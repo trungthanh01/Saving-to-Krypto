@@ -15,6 +15,7 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
     description: 'Tiền thưởng dự án',
     date: '2025-09-18',
     category: 'Thu nhập',
+    goalId: 'g1'
   },
   {
     id: 's2',
@@ -22,6 +23,7 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
     description: 'Bán sách cũ',
     date: '2025-09-15',
     category: 'Bán đồ',
+    goalId: 'g1'
   },
   {
     id: 's3',
@@ -29,6 +31,7 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
     description: 'Được tặng',
     date: '2025-09-12',
     category: 'Quà tặng',
+    goalId: 'g2'
   },
 ];
 
@@ -51,13 +54,17 @@ const initialGoals = [
     const [goals, setGoals] = useState(initialGoals)
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
-    function handleOpenSavingModal(){
+    const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
+
+    function handleOpenAddSavingModal(goalId){
       setIsAddSavingModalOpen(true)
+      setCurrentTargetGoalId(goalId)
       console.log('Mở modal thêm giao dịch')
     }
     
-    function handleCloseSavingModal(){
+    function handleCloseAddSavingModal(){
       setIsAddSavingModalOpen(false)
+      setCurrentTargetGoalId(null)
       console.log('Đóng modal thêm giao dịch')
     }
 
@@ -65,13 +72,11 @@ const initialGoals = [
       const newCompleteSaving = {
         ...newSavingData,
         id: `s_${new Date().getTime()}`,//tạo id
-        date: new Date().toISOString().split('T')[0]//ngày
+        date: new Date().toISOString().split('T')[0],//ngày
+        goalId: currentTargetGoalId
       }
       //cập nhật state đặt các khoản tiết kiệm lên đầu danh sách
-      setSavings([
-        newCompleteSaving,
-        ...savings
-      ])
+      setSavings([newCompleteSaving,...savings])
     }
     const totalSavings = savings.reduce((sum, currentsaving)=>{
       return sum + currentsaving.amount
@@ -88,10 +93,7 @@ const initialGoals = [
         ...newGoalData,
         id: `g_${new Date().getTime()}`
       }
-      setGoals([
-        newCompleteGoal,
-        ...goals
-      ])
+      setGoals([newCompleteGoal,...goals])
     }
     
     return (
@@ -103,9 +105,6 @@ const initialGoals = [
           <section className='goals-section'>
           <div className="section-header">
               <h2>Mục Tiêu Của Bạn</h2>
-              <AddButton >
-                Thêm Giao Dịch
-              </AddButton>
               <AddButton onClick={handleOpenGoalModal}>
                 Thêm Mục Tiêu
               </AddButton>
@@ -114,9 +113,9 @@ const initialGoals = [
               {goals.map((goal) => 
                 <GoalCard
                   key={goal.id}
-                  title={goal.title}
-                  targetAmount={goal.targetAmount}
-                  currentsaving={totalSavings}
+                  goal={goal}
+                  savings={savings}
+                  onAddSavingClick={handleOpenAddSavingModal}
                 />
               )}
             </div>
@@ -126,7 +125,6 @@ const initialGoals = [
           <section className="history-section">
             <div className="section-header">
               <h2>Lịch sử giao dịch</h2>
-              <AddButton onClick={handleOpenSavingModal}>Thêm Giao Dịch</AddButton>
             </div>
             <div className="history-list"> 
               {savings.map((transaction) => (
@@ -135,14 +133,13 @@ const initialGoals = [
                   amount={transaction.amount}
                   description={transaction.description}
                   date={transaction.date}
-                  category={transaction.category}
                 />
               ))}
             </div>
           </section>
           <AddSavingForm
             isOpen={isAddSavingModalOpen}
-            onClose={handleCloseSavingModal}
+            onClose={handleCloseAddSavingModal}
             onAddSaving={handleAddSaving}
           />
           <AddGoalForm
