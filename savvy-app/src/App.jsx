@@ -6,58 +6,21 @@ import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
 
-
   // --- DỮ LIỆU GIẢ (MOCK DATA) ---
    
- const initialSavings = [
-  {
-    id: 's1',
-    amount: 50,
-    description: 'Tiền thưởng dự án',
-    date: '2025-09-18',
-    category: 'Thu nhập',
-    goalId: 'g1'
-  },
-  {
-    id: 's2',
-    amount: 25,
-    description: 'Bán sách cũ',
-    date: '2025-09-15',
-    category: 'Bán đồ',
-    goalId: 'g1'
-  },
-  {
-    id: 's3',
-    amount: 10,
-    description: 'Được tặng',
-    date: '2025-09-12',
-    category: 'Quà tặng',
-    goalId: 'g2'
-  },
-];
 
-const initialGoals = [
-  {
-    id: 'g1',
-    title: 'Mua tai nghe mới',
-    targetAmount: 300,
-  },
-  {
-    id: 'g2',
-    title: 'Đi du lịch Đà Lạt',
-    targetAmount: 1000,
-  },
-];
 
   // --------------------------------
   export function App() {
     const [savings, setSavings] = useState(() => {
-      const savedSavings = localStorage.getItem('savvyy-savings');
-      return savedSavings ? JSON.parse(savedSavings) : initialSavings;
+      const savedSavings = localStorage.getItem('savvy-savings');
+      // Nếu có dữ liệu trong Local Storage thì dùng, nếu không thì bắt đầu với mảng rỗng
+      return savedSavings ? JSON.parse(savedSavings) : [];
     });
     const [goals, setGoals] = useState(() => {
-      const savedGoals = localStorage.getItem('savvyy-goals');
-      return savedGoals ? JSON.parse(savedGoals) : initialGoals;
+      const savedGoals = localStorage.getItem('savvy-goals');
+      // Tương tự, ưu tiên Local Storage, nếu không thì bắt đầu với mảng rỗng
+      return savedGoals ? JSON.parse(savedGoals) : [];
     });
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
@@ -65,8 +28,8 @@ const initialGoals = [
 
     //Local storage
     useEffect(() => {
-      localStorage.setItem('savvyy-savings', JSON.stringify(savings));
-      localStorage.setItem('Savvyy-goals', JSON.stringify(goals));
+      localStorage.setItem('savvy-savings', JSON.stringify(savings));
+      localStorage.setItem('savvy-goals', JSON.stringify(goals));
       console.log('Dữ liệu đã được lưu vào Local Storage')
     }, [savings, goals])
 
