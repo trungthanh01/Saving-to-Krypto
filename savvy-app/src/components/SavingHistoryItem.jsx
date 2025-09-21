@@ -1,6 +1,6 @@
 import styles from './SavingHistoryItem.module.css';
 
-export function SavingHistoryItem({ description, amount, date, category }) {
+export function SavingHistoryItem({id, description, amount, date, onDelete }) {
   return (
     <div className={styles.item}>
       <div className={styles.details}>
@@ -9,7 +9,17 @@ export function SavingHistoryItem({ description, amount, date, category }) {
           <span>{date}</span>
         </div>
       </div>
-      <p className={styles.amount}>+${amount}</p>
+      <div className={styles.actions}>
+        <p className={styles.amount}>
+          +${amount.toLocaleString('es-US')}
+        </p>
+        <button 
+          onClick={() => onDelete(id)} 
+          className={styles.deleteButton}>
+            &times;
+        </button>
+      </div>
+      
     </div>
   );
 }

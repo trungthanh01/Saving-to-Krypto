@@ -52,13 +52,15 @@
 - [x] **Task 2.4: Xây dựng Chức năng 'Add Goal'**
   - **Mục đích:** Cho phép người dùng thêm mục tiêu mới.
   - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một mục tiêu mới vào state.
-- [x] **Task 2.5: Xây dựng Chức năng 'Add Saving'**
-  - **Mục đích:** Cho phép user thêm tiền tiết kiệ vào goals.
-  - **Hành động:** Tạo modal, form và viết hàm xử lý logic để thêm tiền vào Goal, form bao gồm input số tiền + option chọn tên mục tiêu + lưu, update progressbar mỗi khi tiền được thêm vào.
-- [ ] **Task 2.6: Xây dựng Chức năng Xóa**
+- [x] **Task 2.5: Xây dựng Chức năng 'Add Saving' cho từng Goal**
+  - **Mục đích:** Cho phép user thêm tiền tiết kiệm vào một goal cụ thể.
+  - **Hành động:** Nâng cấp GoalCard, App, và AddSavingForm để quản lý và cập nhật tiến trình cho từng goal riêng biệt.
+- [x] **Task 2.6: Xây dựng Chức năng Xóa**
   - **Mục đích:** Cho phép người dùng xóa một khoản tiết kiệm đã nhập sai.
   - **Hành động:** Viết hàm xử lý logic xóa một item khỏi mảng savings bằng cách sử dụng id và phương thức .filter().
-
+- [x] **Task 2.7: Lưu dữ liệu vào Local Storage**
+  - **Mục đích:** Giúp người dùng không bị mất dữ liệu khi tải lại trang.
+  - **Hành động:** Sử dụng hook useEffect để tự động lưu và tải state từ localStorage của trình duyệt.
 ---
 
 ### **Giai đoạn 3: Hoàn Thiện & Tối Ưu (Polishing & Optimizing)**
@@ -67,9 +69,7 @@
 - [ ] **Task 3.1: Hiển thị thông báo động viên**
   - **Mục đích:** Tạo sự tương tác thú vị sau khi người dùng thêm một khoản tiết kiệm.
   - **Hành động:** Tạo state để lưu trữ và hiển thị một thông báo động viên trên màn hình chính.
-- [ ] **Task 3.2: Lưu dữ liệu vào Local Storage**
-  - **Mục đích:** Giúp người dùng không bị mất dữ liệu khi tải lại trang.
-  - **Hành động:** Sử dụng hook useEffect để tự động lưu và tải state từ localStorage của trình duyệt.
+
 - [ ] **Task 3.3: Tinh chỉnh CSS và Responsive**
   - **Mục đích:** Đảm bảo ứng dụng trông đẹp mắt và hoạt động tốt trên mọi kích thước màn hình.
   - **Hành động:** Rà soát lại toàn bộ CSS, sử dụng Flexbox/Grid và Media Queries để tối ưu hóa giao diện cho mobile-first.

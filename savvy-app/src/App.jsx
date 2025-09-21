@@ -3,8 +3,9 @@ import { SavingHistoryItem } from './components/SavingHistoryItem.jsx';
 import { AddButton } from './components/AddButton.jsx';
 import {AddSavingForm} from './components/AddSavingForm.jsx'
 import './App.css';
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
+
 
   // --- DỮ LIỆU GIẢ (MOCK DATA) ---
    
@@ -50,11 +51,24 @@ const initialGoals = [
 
   // --------------------------------
   export function App() {
-    const [savings, setSavings] = useState(initialSavings)
-    const [goals, setGoals] = useState(initialGoals)
+    const [savings, setSavings] = useState(() => {
+      const savedSavings = localStorage.getItem('savvyy-savings');
+      return savedSavings ? JSON.parse(savedSavings) : initialSavings;
+    });
+    const [goals, setGoals] = useState(() => {
+      const savedGoals = localStorage.getItem('savvyy-goals');
+      return savedGoals ? JSON.parse(savedGoals) : initialGoals;
+    });
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
+
+    //Local storage
+    useEffect(() => {
+      localStorage.setItem('savvyy-savings', JSON.stringify(savings));
+      localStorage.setItem('Savvyy-goals', JSON.stringify(goals));
+      console.log('Dữ liệu đã được lưu vào Local Storage')
+    }, [savings, goals])
 
     function handleOpenAddSavingModal(goalId){
       setIsAddSavingModalOpen(true)
@@ -95,6 +109,11 @@ const initialGoals = [
       }
       setGoals([newCompleteGoal,...goals])
     }
+    function handleDeleteSaving(savingIdToDelete) {
+      const newSavings = savings.filter(saving => 
+        saving.id !== savingIdToDelete);
+      setSavings(newSavings);
+    }  
     
     return (
       <div className='app-container'>
@@ -130,9 +149,11 @@ const initialGoals = [
               {savings.map((transaction) => (
                 <SavingHistoryItem
                   key={transaction.id}
+                  id={transaction.id}
                   amount={transaction.amount}
                   description={transaction.description}
                   date={transaction.date}
+                  onDelete={handleDeleteSaving}
                 />
               ))}
             </div>
