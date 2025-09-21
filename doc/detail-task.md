@@ -63,6 +63,14 @@
   - **Hành động:** Sử dụng hook useEffect để tự động lưu và tải state từ localStorage của trình duyệt.
 ---
 
+### **Giai đoạn 3: Cải Tiến Ứng Dụng & Thông Minh**
+*Mục tiêu: nâng cấp khả năng tương tác giữa ứng dụng và người dùng, đưa ứng dụng trở nên phù hợp với nhiều mục tiêu của người dùng*
+
+- [ ]**Task 3.1: Xóa Goal Card**
+  - **Mục đích:** Nếu đã có thể thêm mục tiêu thì người dùng cũng cần có thể xóa mục tiêu khi không còn cần đến.
+  - **Hành động:** Thêm nút xóa vào mỗi `GoalCard`. Khi nhấn, không chỉ xóa mục tiêu mà còn xóa tất cả các khoản tiết kiệm (`savings`) liên quan. Cần có hộp thoại xác nhận để tránh xóa nhầm.
+
+---
 ### **Giai đoạn 4: Hoàn Thiện & Tối Ưu (Polishing & Optimizing)**
 *Mục tiêu: Cải thiện trải nghiệm người dùng và làm cho ứng dụng trở nên chuyên nghiệp hơn.*
 

@@ -47,3 +47,15 @@
   /* Bỏ margin-bottom nếu có */
   margin: 0;
 }
+.deleteButton{
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    padding: var(--spacing-1);
+    color: red;
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: color 0.2 ease-in-out;
+    margin-left: 10px;
+}

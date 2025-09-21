@@ -77,6 +77,20 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
         saving.id !== savingIdToDelete);
       setSavings(newSavings);
     }  
+    function handleDeleteGoal(goalIdToDelete) {
+      const userConfirmed = window.confirm(
+        'Bạn có chắc chắn muốn xóa mục tiêu này không? Tất cả các khoản tiết kiệm liên quan cũng sẽ bị xóa vĩnh viễn.'
+      )
+      if (!userConfirmed) {
+        return;
+      }
+      const newGoals = goals.filter(goal => 
+        goal.id !== goalIdToDelete);
+      setGoals(newGoals);
+      const newSavings = savings.filter(saving =>
+        saving.goalId !== goalIdToDelete);
+        setSavings(newSavings)
+    }
     
     return (
       <div className='app-container'>
@@ -98,6 +112,8 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
                   goal={goal}
                   savings={savings}
                   onAddSavingClick={handleOpenAddSavingModal}
+                  onDelete={handleDeleteGoal}
+                  
                 />
               )}
             </div>

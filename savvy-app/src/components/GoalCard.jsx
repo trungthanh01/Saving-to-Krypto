@@ -2,7 +2,7 @@ import styles from './GoalCard.module.css';
 import { AddButton } from './AddButton';
 
 // Bước 2.2: Thay đổi props nhận vào
-export function GoalCard({ goal, savings , onAddSavingClick  }) {
+export function GoalCard({ goal, savings , onAddSavingClick, onDelete }) {
   // Bước 2.3: Tự tính tổng
   const currentAmount = savings
     .filter(saving => saving.goalId === goal.id)
@@ -18,10 +18,16 @@ export function GoalCard({ goal, savings , onAddSavingClick  }) {
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <h3 className={styles.title}>{goal.title}</h3>
-        {/* Bước 2.4: Thêm nút Add Saving */}
-        <AddButton  onClick={() => onAddSavingClick(goal.id)}>
-          Add Saving
-        </AddButton>
+        <div className="buttonGoal">
+          <AddButton  onClick={() => onAddSavingClick(goal.id)}>
+            Add Saving
+          </AddButton>
+          <button 
+            className={styles.deleteButton}
+            onClick={() => onDelete(goal.id)}>
+              &times;
+          </button>
+        </div>
       </div>
       <div className={styles.cardBody}>
         <p className={styles.amount}>
