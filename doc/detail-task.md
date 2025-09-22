@@ -1,83 +1,97 @@
-# Chi Tiết Công Việc - Dự án "Savvy"
+# Chi Tiết Công Việc - Dự án "Crypto Portfolio"
 
-Đây là nơi chúng ta sẽ theo dõi tiến độ chi tiết của từng task, được đồng bộ từ `doc/task.xml`.
-
----
-
-### **Giai đoạn 0: Nền Tảng & Thiết Lập (Foundation & Setup)**
-*Mục tiêu: Tạo ra một môi trường làm việc sạch sẽ và có cấu trúc tốt, sẵn sàng để phát triển.*
-
-- [x] **Task 0.1: Khởi tạo dự án React**
-  - **Mục đích:** Tạo ra bộ khung sườn cơ bản cho ứng dụng.
-  - **Hành động:** Sử dụng công cụ Vite để tạo một dự án React mới.
-- [x] **Task 0.2: Dọn dẹp và cấu trúc thư mục**
-  - **Mục đích:** Tổ chức code một cách logic để dễ dàng tìm kiếm và bảo trì.
-  - **Hành động:** Xóa các file mặc định không cần thiết. Tạo cấu trúc thư mục: src/components, src/assets, src/styles.
-- [x] **Task 0.3: Thiết lập Styling cơ bản**
-  - **Mục đích:** Đảm bảo ứng dụng có một giao diện nhất quán ngay từ đầu.
-  - **Hành động:** Tạo file CSS chung để reset style và định nghĩa các biến màu sắc, font chữ.
+Đây là kế hoạch chi tiết để tích hợp tính năng quản lý danh mục đầu tư crypto vào ứng dụng Savvy. Chúng ta sẽ tiếp cận theo phương pháp **Sản phẩm Khả dụng Tối thiểu (Minimum Viable Product - MVP)**, xây dựng các tính năng cốt lõi trước, sau đó liên tục nâng cấp và hoàn thiện.
 
 ---
 
-### **Giai đoạn 1: Lõi Dữ Liệu & Giao Diện Tĩnh (Data Core & Static UI)**
-*Mục tiêu: Định hình cấu trúc dữ liệu và xây dựng giao diện tĩnh từ dữ liệu giả (mock data).*
+### **Giai đoạn 1: MVP - Hiển thị Danh mục Đầu tư Cốt lõi**
+*Mục tiêu: Xây dựng phiên bản đơn giản nhất để có thể nhập và hiển thị danh sách các coin đang nắm giữ cùng với tổng giá trị của chúng. Giai đoạn này tập trung vào hai kỹ năng mới quan trọng: **gọi API** và **xử lý tác vụ bất đồng bộ**.*
 
-- [x] **Task 1.1: Định hình cấu trúc dữ liệu**
-  - **Mục đích:** Xác định rõ các thông tin cần lưu trữ cho 'Saving' và 'Goal'.
-  - **Hành động:** Thiết kế cấu trúc object cho một khoản tiết kiệm (id, amount, description, date) và một mục tiêu (id, title, targetAmount).
-- [x] **Task 1.2: Tạo dữ liệu giả (Mock Data)**
-  - **Mục đích:** Có dữ liệu để hiển thị lên UI mà không cần logic phức tạp.
-  - **Hành động:** Trong file App.jsx, tạo hai mảng dữ liệu giả cho savings và goals.
-- [x] **Task 1.3: Xây dựng các Component tĩnh**
-  - **Mục đích:** Tạo ra các thành phần giao diện nhỏ, có thể tái sử dụng.
-  - **Hành động:** Tạo các component: GoalCard.jsx, SavingHistoryItem.jsx, AddButton.jsx.
-- [x] **Task 1.4: Lắp ráp Giao diện chính**
-  - **Mục đích:** Dựng lên màn hình chính của ứng dụng từ các component đã tạo.
-  - **Hành động:** Trong App.jsx, sử dụng phương thức .map() để hiển thị danh sách các GoalCard và SavingHistoryItem từ dữ liệu giả.
+- [ ] **Task 1.1: Thiết lập cấu trúc & công cụ**
+  - **Mục đích:** Chuẩn bị nền tảng code và các thư viện cần thiết cho tính năng mới.
+  - **Hành động:**
+    - Tạo cấu trúc thư mục mới: `src/components/portfolio/` và `src/services/`.
+    - Cài đặt thư viện `axios` để thực hiện các cuộc gọi API: `npm install axios`.
+
+- [ ] **Task 1.2: Xây dựng Service gọi API CoinGecko**
+  - **Mục đích:** Tạo một nơi tập trung, tái sử dụng được để lấy dữ liệu giá crypto từ một nguồn bên ngoài.
+  - **Hành động:**
+    - Tạo file `src/services/crypto-api.js`.
+    - Viết một hàm bất đồng bộ (async function), ví dụ `fetchCoinData(coinIds)`, sử dụng `axios` để gọi API của CoinGecko và lấy dữ liệu thị trường của các đồng coin được yêu cầu.
+
+- [ ] **Task 1.3: Quản lý State Portfolio trong App.jsx**
+  - **Mục đích:** Sử dụng kiến thức đã có về `useState` để quản lý danh sách các coin người dùng sở hữu.
+  - **Hành động:**
+    - Trong `App.jsx`, tạo một state mới tên là `holdings` với `useState`.
+    - Dữ liệu `holdings` sẽ là một mảng các object, ví dụ: `[{ id: 'bitcoin', amount: 0.5 }, { id: 'ethereum', amount: 10 }]`.
+
+- [ ] **Task 1.4: Xây dựng Giao diện Portfolio cơ bản**
+  - **Mục đích:** Tạo component để hiển thị danh mục đầu tư và học cách kết hợp hiển thị dữ liệu tĩnh (từ state) và dữ liệu động (từ API).
+  - **Hành động:**
+    - Tạo component `Portfolio.jsx` trong `src/components/portfolio/`.
+    - Component này sẽ nhận `holdings` làm prop, dùng `useEffect` để gọi hàm `fetchCoinData` và lưu kết quả trả về vào một state nội bộ (ví dụ `coinMarketData`).
+    - Render ra một danh sách đơn giản hiển thị: Tên coin, số lượng, giá hiện tại, và tổng giá trị của từng khoản đầu tư.
+
+- [ ] **Task 1.5: Hoàn thiện Tích hợp & Chức năng Thêm Coin**
+  - **Mục đích:** Hiển thị module portfolio trên giao diện chính và cho phép người dùng thêm coin mới vào danh mục của họ.
+  - **Hành động:**
+    - Import và hiển thị component `<Portfolio />` trong `App.jsx`.
+    - Tạo một form rất đơn giản (chưa cần modal) để người dùng có thể nhập ID của coin (ví dụ: 'bitcoin') và số lượng, sau đó cập nhật vào state `holdings`.
+
+---
+
+### **Giai đoạn 2: Tái cấu trúc với Context API**
+*Mục tiêu: Khi tính năng bắt đầu phức tạp hơn, chúng ta sẽ học cách quản lý state "toàn cục" (global state) bằng Context API. Điều này giúp tách biệt logic ra khỏi các component giao diện, làm cho code sạch sẽ và dễ bảo trì hơn.*
+
+- [ ] **Task 2.1: Tạo Portfolio Context**
+  - **Mục đích:** Xây dựng một "kho chứa" state tập trung cho toàn bộ tính năng portfolio.
+  - **Hành động:**
+    - Tạo thư mục `src/context/`.
+    - Tạo file `src/context/PortfolioContext.jsx`, định nghĩa `PortfolioContext` và `PortfolioProvider`.
+    - Di chuyển state `holdings` và tất cả logic liên quan (thêm coin, gọi API) từ `App.jsx` và `Portfolio.jsx` vào trong `PortfolioProvider`.
+
+- [ ] **Task 2.2: Tích hợp Context Provider**
+  - **Mục đích:** "Bao bọc" ứng dụng của chúng ta để mọi component bên trong đều có khả năng truy cập vào state của portfolio.
+  - **Hành động:**
+    - Trong `main.jsx`, import và bao bọc component `<App />` bằng `<PortfolioProvider>`.
+
+- [ ] **Task 2.3: Sử dụng Context trong Component**
+  - **Mục đích:** Trải nghiệm sự tiện lợi của việc lấy dữ liệu trực tiếp từ Context thay vì phải truyền props qua nhiều cấp (prop drilling).
+  - **Hành động:**
+    - Trong component `Portfolio.jsx`, sử dụng hook `useContext` để lấy dữ liệu `holdings` và các hàm cần thiết.
+    - Xóa việc truyền props từ `App.jsx`.
 
 ---
 
-### **Giai đoạn 2: "Thổi Hồn" cho Ứng Dụng (Adding State & Interactivity)**
-*Mục tiêu: Làm cho ứng dụng trở nên "sống động" bằng cách quản lý trạng thái và xử lý sự kiện người dùng.*
+### **Giai đoạn 3: Trực quan hóa Dữ liệu với Biểu đồ**
+*Mục tiêu: Học cách tích hợp và sử dụng một thư viện của bên thứ ba (`Recharts`) để biến những con số khô khan thành một biểu đồ trực quan, dễ hiểu.*
 
-- [x] **Task 2.1: Quản lý State với React Hooks**
-  - **Mục đích:** Chuyển từ dữ liệu giả sang trạng thái động của ứng dụng.
-  - **Hành động:** Sử dụng hook useState trong App.jsx để quản lý mảng savings và goals.
-- [x] **Task 2.2: Xây dựng Chức năng 'Add Saving'**
-  - **Mục đích:** Cho phép người dùng thêm một khoản tiết kiệm mới.
-  - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một khoản tiết kiệm mới vào state.
-- [x] **Task 2.3: Tính toán và cập nhật thanh tiến trình**
-  - **Mục đích:** Phản ánh đúng tiến độ tiết kiệm trên các GoalCard.
-  - **Hành động:** Viết logic tính tổng tiền tiết kiệm và truyền xuống component GoalCard để tính toán phần trăm hoàn thành.
-- [x] **Task 2.4: Xây dựng Chức năng 'Add Goal'**
-  - **Mục đích:** Cho phép người dùng thêm mục tiêu mới.
-  - **Hành động:** Tạo Modal, Form và viết hàm xử lý logic để thêm một mục tiêu mới vào state.
-- [x] **Task 2.5: Xây dựng Chức năng 'Add Saving' cho từng Goal**
-  - **Mục đích:** Cho phép user thêm tiền tiết kiệm vào một goal cụ thể.
-  - **Hành động:** Nâng cấp GoalCard, App, và AddSavingForm để quản lý và cập nhật tiến trình cho từng goal riêng biệt.
-- [x] **Task 2.6: Xây dựng Chức năng Xóa**
-  - **Mục đích:** Cho phép người dùng xóa một khoản tiết kiệm đã nhập sai.
-  - **Hành động:** Viết hàm xử lý logic xóa một item khỏi mảng savings bằng cách sử dụng id và phương thức .filter().
-- [x] **Task 2.7: Lưu dữ liệu vào Local Storage**
-  - **Mục đích:** Giúp người dùng không bị mất dữ liệu khi tải lại trang.
-  - **Hành động:** Sử dụng hook useEffect để tự động lưu và tải state từ localStorage của trình duyệt.
----
+- [ ] **Task 3.1: Cài đặt và Chuẩn bị**
+  - **Mục đích:** Thêm thư viện vẽ biểu đồ vào dự án.
+  - **Hành động:**
+    - Chạy lệnh `npm install recharts` trong terminal.
 
-### **Giai đoạn 3: Cải Tiến Ứng Dụng & Thông Minh**
-*Mục tiêu: nâng cấp khả năng tương tác giữa ứng dụng và người dùng, đưa ứng dụng trở nên phù hợp với nhiều mục tiêu của người dùng*
-
-- [x]**Task 3.1: Xóa Goal Card**
-  - **Mục đích:** Nếu đã có thể thêm mục tiêu thì người dùng cũng cần có thể xóa mục tiêu khi không còn cần đến.
-  - **Hành động:** Thêm nút xóa vào mỗi `GoalCard`. Khi nhấn, không chỉ xóa mục tiêu mà còn xóa tất cả các khoản tiết kiệm (`savings`) liên quan. Cần có hộp thoại xác nhận để tránh xóa nhầm.
+- [ ] **Task 3.2: Xây dựng Component `HoldingsChart`**
+  - **Mục đích:** Tạo một biểu đồ tròn (Pie Chart) để thể hiện tỷ trọng giá trị của mỗi loại coin trong tổng danh mục.
+  - **Hành động:**
+    - Tạo file `src/components/portfolio/HoldingsChart.jsx`.
+    - Lấy dữ liệu từ `PortfolioContext`.
+    - Xử lý và tính toán dữ liệu để có định dạng mà `Recharts` yêu cầu (ví dụ: `[{ name: 'Bitcoin', value: 45000 }, ...]`).
+    - Render component `PieChart` từ `Recharts` và truyền dữ liệu vào.
 
 ---
-### **Giai đoạn 4: Hoàn Thiện & Tối Ưu (Polishing & Optimizing)**
-*Mục tiêu: Cải thiện trải nghiệm người dùng và làm cho ứng dụng trở nên chuyên nghiệp hơn.*
 
-- [x] **Task 4.1: Hiển thị thông báo động viên**
-  - **Mục đích:** Tạo sự tương tác thú vị sau khi người dùng thêm một khoản tiết kiệm.
-  - **Hành động:** Tạo state để lưu trữ và hiển thị một thông báo động viên trên màn hình chính.
+### **Giai đoạn 4: Hoàn thiện và Nâng cao**
+*Mục tiêu: Quay trở lại kế hoạch ban đầu và bổ sung các tính năng nâng cao để hoàn thiện sản phẩm, mang lại trải nghiệm người dùng tốt hơn.*
 
-- [x] **Task 4.2: Tinh chỉnh CSS và Responsive**
-  - **Mục đích:** Đảm bảo ứng dụng trông đẹp mắt và hoạt động tốt trên mọi kích thước màn hình.
-  - **Hành động:** Rà soát lại toàn bộ CSS, sử dụng Flexbox/Grid và Media Queries để tối ưu hóa giao diện cho mobile-first.
+- [ ] **Task 4.1: Nâng cấp Chức năng 'Thêm Giao dịch' với Modal**
+  - **Mục đích:** Cải thiện trải nghiệm người dùng bằng cách sử dụng Modal cho việc thêm/sửa giao dịch, thay vì form tĩnh.
+  - **Hành động:**
+    - Tái sử dụng hoặc tạo mới một component Modal.
+    - Tích hợp form thêm giao dịch vào bên trong Modal.
+
+- [ ] **Task 4.2: Hiển thị Tổng quan Portfolio (Summary)**
+  - **Mục đích:** Cung cấp cho người dùng cái nhìn tổng quan nhanh về hiệu suất danh mục đầu tư.
+  - **Hành động:**
+    - Tạo component `PortfolioSummary.jsx`.
+    - Tính toán và hiển thị các thông tin như: tổng giá trị, tổng lời/lỗ, và thay đổi trong 24 giờ.
