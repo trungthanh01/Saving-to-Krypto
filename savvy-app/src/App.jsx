@@ -21,6 +21,7 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
     const [goalMessage, setGoalMessage] = useState('')
+    const [holdings, setHoldings] = useState('')
 
     useEffect(() => {
       // Nếu không có message, không làm gì cả.
