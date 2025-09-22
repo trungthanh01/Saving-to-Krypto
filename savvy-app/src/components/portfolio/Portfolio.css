@@ -1,0 +1,68 @@
+.portfolio-section {
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+}
+
+.portfolio-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-4);
+    color: var(--color-text-primary);
+}
+
+.portfolio-list {
+    display: grid;
+    gap: var(--spacing-3);
+}
+
+.portfolio-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background-color: var(--color-background-primary);
+    border-radius: var(--border-radius-md);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.portfolio-item:hover {
+    background-color: var(--color-background-tertiary);
+}
+
+.coin-image {
+    width: 40px;
+    height: 40px;
+}
+
+.coin-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.coin-name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.coin-price {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.coin-holdings {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.coin-value {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.coin-amount {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
