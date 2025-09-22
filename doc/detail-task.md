@@ -7,19 +7,19 @@
 ### **Giai đoạn 1: MVP - Hiển thị Danh mục Đầu tư Cốt lõi**
 *Mục tiêu: Xây dựng phiên bản đơn giản nhất để có thể nhập và hiển thị danh sách các coin đang nắm giữ cùng với tổng giá trị của chúng. Giai đoạn này tập trung vào hai kỹ năng mới quan trọng: **gọi API** và **xử lý tác vụ bất đồng bộ**.*
 
-- [ ] **Task 1.1: Thiết lập cấu trúc & công cụ**
+- [x] **Task 1.1: Thiết lập cấu trúc & công cụ**
   - **Mục đích:** Chuẩn bị nền tảng code và các thư viện cần thiết cho tính năng mới.
   - **Hành động:**
     - Tạo cấu trúc thư mục mới: `src/components/portfolio/` và `src/services/`.
     - Cài đặt thư viện `axios` để thực hiện các cuộc gọi API: `npm install axios`.
 
-- [ ] **Task 1.2: Xây dựng Service gọi API CoinGecko**
+- [x] **Task 1.2: Xây dựng Service gọi API CoinGecko**
   - **Mục đích:** Tạo một nơi tập trung, tái sử dụng được để lấy dữ liệu giá crypto từ một nguồn bên ngoài.
   - **Hành động:**
     - Tạo file `src/services/crypto-api.js`.
     - Viết một hàm bất đồng bộ (async function), ví dụ `fetchCoinData(coinIds)`, sử dụng `axios` để gọi API của CoinGecko và lấy dữ liệu thị trường của các đồng coin được yêu cầu.
 
-- [ ] **Task 1.3: Quản lý State Portfolio trong App.jsx**
+- [x] **Task 1.3: Quản lý State Portfolio trong App.jsx**
   - **Mục đích:** Sử dụng kiến thức đã có về `useState` để quản lý danh sách các coin người dùng sở hữu.
   - **Hành động:**
     - Trong `App.jsx`, tạo một state mới tên là `holdings` với `useState`.
