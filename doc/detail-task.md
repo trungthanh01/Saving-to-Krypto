@@ -74,10 +74,10 @@
 ### **Giai đoạn 4: Hoàn Thiện & Tối Ưu (Polishing & Optimizing)**
 *Mục tiêu: Cải thiện trải nghiệm người dùng và làm cho ứng dụng trở nên chuyên nghiệp hơn.*
 
-- [ ] **Task 4.1: Hiển thị thông báo động viên**
+- [x] **Task 4.1: Hiển thị thông báo động viên**
   - **Mục đích:** Tạo sự tương tác thú vị sau khi người dùng thêm một khoản tiết kiệm.
   - **Hành động:** Tạo state để lưu trữ và hiển thị một thông báo động viên trên màn hình chính.
 
-- [ ] **Task 4.2: Tinh chỉnh CSS và Responsive**
+- [x] **Task 4.2: Tinh chỉnh CSS và Responsive**
   - **Mục đích:** Đảm bảo ứng dụng trông đẹp mắt và hoạt động tốt trên mọi kích thước màn hình.
   - **Hành động:** Rà soát lại toàn bộ CSS, sử dụng Flexbox/Grid và Media Queries để tối ưu hóa giao diện cho mobile-first.

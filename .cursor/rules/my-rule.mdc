@@ -88,3 +88,9 @@ Các kịch bản gỡ lỗi: scripts/debugging/
 ## **# 6. Nguồn kiến thức**
 (Đặc biệt ưu tiên) Sử dụng kiến thức từ thư viện React thông qua link sau: https://react.dev/learn 
 Những kiến thức trong này sẽ giúp code của tôi và bạn clean hơn và có hệ thống hơn
+
+## **# 7. Lưu trữ quá trình thực hiện**
+Sau khi hoàn thành task bạn sẽ update file @progess.md để lưu lại quá các bước hoàn thành task theo dạng step by step.
+**ví dụ: sau khi hoàn thành một task thì bạn lưu lại các bước như:
+- Bước 1: truyền props xuống...
+- Bước 2: lấy filter()...**
