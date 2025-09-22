@@ -10,19 +10,38 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
-      // Nếu có dữ liệu trong Local Storage thì dùng, nếu không thì bắt đầu với mảng rỗng
       return savedSavings ? JSON.parse(savedSavings) : [];
     });
+
     const [goals, setGoals] = useState(() => {
       const savedGoals = localStorage.getItem('savvy-goals');
-      // Tương tự, ưu tiên Local Storage, nếu không thì bắt đầu với mảng rỗng
       return savedGoals ? JSON.parse(savedGoals) : [];
     });
+
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
+    const [goalMessage, setGoalMessage] = useState('')
 
-    //Local storage
+    useEffect(() => {
+      // Nếu không có message, không làm gì cả.
+      if (!goalMessage) {
+        return;
+      }
+  
+      // Đặt một bộ đếm thời gian. Sau 3 giây, nó sẽ xóa message.
+      const timerId = setTimeout(() => {
+        setGoalMessage('');
+      }, 3000);
+  
+      // Đây là hàm cleanup. React sẽ chạy nó trước khi chạy lại effect
+      // hoặc khi component bị gỡ bỏ.
+      // Điều này đảm bảo chúng ta không bị rò rỉ bộ nhớ từ các bộ đếm thời gian cũ.
+      return () => {
+        clearTimeout(timerId);
+      };
+    }, [goalMessage]); // Effect này sẽ chạy lại mỗi khi goalMessage thay đổi.
+
     useEffect(() => {
       localStorage.setItem('savvy-savings', JSON.stringify(savings));
       localStorage.setItem('savvy-goals', JSON.stringify(goals));
@@ -48,8 +67,9 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
         date: new Date().toISOString().split('T')[0],//ngày
         goalId: currentTargetGoalId
       }
-      //cập nhật state đặt các khoản tiết kiệm lên đầu danh sách
       setSavings([newCompleteSaving,...savings])
+      setGoalMessage('Tốt lắm! Góp gió thành bão.')
+
     }
     const totalSavings = savings.reduce((sum, currentsaving)=>{
       return sum + currentsaving.amount
@@ -92,6 +112,7 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
       <div className='app-container'>
         <header className='app-header'>
           <h1>Savvy</h1>
+          {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
         </header>
         <main>
           <section className='goals-section'>
