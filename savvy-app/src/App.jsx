@@ -6,11 +6,7 @@ import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
 
-  // --- DỮ LIỆU GIẢ (MOCK DATA) ---
-   
 
-
-  // --------------------------------
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
