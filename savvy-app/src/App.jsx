@@ -5,7 +5,7 @@ import {AddSavingForm} from './components/AddSavingForm.jsx'
 import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
-
+import { Portfolio } from './components/portfolio/Portfolio.jsx';
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
@@ -21,7 +21,11 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
     const [goalMessage, setGoalMessage] = useState('')
-    const [holdings, setHoldings] = useState('')
+    const [holdings, setHoldings] = useState([
+      { id: 'bitcoin', amount: 0.5 },
+      { id: 'ethereum', amount: 10 },
+      { id: 'chainlink', amount: 150 },
+    ])
 
     useEffect(() => {
       // Nếu không có message, không làm gì cả.
@@ -163,6 +167,9 @@ import { AddGoalForm } from './components/AddGoalForm.jsx';
             isOpen={isAddGoalModalOpen}
             onClose={handleCloseAddGoalModal}
             onAddGoal={handleAddGoal}
+          />
+          <Portfolio 
+            holdings={holdings}
           />
         </main>
       </div> 
