@@ -6,6 +6,7 @@ import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
+// import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
