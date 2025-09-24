@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { fetchCoinData } from "../../services/crypto-api.js";
 import './Portfolio.css';
 
-// Sửa lỗi chính tả: Porfolio -> Portfolio, hooldings -> holdings
 export function Portfolio({ holdings }) {
     const [marketData, setMarketData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Sửa quy ước đặt tên: LoadData -> loadData
         const loadData = async () => {
             try {
                 // Reset state trước mỗi lần chạy để đảm bảo sự nhất quán

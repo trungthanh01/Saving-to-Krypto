@@ -6,7 +6,7 @@ import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
-// import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
+import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
@@ -112,6 +112,39 @@ import { Portfolio } from './components/portfolio/Portfolio.jsx';
         saving.goalId !== goalIdToDelete);
         setSavings(newSavings)
     }
+
+    function handleAddHolding(newHolding) {
+      console.log('App.jsx đã nhận được holding mới:', newHolding);
+  
+      setHoldings(prevHoldings => {
+        // Tìm xem coin sắp thêm đã có trong danh mục hay chưa
+        const existingHolding = prevHoldings.find(h => h.id === newHolding.id);
+  
+        // TRƯỜNG HỢP 1: COIN ĐÃ TỒN TẠI
+        if (existingHolding) {
+          console.log('Coin đã tồn tại. Cập nhật số lượng.');
+          // Dùng .map() để tạo ra một mảng mới.
+          // Mảng mới này sẽ giống hệt mảng cũ, ngoại trừ object của coin đã tồn tại.
+          return prevHoldings.map(h =>
+            h.id === newHolding.id
+              // Nếu đúng coin cần cập nhật, tạo object mới với amount được cộng dồn
+              ? { ...h, amount: h.amount + newHolding.amount }
+              // Nếu không, giữ nguyên object cũ
+              : h
+          );
+        }
+        
+        // TRƯỜ-NG HỢP 2: COIN CHƯA TỒN TẠI
+        else {
+          console.log('Coin mới. Thêm vào danh mục.');
+          // Tạo ra một mảng mới bằng cách đặt newHolding ở đầu,
+          // và sao chép tất cả các phần tử của mảng cũ ra phía sau.
+          return [newHolding, ...prevHoldings];
+        }
+      });
+      
+      setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()} vào danh mục!`);
+    }
     
     return (
       <div className='app-container'>
@@ -119,6 +152,11 @@ import { Portfolio } from './components/portfolio/Portfolio.jsx';
           <h1>Savvy</h1>
           {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
         </header>
+        <Portfolio 
+          holdings={holdings}
+        />
+        <AddHoldingForm
+          onAddHolding={handleAddHolding}/>
         <main>
           <section className='goals-section'>
           <div className="section-header">
@@ -168,9 +206,6 @@ import { Portfolio } from './components/portfolio/Portfolio.jsx';
             isOpen={isAddGoalModalOpen}
             onClose={handleCloseAddGoalModal}
             onAddGoal={handleAddGoal}
-          />
-          <Portfolio 
-            holdings={holdings}
           />
         </main>
       </div> 

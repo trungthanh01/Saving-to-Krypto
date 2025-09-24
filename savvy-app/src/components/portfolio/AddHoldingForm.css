@@ -1,0 +1,11 @@
+.form-inputs button:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* Thêm vào để xử lý cho màn hình hẹp */
+@media (max-width: 600px) {
+    .form-inputs {
+      flex-direction: column;
+      align-items: stretch; /* Làm cho các input và button rộng bằng nhau */
+    }
+}

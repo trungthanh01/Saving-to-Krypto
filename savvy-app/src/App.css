@@ -92,7 +92,7 @@ main {
   }
 
   main {
-    flex-direction: row; /* Chuyển sang layout hàng ngang */
+    flex-direction: column; /* Chuyển sang layout hàng ngang */
   }
 
   .goals-list {

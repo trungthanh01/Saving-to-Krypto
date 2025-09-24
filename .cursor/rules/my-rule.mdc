@@ -157,7 +157,10 @@ Các kịch bản gỡ lỗi: scripts/debugging/
 Những kiến thức trong này sẽ giúp code của tôi và bạn clean hơn và có hệ thống hơn
 
 ## **# 7. Lưu trữ quá trình thực hiện**
-Sau khi hoàn thành task bạn sẽ update file @progess.md để lưu lại quá các bước hoàn thành task theo dạng step by step.
+Sau khi hoàn thành task bạn sẽ update file doc/progress.md để lưu lại quá các bước hoàn thành task theo dạng step by step.
 **ví dụ: sau khi hoàn thành một task thì bạn lưu lại các bước như:
 - Bước 1: truyền props xuống...
 - Bước 2: lấy filter()...**
+
+## **# 8. Luôn gắn console.log()**
+Tôi muốn nhìn thấy trên browser các kết quả thực hiện

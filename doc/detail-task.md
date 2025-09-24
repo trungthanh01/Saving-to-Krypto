@@ -25,14 +25,14 @@
     - Trong `App.jsx`, tạo một state mới tên là `holdings` với `useState`.
     - Dữ liệu `holdings` sẽ là một mảng các object, ví dụ: `[{ id: 'bitcoin', amount: 0.5 }, { id: 'ethereum', amount: 10 }]`.
 
-- [ ] **Task 1.4: Xây dựng Giao diện Portfolio cơ bản**
+- [x] **Task 1.4: Xây dựng Giao diện Portfolio cơ bản**
   - **Mục đích:** Tạo component để hiển thị danh mục đầu tư và học cách kết hợp hiển thị dữ liệu tĩnh (từ state) và dữ liệu động (từ API).
   - **Hành động:**
     - Tạo component `Portfolio.jsx` trong `src/components/portfolio/`.
     - Component này sẽ nhận `holdings` làm prop, dùng `useEffect` để gọi hàm `fetchCoinData` và lưu kết quả trả về vào một state nội bộ (ví dụ `coinMarketData`).
     - Render ra một danh sách đơn giản hiển thị: Tên coin, số lượng, giá hiện tại, và tổng giá trị của từng khoản đầu tư.
 
-- [ ] **Task 1.5: Hoàn thiện Tích hợp & Chức năng Thêm Coin**
+- [x] **Task 1.5: Hoàn thiện Tích hợp & Chức năng Thêm Coin**
   - **Mục đích:** Hiển thị module portfolio trên giao diện chính và cho phép người dùng thêm coin mới vào danh mục của họ.
   - **Hành động:**
     - Import và hiển thị component `<Portfolio />` trong `App.jsx`.

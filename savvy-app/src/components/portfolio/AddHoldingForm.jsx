@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 export function AddHoldingForm({ onAddHolding }) {
   // Sửa lỗi 1: React Hooks (useState, useEffect,...) phải được gọi bên trong một component.
   const [coinId, setCoinId] = useState('');
