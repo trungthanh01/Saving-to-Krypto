@@ -7,7 +7,6 @@ import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
-import { PortfolioContext } from './context/PortfolioContext.jsx';
   export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
@@ -123,13 +122,11 @@ import { PortfolioContext } from './context/PortfolioContext.jsx';
           <h1>Savvy</h1>
           {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
         </header>
-        <Portfolio 
-          // Prop `holdings` sẽ được xóa ở bước sau
-        />
-        <AddHoldingForm
-          // Prop `onAddHolding` sẽ được xóa ở bước sau
-        />
         <main>
+          {/* Di chuyển Portfolio và Form vào trong main */}
+          <AddHoldingForm />
+          <Portfolio />
+
           <section className='goals-section'>
           <div className="section-header">
               <h2>Mục Tiêu Của Bạn</h2>

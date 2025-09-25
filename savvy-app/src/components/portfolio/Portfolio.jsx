@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { fetchCoinData } from "../../services/crypto-api.js";
+import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './Portfolio.css';
 
-export function Portfolio({ holdings }) {
+export function Portfolio() {
+    const {holdings} = useContext(PortfolioContext)
     const [marketData, setMarketData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);

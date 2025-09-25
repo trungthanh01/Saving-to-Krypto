@@ -1,6 +1,11 @@
-import { useState } from "react";
-export function AddHoldingForm({ onAddHolding }) {
-  // Sửa lỗi 1: React Hooks (useState, useEffect,...) phải được gọi bên trong một component.
+import { useState, useContext } from "react";
+// Sửa lỗi cú pháp: Thêm dấu ngoặc nhọn {} khi import
+import { PortfolioContext } from "../../context/PortfolioContext.jsx";
+
+export function AddHoldingForm() {
+  // Đổi tên biến để tránh trùng lặp với hàm trong context,
+  // và để rõ ràng hơn đây là hàm lấy từ context.
+  const { addHolding: onAddHoldingFromContext } = useContext(PortfolioContext);
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');
 
@@ -20,7 +25,8 @@ export function AddHoldingForm({ onAddHolding }) {
     };
     
     console.log('Form Action Triggered!', newHolding);
-    onAddHolding(newHolding);
+    // Gọi hàm đã lấy từ context
+    onAddHoldingFromContext(newHolding);
 
     // Sửa lỗi 4: Logic reset form được chuyển vào cuối hàm handleSubmit.
     // Nó chỉ chạy sau khi đã thêm thành công.
