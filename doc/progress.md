@@ -46,3 +46,31 @@
     - **Bước 3:** Viết hàm `handleAction` để xử lý form, tạo object `newHolding`, gọi prop `onAddHolding`, và reset form. Sử dụng `action` prop trên thẻ `<form>`.
     - **Bước 4:** Trong `App.jsx`, viết hàm logic `handleAddHolding` để nhận `newHolding`. Hàm này xử lý cả hai trường hợp: thêm coin mới (thêm vào mảng) và cập nhật coin đã có (dùng `.map()` để cộng dồn `amount`).
     - **Bước 5:** Import và render `<AddHoldingForm />` trong `App.jsx`, truyền hàm `handleAddHolding` vào prop `onAddHolding`.
+---
+
+**Giai đoạn 2:** 
+Giải thích chi tiết từng bước (Task 2.3)
+**Bước 1: "Cắt đứt" việc truyền Props tại App.jsx**
+Hành động: Chúng ta đã vào App.jsx và thay đổi:
+Tại sao? Đây là bước "cách ly" các component. Chúng ta đang nói với App.jsx (CEO) rằng: "Ông không cần phải làm người trung gian đưa tin nữa. Các nhân viên Portfolio và AddHoldingForm sẽ tự biết cách lấy thông tin." Điều này làm cho App.jsx trở nên đơn giản hơn, nó chỉ cần render các component mà không cần quan tâm đến dữ liệu của chúng.
+
+**Bước 2: Dạy Portfolio.jsx cách "đọc bảng thông báo"**
+Hành động: Trong Portfolio.jsx, chúng ta đã:
+Import useContext và PortfolioContext.
+Xóa holdings khỏi props.
+Thêm dòng: const { holdings } = useContext(PortfolioContext);
+Tác dụng là gì?
+useContext(PortfolioContext) giống như hành động "nhìn lên" cái bảng PortfolioContext mà chúng ta đã treo.
+const { holdings } = ... là cách chúng ta "đọc" thông tin holdings từ trên bảng đó và lưu nó vào một biến cục bộ tên là holdings.
+Kết quả: Component Portfolio giờ đây đã hoàn toàn tự chủ. Nó không còn phụ thuộc vào việc component cha có truyền đúng prop holdings cho nó hay không. Miễn là nó được đặt ở đâu đó bên trong <PortfolioProvider>, nó sẽ luôn lấy được dữ liệu mới nhất.
+
+**Bước 3: Dạy AddHoldingForm.jsx cách "nhận mệnh lệnh" từ bảng thông báo**
+Hành động: Tương tự, trong AddHoldingForm.jsx, chúng ta đã:
+Import useContext và PortfolioContext.
+Xóa onAddHolding khỏi props.
+Thêm dòng: const { addHolding } = useContext(PortfolioContext);
+Thay đổi onAddHolding(newHolding) thành addHolding(newHolding).
+Tác dụng là gì?
+Giống như Portfolio, component này giờ đây cũng "nhìn lên" cùng một cái bảng.
+Nhưng thay vì lấy dữ liệu holdings, nó lấy hàm addHolding.
+Kết quả: Component form này giờ có thể gọi trực tiếp hàm logic nằm trong PortfolioContext mà không cần App.jsx làm trung gian. Điều này cực kỳ mạnh mẽ. Giả sử sau này bạn muốn đặt form này ở một trang khác, sâu hơn 5 cấp component, bạn không cần phải truyền prop onAddHolding qua cả 5 cấp đó nữa.
