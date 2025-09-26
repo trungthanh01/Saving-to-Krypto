@@ -43,19 +43,19 @@
 ### **Giai đoạn 2: Tái cấu trúc với Context API**
 *Mục tiêu: Khi tính năng bắt đầu phức tạp hơn, chúng ta sẽ học cách quản lý state "toàn cục" (global state) bằng Context API. Điều này giúp tách biệt logic ra khỏi các component giao diện, làm cho code sạch sẽ và dễ bảo trì hơn.*
 
-- [ ] **Task 2.1: Tạo Portfolio Context**
+- [x] **Task 2.1: Tạo Portfolio Context**
   - **Mục đích:** Xây dựng một "kho chứa" state tập trung cho toàn bộ tính năng portfolio.
   - **Hành động:**
     - Tạo thư mục `src/context/`.
     - Tạo file `src/context/PortfolioContext.jsx`, định nghĩa `PortfolioContext` và `PortfolioProvider`.
     - Di chuyển state `holdings` và tất cả logic liên quan (thêm coin, gọi API) từ `App.jsx` và `Portfolio.jsx` vào trong `PortfolioProvider`.
 
-- [ ] **Task 2.2: Tích hợp Context Provider**
+- [x] **Task 2.2: Tích hợp Context Provider**
   - **Mục đích:** "Bao bọc" ứng dụng của chúng ta để mọi component bên trong đều có khả năng truy cập vào state của portfolio.
   - **Hành động:**
     - Trong `main.jsx`, import và bao bọc component `<App />` bằng `<PortfolioProvider>`.
 
-- [ ] **Task 2.3: Sử dụng Context trong Component**
+- [x] **Task 2.3: Sử dụng Context trong Component**
   - **Mục đích:** Trải nghiệm sự tiện lợi của việc lấy dữ liệu trực tiếp từ Context thay vì phải truyền props qua nhiều cấp (prop drilling).
   - **Hành động:**
     - Trong component `Portfolio.jsx`, sử dụng hook `useContext` để lấy dữ liệu `holdings` và các hàm cần thiết.
@@ -66,7 +66,7 @@
 ### **Giai đoạn 3: Trực quan hóa Dữ liệu với Biểu đồ**
 *Mục tiêu: Học cách tích hợp và sử dụng một thư viện của bên thứ ba (`Recharts`) để biến những con số khô khan thành một biểu đồ trực quan, dễ hiểu.*
 
-- [ ] **Task 3.1: Cài đặt và Chuẩn bị**
+- [x] **Task 3.1: Cài đặt và Chuẩn bị**
   - **Mục đích:** Thêm thư viện vẽ biểu đồ vào dự án.
   - **Hành động:**
     - Chạy lệnh `npm install recharts` trong terminal.
