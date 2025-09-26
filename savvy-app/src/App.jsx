@@ -1,10 +1,10 @@
-import { GoalCard } from './components/GoalCard.jsx';
-import { SavingHistoryItem } from './components/SavingHistoryItem.jsx';
-import { AddButton } from './components/AddButton.jsx';
-import {AddSavingForm} from './components/AddSavingForm.jsx'
+import { GoalCard } from './components/savyy/GoalCard.jsx';
+import { SavingHistoryItem } from './components/savyy/SavingHistoryItem.jsx';
+import { AddButton } from './components/savyy/AddButton.jsx';
+import {AddSavingForm} from './components/savyy/AddSavingForm.jsx'
 import './App.css';
 import {useState, useEffect} from 'react'
-import { AddGoalForm } from './components/AddGoalForm.jsx';
+import { AddGoalForm } from './components/savyy/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
   export function App() {
