@@ -102,3 +102,23 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 }
+
+/* --- Portfolio Layout --- */
+.portfolio-container {
+  display: flex;
+  flex-direction: column; /* Mặc định trên mobile: xếp chồng */
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (min-width: 768px) {
+  .portfolio-container {
+    flex-direction: row; /* Trên desktop: nằm ngang */
+    align-items: flex-start;
+  }
+  
+  /* Chia không gian cho 2 thành phần */
+  .portfolio-container > * {
+    flex: 1; 
+  }
+}

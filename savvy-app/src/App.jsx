@@ -7,7 +7,8 @@ import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/savyy/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
-import { HoldingsChart} from './components/portfolio/HoldingsChart.jsx'
+import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
+
 
 export function App() {
     const [savings, setSavings] = useState(() => {
