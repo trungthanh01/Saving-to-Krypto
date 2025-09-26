@@ -1,13 +1,15 @@
+import './App.css';
 import { GoalCard } from './components/savyy/GoalCard.jsx';
 import { SavingHistoryItem } from './components/savyy/SavingHistoryItem.jsx';
 import { AddButton } from './components/savyy/AddButton.jsx';
 import {AddSavingForm} from './components/savyy/AddSavingForm.jsx'
-import './App.css';
 import {useState, useEffect} from 'react'
 import { AddGoalForm } from './components/savyy/AddGoalForm.jsx';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
-  export function App() {
+import { HoldingsChart} from './components/portfolio/HoldingsChart.jsx'
+
+export function App() {
     const [savings, setSavings] = useState(() => {
       const savedSavings = localStorage.getItem('savvy-savings');
       return savedSavings ? JSON.parse(savedSavings) : [];
@@ -123,10 +125,12 @@ import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
           {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
         </header>
         <main>
-          {/* Di chuyển Portfolio và Form vào trong main */}
-          <AddHoldingForm />
-          <Portfolio />
-
+          <AddHoldingForm /> 
+          <div className="portfolio-container">
+            <Portfolio />
+            <HoldingsChart />
+          </div>
+          
           <section className='goals-section'>
           <div className="section-header">
               <h2>Mục Tiêu Của Bạn</h2>

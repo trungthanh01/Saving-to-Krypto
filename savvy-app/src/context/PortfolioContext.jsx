@@ -28,15 +28,11 @@ export function PortfolioProvider({ children }) {
     });
   }
 
-  // --- Bước 2: State cho dữ liệu được gọi từ API ---
   const [portfolioData, setPortfolioData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- Bước 3: useEffect gọi API và xử lý dữ liệu ---
   useEffect(() => {
-    // Không cần `async` trực tiếp trong callback của useEffect
-    // Tạo một hàm async bên trong nó
     const loadPortfolioData = async () => {
       if (holdings.length === 0) {
         setPortfolioData([]);
@@ -50,7 +46,6 @@ export function PortfolioProvider({ children }) {
         const ids = holdings.map(coin => coin.id);
         const marketData = await fetchCoinData(ids);
 
-        // Kết hợp dữ liệu holdings và marketData
         const combinedData = marketData.map(marketCoin => {
           const holding = holdings.find(h => h.id === marketCoin.id);
           return {
@@ -73,7 +68,6 @@ export function PortfolioProvider({ children }) {
   }, [holdings]); // Effect này sẽ chạy lại mỗi khi `holdings` thay đổi
 
 
-  // --- Bước 4: Cập nhật lại `value` để chia sẻ tất cả dữ liệu ---
   const value = {
     holdings, // Dữ liệu gốc
     addHolding: handleAddHolding, // Hàm để thêm coin

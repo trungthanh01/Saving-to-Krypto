@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-// Sửa lỗi cú pháp: Thêm dấu ngoặc nhọn {} khi import
+import './AddHoldingForm.css'
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 
 export function AddHoldingForm() {
