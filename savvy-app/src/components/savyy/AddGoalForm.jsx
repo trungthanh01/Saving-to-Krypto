@@ -9,7 +9,11 @@ export function AddGoalForm({ isOpen, onClose, onAddGoal }) {
     return null;
   }
 
-  async function handleAddGoalAction(formData) {
+  async function handleSubmit(event) { // 1. Đổi tên và nhận event
+    event.preventDefault(); // 2. Ngăn trang tải lại
+
+    // Lấy dữ liệu từ form thông qua FormData
+    const formData = new FormData(event.currentTarget);
     const title = formData.get('title');
     const targetAmount = formData.get('targetAmount');
 
@@ -43,7 +47,7 @@ export function AddGoalForm({ isOpen, onClose, onAddGoal }) {
             &times;
           </button>
         </header>
-        <form action={handleAddGoalAction} ref={formRef}>
+        <form onSubmit={handleSubmit} ref={formRef}> {/* 3. Đổi action thành onSubmit */}
           <div className={styles.formGroup}>
             <label htmlFor="title">Tên mục tiêu</label>
             <input

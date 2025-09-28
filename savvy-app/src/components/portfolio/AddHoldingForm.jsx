@@ -9,27 +9,24 @@ export function AddHoldingForm() {
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');
 
-  // Sửa lỗi 2: Hàm xử lý sự kiện luôn nhận một đối tượng 'event' làm tham số đầu tiên.
-  const handleAction = () => {
-    // Dòng event.preventDefault() không còn cần thiết.
+  // Sửa lại hàm xử lý để nhận 'event'
+  const handleSubmit = (event) => {
+    // Thêm lại preventDefault()
+    event.preventDefault();
 
-    // Sửa lỗi 3: Thay vì chỉ reset, hãy thông báo cho người dùng.
     if (coinId.length === 0 || amount.length === 0) {
       alert("Vui lòng nhập đủ thông tin Coin ID và Số lượng.");
-      return; // Dừng hàm tại đây.
+      return;
     }
 
     const newHolding = {
-      id: coinId.toLowerCase().trim(), // Thêm .trim() để xóa các khoảng trắng thừa
+      id: coinId.toLowerCase().trim(),
       amount: parseFloat(amount)
     };
     
-    console.log('Form Action Triggered!', newHolding);
-    // Gọi hàm đã lấy từ context
+    console.log('Form Submitted!', newHolding);
     onAddHoldingFromContext(newHolding);
 
-    // Sửa lỗi 4: Logic reset form được chuyển vào cuối hàm handleSubmit.
-    // Nó chỉ chạy sau khi đã thêm thành công.
     setCoinId('');
     setAmount('');
   };
@@ -38,8 +35,8 @@ export function AddHoldingForm() {
   // Gọi hàm set... trực tiếp trong thân component sẽ gây ra vòng lặp render vô hạn.
 
   return (
-    // Sửa lỗi 5: Trong React, chúng ta sử dụng `onSubmit` để xử lý sự kiện submit của form.
-    <form action={handleAction}>
+    // Đổi `action` thành `onSubmit`
+    <form onSubmit={handleSubmit}>
       <h3>Thêm Coin Mới</h3>
       <input
         type="text"

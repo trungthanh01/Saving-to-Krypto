@@ -9,8 +9,12 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
     return null;
   }
 
-  // Bước 4: Viết lại hàm xử lý dưới dạng một "action"
-  async function handleAddSavingAction(formData) {
+  // Chuyển sang dùng onSubmit
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    // Lấy dữ liệu từ form thông qua FormData
+    const formData = new FormData(event.currentTarget);
     const amount = formData.get('amount');
     const description = formData.get('description');
 
@@ -44,8 +48,8 @@ export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
             &times;
           </button>
         </header>
-        {/* Bước 5: Kết nối ref và action vào form */}
-        <form action={handleAddSavingAction} ref={formRef}>
+        {/* Đổi action thành onSubmit */}
+        <form onSubmit={handleSubmit} ref={formRef}>
           <div className={styles.formGroup}>
             <label htmlFor="amount">Số tiền</label>
             {/* Bước 3: Gỡ bỏ value/onChange, thêm `name` */}
