@@ -14,63 +14,57 @@
 
 ---
 
-### Crypto Portfolio - Giai đoạn 1: MVP (Chi tiết)
+## Giai đoạn 1: Xây dựng MVP (Hoàn thành)
 
-- **Task 1.1: Thiết lập nền tảng**
-    - **Bước 1:** Tạo các thư mục cần thiết: `src/components/portfolio/` và `src/services/`.
-    - **Bước 2:** Cài đặt thư viện `axios` bằng lệnh `npm install axios`.
+- **Task 1.1: Chuẩn bị Cấu trúc & Cài đặt**
+  - Bước 1: Tạo cấu trúc thư mục `components/portfolio`, `services`, `context`.
+  - Bước 2: Cài đặt thư viện `axios` để gọi API.
+- **Task 1.2: Xây dựng Service gọi API CoinGecko**
+  - Bước 1: Tạo file `services/crypto-api.js`.
+  - Bước 2: Viết hàm `fetchCoinData` bất đồng bộ để lấy dữ liệu từ API.
+  - Bước 3: Xử lý lỗi bằng `try...catch`.
+- **Task 1.3: Quản lý State cơ bản trong App.jsx**
+  - Bước 1: Tạo state `holdings` với dữ liệu giả.
+- **Task 1.4: Xây dựng Component UI Portfolio cơ bản**
+  - Bước 1: Tạo component `Portfolio.jsx`.
+  - Bước 2: Dùng `useEffect` và `useState` để gọi API và quản lý các trạng thái `marketData`, `isLoading`, `error`.
+  - Bước 3: Viết logic để kết hợp `holdings` (số lượng) và `marketData` (thông tin giá).
+  - Bước 4: Render danh sách các coin ra giao diện.
+- **Task 1.5: Tích hợp chức năng Thêm Coin**
+  - Bước 1: Tạo component `AddHoldingForm.jsx`.
+  - Bước 2: Viết hàm `handleAddHolding` trong `App.jsx` để cập nhật state `holdings`.
+  - Bước 3: Truyền hàm `handleAddHolding` xuống `AddHoldingForm` qua props.
 
-- **Task 1.2: Xây dựng Service API**
-    - **Bước 1:** Tạo file `src/services/crypto-api.js`.
-    - **Bước 2:** Viết hàm `fetchCoinData` bất đồng bộ (`async`) để nhận một mảng `coinIds`.
-    - **Bước 3:** Sử dụng `try/catch` để xử lý logic gọi API và các lỗi tiềm ẩn.
-    - **Bước 4:** Dùng `axios.get` với `await` để gọi đến endpoint của CoinGecko.
-    - **Bước 5:** `return response.data` khi thành công và `throw error` khi thất bại.
-    - **Bước 6 (Kiểm tra):** Tạm thời gọi hàm này trong một file bất kỳ và dùng `console.log` để xác nhận đã nhận được dữ liệu.
+## Giai đoạn 2: Tái cấu trúc với Context API (Hoàn thành)
 
-- **Task 1.3: Khởi tạo State Portfolio**
-    - **Bước 1:** Trong `App.jsx`, import `useState`.
-    - **Bước 2:** Khai báo state `holdings` và cung cấp một mảng dữ liệu mẫu để làm việc.
+- **Task 2.1: Tạo PortfolioContext**
+  - Bước 1: Tạo file `context/PortfolioContext.jsx`.
+  - Bước 2: Sử dụng `createContext` để tạo `PortfolioContext`.
+- **Task 2.2: Xây dựng PortfolioProvider**
+  - Bước 1: Tạo component `PortfolioProvider`.
+  - Bước 2: Di chuyển toàn bộ state (`holdings`, `portfolioData`, `isLoading`, `error`) và logic (`handleAddHolding`, `useEffect` gọi API) từ `App.jsx` và `Portfolio.jsx` vào `PortfolioProvider`.
+  - Bước 3: Cung cấp các state và hàm xử lý cho toàn bộ ứng dụng qua `Provider value`.
+- **Task 2.3: Tích hợp Context vào ứng dụng**
+  - Bước 1: Bọc component `<App />` trong `<PortfolioProvider />` tại file `main.jsx`.
+  - Bước 2: Sử dụng `useContext` trong `Portfolio.jsx` và `AddHoldingForm.jsx` để lấy dữ liệu và hàm xử lý trực tiếp từ Context, loại bỏ prop drilling.
 
-- **Task 1.4: Xây dựng Component Hiển thị `Portfolio.jsx`**
-    - **Bước 1:** Tạo file component và bộ khung, đảm bảo nhận được prop `holdings`.
-    - **Bước 2:** Chuẩn bị các state nội bộ: `marketData`, `isLoading`, `error`.
-    - **Bước 3:** Viết `useEffect` với dependency là `[holdings]` để gọi API.
-    - **Bước 4:** Bên trong `useEffect`, lấy danh sách ID từ `holdings`, gọi `fetchCoinData`, và cập nhật các state `marketData`, `isLoading`, `error` tương ứng.
-    - **Bước 5:** Viết JSX để xử lý hiển thị có điều kiện cho các trạng thái loading và error.
-    - **Bước 6:** Viết logic render chính: Dùng `.map()` duyệt qua `marketData`, và với mỗi `coinData`, dùng `.find()` trên `holdings` để lấy `amount`, sau đó tính toán `totalValue` và hiển thị tất cả thông tin.
+## Giai đoạn 3: Tích hợp Biểu đồ (Hoàn thành)
 
-- **Task 1.5: Xây dựng Form và Tích hợp**
-    - **Bước 1:** Tạo component `AddHoldingForm.jsx`.
-    - **Bước 2:** Dùng `useState` để quản lý state cho các ô input (`coinId`, `amount`).
-    - **Bước 3:** Viết hàm `handleAction` để xử lý form, tạo object `newHolding`, gọi prop `onAddHolding`, và reset form. Sử dụng `action` prop trên thẻ `<form>`.
-    - **Bước 4:** Trong `App.jsx`, viết hàm logic `handleAddHolding` để nhận `newHolding`. Hàm này xử lý cả hai trường hợp: thêm coin mới (thêm vào mảng) và cập nhật coin đã có (dùng `.map()` để cộng dồn `amount`).
-    - **Bước 5:** Import và render `<AddHoldingForm />` trong `App.jsx`, truyền hàm `handleAddHolding` vào prop `onAddHolding`.
----
+- **Task 3.1: Cài đặt Recharts**
+  - Bước 1: Chạy lệnh `npm install recharts`.
+- **Task 3.2: Xây dựng Component HoldingsChart**
+  - Bước 1: Tạo component `HoldingsChart.jsx`.
+  - Bước 2: Dùng `useContext` để lấy `portfolioData`.
+  - Bước 3: Viết hàm để biến đổi `portfolioData` sang định dạng mà Recharts yêu cầu (`{ name, value }`).
+  - Bước 4: Sử dụng các component `<PieChart>`, `<Pie>`, `<Tooltip>`, `<Cell>` để vẽ biểu đồ.
 
-**Giai đoạn 2:** 
-Giải thích chi tiết từng bước (Task 2.3)
-**Bước 1: "Cắt đứt" việc truyền Props tại App.jsx**
-Hành động: Chúng ta đã vào App.jsx và thay đổi:
-Tại sao? Đây là bước "cách ly" các component. Chúng ta đang nói với App.jsx (CEO) rằng: "Ông không cần phải làm người trung gian đưa tin nữa. Các nhân viên Portfolio và AddHoldingForm sẽ tự biết cách lấy thông tin." Điều này làm cho App.jsx trở nên đơn giản hơn, nó chỉ cần render các component mà không cần quan tâm đến dữ liệu của chúng.
+## Giai đoạn 4: Hoàn thiện & Sửa lỗi (Hoàn thành)
 
-**Bước 2: Dạy Portfolio.jsx cách "đọc bảng thông báo"**
-Hành động: Trong Portfolio.jsx, chúng ta đã:
-Import useContext và PortfolioContext.
-Xóa holdings khỏi props.
-Thêm dòng: const { holdings } = useContext(PortfolioContext);
-Tác dụng là gì?
-useContext(PortfolioContext) giống như hành động "nhìn lên" cái bảng PortfolioContext mà chúng ta đã treo.
-const { holdings } = ... là cách chúng ta "đọc" thông tin holdings từ trên bảng đó và lưu nó vào một biến cục bộ tên là holdings.
-Kết quả: Component Portfolio giờ đây đã hoàn toàn tự chủ. Nó không còn phụ thuộc vào việc component cha có truyền đúng prop holdings cho nó hay không. Miễn là nó được đặt ở đâu đó bên trong <PortfolioProvider>, nó sẽ luôn lấy được dữ liệu mới nhất.
-
-**Bước 3: Dạy AddHoldingForm.jsx cách "nhận mệnh lệnh" từ bảng thông báo**
-Hành động: Tương tự, trong AddHoldingForm.jsx, chúng ta đã:
-Import useContext và PortfolioContext.
-Xóa onAddHolding khỏi props.
-Thêm dòng: const { addHolding } = useContext(PortfolioContext);
-Thay đổi onAddHolding(newHolding) thành addHolding(newHolding).
-Tác dụng là gì?
-Giống như Portfolio, component này giờ đây cũng "nhìn lên" cùng một cái bảng.
-Nhưng thay vì lấy dữ liệu holdings, nó lấy hàm addHolding.
-Kết quả: Component form này giờ có thể gọi trực tiếp hàm logic nằm trong PortfolioContext mà không cần App.jsx làm trung gian. Điều này cực kỳ mạnh mẽ. Giả sử sau này bạn muốn đặt form này ở một trang khác, sâu hơn 5 cấp component, bạn không cần phải truyền prop onAddHolding qua cả 5 cấp đó nữa.
+- **Task 4.1: Hoàn thiện giao diện**
+  - Bước 1: Dùng CSS Flexbox để tạo layout responsive cho danh sách portfolio và biểu đồ.
+  - Bước 2: Thêm màu sắc và nhãn cho biểu đồ để tăng tính trực quan.
+- **Task 4.2: Gỡ lỗi (Debugging)**
+  - Bước 1: Gỡ lỗi xung đột phiên bản giữa `recharts` và `React 19`.
+  - Bước 2: Hạ cấp dự án về `React 18` và các `devDependencies` tương thích để đảm bảo sự ổn định.
+  - Bước 3: Gỡ lỗi `ERESOLVE` bằng cách đồng bộ hóa toàn bộ hệ thống ESLint.
+  - Bước 4: Sửa lỗi `Invalid prop 'action'` trên tất cả các form do khác biệt giữa React 19 và React 18, chuyển từ `action` sang `onSubmit`.

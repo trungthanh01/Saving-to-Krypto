@@ -71,7 +71,7 @@
   - **Hành động:**
     - Chạy lệnh `npm install recharts` trong terminal.
 
-- [ ] **Task 3.2: Xây dựng Component `HoldingsChart`**
+- [x] **Task 3.2: Xây dựng Component `HoldingsChart`**
   - **Mục đích:** Tạo một biểu đồ tròn (Pie Chart) để thể hiện tỷ trọng giá trị của mỗi loại coin trong tổng danh mục.
   - **Hành động:**
     - Tạo file `src/components/portfolio/HoldingsChart.jsx`.
