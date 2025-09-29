@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { fetchCoinData } from "../services/crypto-api.js"; // Sửa đường dẫn
 export const PortfolioContext = createContext();
 
-export function PortfolioProvider({ children }) {
+export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận setGoalMessage
   // --- Bước 1: Di chuyển state và logic xử lý lên trên cùng ---
   const [holdings, setHoldings] = useState([
     { id: 'bitcoin', amount: 0.5 },
@@ -26,8 +26,11 @@ export function PortfolioProvider({ children }) {
         return [newHolding, ...prevHoldings];
       }
     });
+    // 2. Gọi hàm setGoalMessage từ props
+    setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
   }
 
+  // --- Bước 2: State cho dữ liệu được gọi từ API ---
   const [portfolioData, setPortfolioData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +71,7 @@ export function PortfolioProvider({ children }) {
   }, [holdings]); // Effect này sẽ chạy lại mỗi khi `holdings` thay đổi
 
 
+  // --- Bước 4: Cập nhật lại `value` để chia sẻ tất cả dữ liệu ---
   const value = {
     holdings, // Dữ liệu gốc
     addHolding: handleAddHolding, // Hàm để thêm coin

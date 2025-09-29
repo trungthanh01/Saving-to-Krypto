@@ -1,188 +1,50 @@
 import './App.css';
-import { GoalCard } from './components/savyy/GoalCard.jsx';
-import { SavingHistoryItem } from './components/savyy/SavingHistoryItem.jsx';
-import { AddButton } from './components/savyy/AddButton.jsx';
-import {AddSavingForm} from './components/savyy/AddSavingForm.jsx'
-import {useState, useEffect} from 'react'
-import { AddGoalForm } from './components/savyy/AddGoalForm.jsx';
+import { useState, useEffect } from 'react';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
 import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
-
+import { Savvy } from './components/savvy/Savvy.jsx';
+import { SavvyProvider } from './context/SavvyContext.jsx';
+import { PortfolioProvider } from './context/PortfolioContext.jsx';
 
 export function App() {
-    const [savings, setSavings] = useState(() => {
-      const savedSavings = localStorage.getItem('savvy-savings');
-      return savedSavings ? JSON.parse(savedSavings) : [];
-    });
+  // 1. App quản lý state thông báo chung
+  const [goalMessage, setGoalMessage] = useState('');
 
-    const [goals, setGoals] = useState(() => {
-      const savedGoals = localStorage.getItem('savvy-goals');
-      return savedGoals ? JSON.parse(savedGoals) : [];
-    });
-
-    const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
-    const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
-    const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
-    const [goalMessage, setGoalMessage] = useState('')
-    // --- STATE `holdings` ĐÃ ĐƯỢC DI CHUYỂN SANG PORTFOLIOCONTEXT ---
-    // const [holdings, setHoldings] = useState([
-    //   { id: 'bitcoin', amount: 0.5 },
-    //   { id: 'ethereum', amount: 10 },
-    //   { id: 'chainlink', amount: 150 },
-    // ])
-
-    useEffect(() => {
-      // Nếu không có message, không làm gì cả.
-      if (!goalMessage) {
-        return;
-      }
-  
-      // Đặt một bộ đếm thời gian. Sau 3 giây, nó sẽ xóa message.
-      const timerId = setTimeout(() => {
-        setGoalMessage('');
-      }, 3000);
-  
-      // Đây là hàm cleanup. React sẽ chạy nó trước khi chạy lại effect
-      // hoặc khi component bị gỡ bỏ.
-      // Điều này đảm bảo chúng ta không bị rò rỉ bộ nhớ từ các bộ đếm thời gian cũ.
-      return () => {
-        clearTimeout(timerId);
-      };
-    }, [goalMessage]); // Effect này sẽ chạy lại mỗi khi goalMessage thay đổi.
-
-    useEffect(() => {
-      localStorage.setItem('savvy-savings', JSON.stringify(savings));
-      localStorage.setItem('savvy-goals', JSON.stringify(goals));
-      console.log('Dữ liệu đã được lưu vào Local Storage')
-    }, [savings, goals])
-
-    function handleOpenAddSavingModal(goalId){
-      setIsAddSavingModalOpen(true)
-      setCurrentTargetGoalId(goalId)
-      console.log('Mở modal thêm giao dịch')
+  // 2. App quản lý useEffect cho thông báo
+  useEffect(() => {
+    if (!goalMessage) {
+      return;
     }
-    
-    function handleCloseAddSavingModal(){
-      setIsAddSavingModalOpen(false)
-      setCurrentTargetGoalId(null)
-      console.log('Đóng modal thêm giao dịch')
-    }
+    const timerId = setTimeout(() => {
+      setGoalMessage('');
+    }, 3000);
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [goalMessage]);
 
-    function handleAddSaving(newSavingData) {
-      const newCompleteSaving = {
-        ...newSavingData,
-        id: `s_${new Date().getTime()}`,//tạo id
-        date: new Date().toISOString().split('T')[0],//ngày
-        goalId: currentTargetGoalId
-      }
-      setSavings([newCompleteSaving,...savings])
-      setGoalMessage('Tốt lắm! Góp gió thành bão.')
-
-    }
-    const totalSavings = savings.reduce((sum, currentsaving)=>{
-      return sum + currentsaving.amount
-    },0) // '0' là số khởi điểm của sum
-
-    function handleOpenGoalModal(){
-      setIsAddGoalModalOpen(true)
-    }
-    function handleCloseAddGoalModal(){
-      setIsAddGoalModalOpen(false)
-    }
-    function handleAddGoal(newGoalData){
-      const newCompleteGoal = {
-        ...newGoalData,
-        id: `g_${new Date().getTime()}`
-      }
-      setGoals([newCompleteGoal,...goals])
-    }
-    function handleDeleteSaving(savingIdToDelete) {
-      const newSavings = savings.filter(saving => 
-        saving.id !== savingIdToDelete);
-      setSavings(newSavings);
-    }  
-    function handleDeleteGoal(goalIdToDelete) {
-      const userConfirmed = window.confirm(
-        'Bạn có chắc chắn muốn xóa mục tiêu này không? Tất cả các khoản tiết kiệm liên quan cũng sẽ bị xóa vĩnh viễn.'
-      )
-      if (!userConfirmed) {
-        return;
-      }
-      const newGoals = goals.filter(goal => 
-        goal.id !== goalIdToDelete);
-      setGoals(newGoals);
-      const newSavings = savings.filter(saving =>
-        saving.goalId !== goalIdToDelete);
-        setSavings(newSavings)
-    }
-
-    // --- HÀM `handleAddHolding` ĐÃ ĐƯỢC DI CHUYỂN SANG PORTFOLIOCONTEXT ---
-    
-    return (
-      <div className='app-container'>
-        <header className='app-header'>
-          <h1>Savvy</h1>
-          {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
-        </header>
-        <main>
-          <AddHoldingForm /> 
+  return (
+    <div className='app-container'>
+      <header className='app-header'>
+        <h1>Savvy</h1>
+        {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
+      </header>
+      
+      <main>
+        <PortfolioProvider setGoalMessage={setGoalMessage}>
           <div className="portfolio-container">
             <Portfolio />
             <HoldingsChart />
           </div>
-          
-          <section className='goals-section'>
-          <div className="section-header">
-              <h2>Mục Tiêu Của Bạn</h2>
-              <AddButton onClick={handleOpenGoalModal}>
-                Thêm Mục Tiêu
-              </AddButton>
-            </div>
-            <div className='goals-list'>
-              {goals.map((goal) => 
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  savings={savings}
-                  onAddSavingClick={handleOpenAddSavingModal}
-                  onDelete={handleDeleteGoal}
-                  
-                />
-              )}
-            </div>
-          </section>
+          <AddHoldingForm /> 
+        </PortfolioProvider>
 
-
-          <section className="history-section">
-            <div className="section-header">
-              <h2>Lịch sử giao dịch</h2>
-            </div>
-            <div className="history-list"> 
-              {savings.map((transaction) => (
-                <SavingHistoryItem
-                  key={transaction.id}
-                  id={transaction.id}
-                  amount={transaction.amount}
-                  description={transaction.description}
-                  date={transaction.date}
-                  onDelete={handleDeleteSaving}
-                />
-              ))}
-            </div>
-          </section>
-          <AddSavingForm
-            isOpen={isAddSavingModalOpen}
-            onClose={handleCloseAddSavingModal}
-            onAddSaving={handleAddSaving}
-          />
-          <AddGoalForm
-            isOpen={isAddGoalModalOpen}
-            onClose={handleCloseAddGoalModal}
-            onAddGoal={handleAddGoal}
-          />
-        </main>
-      </div> 
-    );
-  }
+        <SavvyProvider setGoalMessage={setGoalMessage}>
+          <Savvy />
+        </SavvyProvider>
+      </main>
+    </div> 
+  );
+}
 
