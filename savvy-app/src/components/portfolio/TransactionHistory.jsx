@@ -3,7 +3,8 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx"; // Thêm 
 import './TransactionHistory.css'; // Import file css
 
 export function TransactionHistory() {
-    const { transactions } = useContext(PortfolioContext);
+    // Sửa lại tên hàm cho đúng với key trong context
+    const { transactions, deleteTransaction } = useContext(PortfolioContext);
     console.log('Dữ liệu transactions', transactions);
 
     // Xử lý trường hợp không có giao dịch
@@ -26,6 +27,9 @@ export function TransactionHistory() {
                     <span className="details">
                         {transaction.amount} {transaction.coinId.toUpperCase()}
                     </span>
+                    <button className="delete-btn" onClick={() => deleteTransaction(transaction.id)}>
+                        &times;
+                    </button>
                 </li>
             ))}
             </ul>

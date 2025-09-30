@@ -45,3 +45,23 @@
     font-weight: bold;
     color: #fff;
 }
+
+.transaction-history .delete-btn {
+    background: #5a3e3e;
+    color: #ffacac;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+    padding: 0;
+    transition: background-color 0.2s;
+}
+
+.transaction-history .delete-btn:hover {
+    background: #7a4f4f;
+    color: #fff;
+}

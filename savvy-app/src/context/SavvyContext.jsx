@@ -16,7 +16,6 @@ export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoal
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
-    // 3. Xóa state và useEffect của goalMessage khỏi đây
       
     useEffect(() => {
         localStorage.setItem('savvy-savings', JSON.stringify(savings));

@@ -44,6 +44,41 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
   }
 
+  // --- Chức năng xóa Giao dịch ---
+  function handleDeleteTransaction(transactionIdToDelete) {
+    // 1. Hỏi xác nhận người dùng
+    const userConfirmed = window.confirm(
+      "Bạn có chắc muốn xóa giao dịch này không? Hành động này sẽ hoàn trả lại số coin vào danh mục của bạn."
+    );
+    if (!userConfirmed) {
+      return;
+    }
+
+    const transactionToDelete = transactions.find(
+      (transaction) => transaction.id === transactionIdToDelete
+    );
+
+    if (!transactionToDelete) {
+      console.error("Không tìm thấy giao dịch để xóa!");
+      return;
+    }
+
+    setHoldings(prevHoldings => {
+      const updatedHoldings = prevHoldings.map(holding => {
+        if (holding.id === transactionToDelete.coinId) {
+          return { ...holding, amount: holding.amount - transactionToDelete.amount };
+        }
+        return holding;
+      });
+      return updatedHoldings.filter(holding => holding.amount > 0.000001); // Thêm ngưỡng nhỏ để tránh lỗi float
+    });
+
+    const newTransactions = transactions.filter(
+      (transaction) => transaction.id !== transactionIdToDelete
+    );
+    setTransactions(newTransactions);
+  }
+
   useEffect( () => {
     localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
     console.log('Danh mục holdings đã được lưu vào local storage!')
@@ -101,6 +136,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
   const value = {
     holdings, // Dữ liệu gốc
     addHolding: handleAddHolding, // Hàm để thêm coin
+    deleteTransaction: handleDeleteTransaction, // Thêm hàm xóa
     portfolioData, // Dữ liệu đã kết hợp để hiển thị
     isLoading, // Trạng thái loading
     error, // Trạng thái lỗi
