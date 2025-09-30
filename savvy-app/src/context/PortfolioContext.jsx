@@ -30,7 +30,17 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
         return [newHolding, ...prevHoldings];
       }
     });
-    // 2. Gọi hàm setGoalMessage từ props
+
+    // 2. Tạo và lưu giao dịch MỚI SAU KHI đã cập nhật holdings
+    const newTransaction = {
+      id: 't_' + new Date().getTime(),
+      coinId: newHolding.id,
+      amount: newHolding.amount,
+      date: new Date().toISOString().split('T')[0]
+    };
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+
+    // 3. Gọi hàm setGoalMessage từ props
     setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
   }
 
@@ -84,7 +94,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     };
 
     loadPortfolioData();
-  }, [holdings]); // Effect này sẽ chạy lại mỗi khi `holdings` thay đổi
+  }, [holdings]); 
 
 
   // --- Bước 4: Cập nhật lại `value` để chia sẻ tất cả dữ liệu ---
@@ -94,6 +104,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     portfolioData, // Dữ liệu đã kết hợp để hiển thị
     isLoading, // Trạng thái loading
     error, // Trạng thái lỗi
+    transactions, // Chia sẻ transactions
   };
 
   return (

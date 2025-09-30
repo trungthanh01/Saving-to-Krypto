@@ -6,7 +6,7 @@ import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
 import { Savvy } from './components/savvy/Savvy.jsx';
 import { SavvyProvider } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
-
+import { TransactionHistory } from './components/portfolio/TransactionHistory.jsx';
 export function App() {
   // 1. App quản lý state thông báo chung
   const [goalMessage, setGoalMessage] = useState('');
@@ -38,6 +38,7 @@ export function App() {
             <HoldingsChart />
           </div>
           <AddHoldingForm /> 
+          <TransactionHistory />
         </PortfolioProvider>
 
         <SavvyProvider setGoalMessage={setGoalMessage}>
