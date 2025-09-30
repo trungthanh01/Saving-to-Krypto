@@ -9,6 +9,11 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     return savedHoldings ? JSON.parse(savedHoldings) : [];
   });
 
+  const [transactions, setTransactions] = useState(() => {
+    const savedTransactions = localStorage.getItem('portfolio-transactions'); // Sửa lại key cho đúng
+    return savedTransactions ? JSON.parse(savedTransactions) : [];
+  })
+
   function handleAddHolding(newHolding) {
     console.log('Context đã nhận được holding mới:', newHolding);
     setHoldings(prevHoldings => {
@@ -31,8 +36,15 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
 
   useEffect( () => {
     localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
-    console.log('Danh mục đã được lưu vào local storage!')
+    console.log('Danh mục holdings đã được lưu vào local storage!')
   },[holdings])
+
+  // Thêm useEffect để lưu transactions
+  useEffect(() => {
+    localStorage.setItem('portfolio-transactions', JSON.stringify(transactions));
+    console.log('Lịch sử giao dịch đã được lưu vào local storage!');
+  }, [transactions]);
+
 
   // --- Bước 2: State cho dữ liệu được gọi từ API ---
   const [portfolioData, setPortfolioData] = useState([]);
