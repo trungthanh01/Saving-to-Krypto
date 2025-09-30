@@ -4,11 +4,10 @@ export const PortfolioContext = createContext();
 
 export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận setGoalMessage
   // --- Bước 1: Di chuyển state và logic xử lý lên trên cùng ---
-  const [holdings, setHoldings] = useState([
-    { id: 'bitcoin', amount: 0.5 },
-    { id: 'ethereum', amount: 10 },
-    { id: 'chainlink', amount: 150 },
-  ]);
+  const [holdings, setHoldings] = useState(() => {
+    const savedHoldings = localStorage.getItem('portfolio-holdings');
+    return savedHoldings ? JSON.parse(savedHoldings) : [];
+  });
 
   function handleAddHolding(newHolding) {
     console.log('Context đã nhận được holding mới:', newHolding);
@@ -29,6 +28,11 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     // 2. Gọi hàm setGoalMessage từ props
     setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
   }
+
+  useEffect( () => {
+    localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
+    console.log('Danh mục đã được lưu vào local storage!')
+  },[holdings])
 
   // --- Bước 2: State cho dữ liệu được gọi từ API ---
   const [portfolioData, setPortfolioData] = useState([]);
