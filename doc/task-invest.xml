@@ -74,7 +74,7 @@
       <time>2-3 hours</time>
     </task>
 
-    <task id="2.2" priority="high" difficulty="medium">
+    <task id="2.2" priority="high" difficulty="medium" status="in_progress">
       <title>Tạo Custom Hook: usePortfolio</title>
       <description>Hook để quản lý portfolio logic</description>
       <subtasks>
@@ -88,7 +88,7 @@
       <time>3-4 hours</time>
     </task>
 
-    <task id="2.3" priority="medium" difficulty="easy">
+    <task id="2.3" priority="medium" difficulty="easy" status="in_progress">
       <title>Tạo Custom Hook: useLocalStorage</title>
       <description>Persist data to localStorage</description>
       <subtasks>
@@ -329,7 +329,7 @@
 
   <!-- PHASE 7: ADDITIONAL FEATURES -->
   <phase id="7" name="Additional Features" duration="3-4 days">
-    <task id="7.1" priority="medium" difficulty="medium">
+    <task id="7.1" priority="medium" difficulty="medium" status="in_progress">
       <title>Transaction History</title>
       <description>Lịch sử mua bán coin</description>
       <subtasks>

@@ -78,19 +78,45 @@
     - Lấy dữ liệu từ `PortfolioContext`.
     - Xử lý và tính toán dữ liệu để có định dạng mà `Recharts` yêu cầu (ví dụ: `[{ name: 'Bitcoin', value: 45000 }, ...]`).
     - Render component `PieChart` từ `Recharts` và truyền dữ liệu vào.
+    
+---
+
+### **Giai đoạn 4: Hoàn thiện Trải nghiệm & Dữ liệu**
+*Mục tiêu: Chuyển đổi từ dữ liệu giả sang dữ liệu thật do người dùng nhập, lưu trữ chúng bền bỉ và xây dựng các tính năng quản lý cốt lõi.*
+
+- [x] **Task 4.1: Lưu trữ Dữ liệu Portfolio (Persistence)**
+  - **Mục đích:** Đảm bảo dữ liệu `holdings` của người dùng không bị mất mỗi khi tải lại trang, bằng cách sử dụng `localStorage`.
+  - **Hành động:**
+    - Trong `PortfolioContext`, sửa `useState` của `holdings` để đọc dữ liệu từ `localStorage` khi khởi tạo.
+    - Thêm `useEffect` để tự động lưu `holdings` vào `localStorage` mỗi khi có thay đổi.
+    - Xóa mảng dữ liệu giả ban đầu.
+
+- [x] **Task 4.2: Xây dựng Lịch sử Giao dịch**
+  - **Mục đích:** Cung cấp cho người dùng một bản ghi chi tiết về tất cả các giao dịch họ đã thực hiện.
+  - **Hành động:**
+    - Tạo state mới `transactions` trong `PortfolioContext`, cũng được lưu vào `localStorage`.
+    - Cập nhật hàm `handleAddHolding` để tạo và lưu một bản ghi giao dịch mới.
+    - Tạo component `TransactionHistory.jsx` để hiển thị danh sách giao dịch.
+
+- [x] **Task 4.3: Triển khai Chức năng Xóa Giao dịch**
+  - **Mục đích:** Cho phép người dùng sửa lỗi hoặc xóa các giao dịch không mong muốn, đồng thời cập nhật lại chính xác danh mục đầu tư.
+  - **Hành động:**
+    - Tạo hàm `handleDeleteTransaction` trong `PortfolioContext`.
+    - Logic: Hàm này sẽ tìm giao dịch, hoàn trả số lượng coin về cho `holdings`, sau đó xóa giao dịch khỏi `transactions`.
+    - Thêm nút Xóa vào `TransactionHistory.jsx` và kết nối nó với hàm mới.
 
 ---
 
-### **Giai đoạn 4: Hoàn thiện và Nâng cao**
+### **Giai đoạn 5: Nâng cao và Tối ưu**
 *Mục tiêu: Quay trở lại kế hoạch ban đầu và bổ sung các tính năng nâng cao để hoàn thiện sản phẩm, mang lại trải nghiệm người dùng tốt hơn.*
 
-- [ ] **Task 4.1: Nâng cấp Chức năng 'Thêm Giao dịch' với Modal**
+- [ ] **Task 5.1: Nâng cấp Chức năng 'Thêm Giao dịch' với Modal**
   - **Mục đích:** Cải thiện trải nghiệm người dùng bằng cách sử dụng Modal cho việc thêm/sửa giao dịch, thay vì form tĩnh.
   - **Hành động:**
     - Tái sử dụng hoặc tạo mới một component Modal.
     - Tích hợp form thêm giao dịch vào bên trong Modal.
 
-- [ ] **Task 4.2: Hiển thị Tổng quan Portfolio (Summary)**
+- [ ] **Task 5.2: Hiển thị Tổng quan Portfolio (Summary)**
   - **Mục đích:** Cung cấp cho người dùng cái nhìn tổng quan nhanh về hiệu suất danh mục đầu tư.
   - **Hành động:**
     - Tạo component `PortfolioSummary.jsx`.
