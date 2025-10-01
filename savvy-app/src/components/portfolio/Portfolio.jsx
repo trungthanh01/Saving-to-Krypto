@@ -1,22 +1,29 @@
 import { useContext } from "react";
-// Xóa bỏ import fetchCoinData, component này không gọi API nữa
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './Portfolio.css';
+import { AddHoldingForm } from "./AddHoldingForm.jsx";
+import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
+
 
 export function Portfolio() {
     // Bước 1: Dùng useContext để "đọc" dữ liệu đã được xử lý từ "tấm bảng" Context
-    const { portfolioData, isLoading, error } = useContext(PortfolioContext);
+    const { 
+        portfolioData, 
+        isLoading, 
+        error, 
+        openAddHoldingModal,
+        isAddHoldingModalOpen,
+        closeAddHoldingModal
+    } = useContext(PortfolioContext);
 
-    // Bước 2: Giữ nguyên logic render cho các trạng thái loading, error
+
     if (isLoading) {
         return <p>Đang tải dữ liệu portfolio...</p>;
     }
-
     if (error) {
         return <p style={{ color: 'red' }}>{error}</p>;
     }
     
-    // Bước 3: Giữ nguyên logic render cho trường hợp danh mục trống
     if (!portfolioData || portfolioData.length === 0) {
         return (
             <section className="portfolio-section">
@@ -31,10 +38,15 @@ export function Portfolio() {
     return (
         <section className="portfolio-section">
             <h2>Danh mục Đầu tư Crypto</h2>
+            <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
+            <AddHoldingForm 
+                isOpen={isAddHoldingModalOpen}
+                onClose={closeAddHoldingModal}
+            />
             <div className="portfolio-list">
                 {portfolioData.map((coin) => {
                     const totalValue = coin.amount * coin.current_price;
-
+                    
                     return (
                         <div key={coin.id} className="portfolio-item">
                             <img src={coin.image} alt={coin.name} className="coin-image" />

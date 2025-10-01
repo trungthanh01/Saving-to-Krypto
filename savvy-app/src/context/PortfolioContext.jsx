@@ -14,6 +14,8 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     return savedTransactions ? JSON.parse(savedTransactions) : [];
   })
 
+  const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
+
   function handleAddHolding(newHolding) {
     console.log('Context đã nhận được holding mới:', newHolding);
     setHoldings(prevHoldings => {
@@ -54,7 +56,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     const transactionToDelete = transactions.find(
       (transaction) => transaction.id === transactionIdToDelete
     );
-
+    
     if (!transactionToDelete) {
       console.error("Không tìm thấy giao dịch để xóa!");
       return;
@@ -76,6 +78,12 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     setTransactions(newTransactions);
   }
 
+  function handleOpenAddHoldingModal() {
+    setIsAddHoldingModalOpen(true);
+  }
+  function handleCloseAddHoldingModal() {
+    setIsAddHoldingModalOpen(false);
+  }
 
 
   useEffect( () => {
@@ -136,6 +144,9 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     holdings, // Dữ liệu gốc
     addHolding: handleAddHolding, // Hàm để thêm coin
     deleteTransaction: handleDeleteTransaction, // Thêm hàm xóa
+    isAddHoldingModalOpen, // Thêm state modal
+    openAddHoldingModal: handleOpenAddHoldingModal, // Thêm hàm mở
+    closeAddHoldingModal: handleCloseAddHoldingModal, // Thêm hàm đóng
     portfolioData, // Dữ liệu đã kết hợp để hiển thị
     isLoading, // Trạng thái loading
     error, // Trạng thái lỗi
