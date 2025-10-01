@@ -30,8 +30,6 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
         return [newHolding, ...prevHoldings];
       }
     });
-
-    // 2. Tạo và lưu giao dịch MỚI SAU KHI đã cập nhật holdings
     const newTransaction = {
       id: 't_' + new Date().getTime(),
       coinId: newHolding.id,
@@ -44,16 +42,15 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
   }
 
-  // --- Chức năng xóa Giao dịch ---
+
   function handleDeleteTransaction(transactionIdToDelete) {
-    // 1. Hỏi xác nhận người dùng
     const userConfirmed = window.confirm(
       "Bạn có chắc muốn xóa giao dịch này không? Hành động này sẽ hoàn trả lại số coin vào danh mục của bạn."
     );
     if (!userConfirmed) {
       return;
     }
-
+    
     const transactionToDelete = transactions.find(
       (transaction) => transaction.id === transactionIdToDelete
     );
@@ -78,6 +75,8 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     );
     setTransactions(newTransactions);
   }
+
+
 
   useEffect( () => {
     localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));

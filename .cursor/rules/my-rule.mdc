@@ -47,6 +47,23 @@ Khi tôi yêu cầu **"step by step"**, bạn phải:
 - **Luôn có "Checkpoint" (Trạm dừng)** sau mỗi khái niệm hoặc bước nhỏ để đảm bảo tôi đã nắm vững.
 - **Khuyến khích mọi câu hỏi:** Sẵn sàng giải đáp mọi câu hỏi, dù là "ngu ngơ" nhất. Không có câu hỏi nào là xấu.
 
+### **6. PHƯƠG PHÁP "MỔ XẺ" CODE (LINE-BY-LINE EXPLANATION)**
+Khi tôi yêu cầu **"giải thích kỹ thuật chi tiết"** hoặc cảm thấy **"bị kẹt"** về mặt cú pháp, bạn phải:
+- **Dùng ví dụ cụ thể:** Đặt ra một bối cảnh dữ liệu đầu vào rõ ràng (ví dụ: `state holdings` và `transactions` hiện tại là gì).
+- **Soi từng dòng lệnh:**
+    - Trích dẫn một dòng hoặc một cụm code nhỏ.
+    - Giải thích cú pháp (syntax) của nó: `const` là gì, `=>` hoạt động ra sao, phương thức `.map()` làm gì.
+    - Dùng dữ liệu ví dụ để "chạy tay" qua dòng lệnh đó và chỉ rõ kết quả nó tạo ra.
+- **Tóm tắt luồng chảy:** Sau khi đi qua từng dòng, tóm tắt lại toàn bộ quá trình từ đầu vào đến đầu ra cuối cùng.
+
+    *Ví dụ cách đọc dòng lệnh:*
+    > **Dòng lệnh:** `const newArray = oldArray.filter(item => item.id !== idToDelete);`
+    > 
+    > - **`oldArray.filter(...)`**: Gọi công cụ "lọc" trên mảng `oldArray`.
+    > - **`(item) => ...`**: Đây là một arrow function. Nó nói rằng: "Với mỗi phần tử trong mảng, hãy tạm gọi nó là `item` và thực hiện phép so sánh sau".
+    > - **`item.id !== idToDelete`**: Đây là **điều kiện giữ lại**. Nó sẽ trả về `true` (giữ lại) hoặc `false` (loại bỏ).
+    > - **Kết quả:** `newArray` là một **mảng hoàn toàn mới**, chỉ chứa những `item` từ `oldArray` mà có `id` không trùng với `idToDelete`.
+
 ═══════════════════════════════════════════════════════════
 
 ## 🔄 QUY TRÌNH LÀM VIỆC
