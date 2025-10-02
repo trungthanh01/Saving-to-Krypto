@@ -138,19 +138,23 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     loadPortfolioData();
   }, [holdings]); 
 
+  const portfolioTotalValue = portfolioData.reduce((total, coin) => {
+    const coinValue = coin.amount * coin.current_price;
+    return total + coinValue;
+  }, 0);
 
-  // --- Bước 4: Cập nhật lại `value` để chia sẻ tất cả dữ liệu ---
   const value = {
-    holdings, // Dữ liệu gốc
-    addHolding: handleAddHolding, // Hàm để thêm coin
-    deleteTransaction: handleDeleteTransaction, // Thêm hàm xóa
-    isAddHoldingModalOpen, // Thêm state modal
-    openAddHoldingModal: handleOpenAddHoldingModal, // Thêm hàm mở
-    closeAddHoldingModal: handleCloseAddHoldingModal, // Thêm hàm đóng
-    portfolioData, // Dữ liệu đã kết hợp để hiển thị
-    isLoading, // Trạng thái loading
-    error, // Trạng thái lỗi
-    transactions, // Chia sẻ transactions
+    holdings, 
+    addHolding: handleAddHolding, 
+    deleteTransaction: handleDeleteTransaction, 
+    isAddHoldingModalOpen, 
+    openAddHoldingModal: handleOpenAddHoldingModal, 
+    closeAddHoldingModal: handleCloseAddHoldingModal, 
+    portfolioData, 
+    isLoading, 
+    error, 
+    transactions,
+    portfolioTotalValue 
   };
 
   return (

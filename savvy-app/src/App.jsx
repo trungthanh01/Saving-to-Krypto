@@ -6,11 +6,13 @@ import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
 import { Savvy } from './components/savvy/Savvy.jsx';
 import { SavvyProvider } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
-import { PortfolioContext } from './context/PortfolioContext.jsx';
 import { TransactionHistory } from './components/portfolio/TransactionHistory.jsx';
+import { PortfolioSummary } from './components/portfolio/PortfolioSummary.jsx';
+
 export function App() {
   // 1. App quản lý state thông báo chung
   const [goalMessage, setGoalMessage] = useState('');
+  
   // 2. App quản lý useEffect cho thông báo
   useEffect(() => {
     if (!goalMessage) {
@@ -34,11 +36,11 @@ export function App() {
       <main>
         <PortfolioProvider setGoalMessage={setGoalMessage}>
           <div className="portfolio-container">
+            <PortfolioSummary />
             <Portfolio />
             <HoldingsChart />
           </div>
           <TransactionHistory />
-
         </PortfolioProvider>
 
         <SavvyProvider setGoalMessage={setGoalMessage}>
