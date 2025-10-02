@@ -3,7 +3,7 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './Portfolio.css';
 import { AddHoldingForm } from "./AddHoldingForm.jsx";
 import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
-
+import { HoldingItem } from "./HoldingItem.jsx";
 
 export function Portfolio() {
     // Bước 1: Dùng useContext để "đọc" dữ liệu đã được xử lý từ "tấm bảng" Context
@@ -54,6 +54,20 @@ export function Portfolio() {
                     
                     return (
                         <div key={coin.id} className="portfolio-item">
+                            <table className="portfolio-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Coin</th>
+                                        <th>Giá</th>
+                                        <th>24H %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {portfolioData.map(coin => (
+                                        <HoldingItem key={coin.id} coin={coin}/>
+                                    ))}
+                                </tbody>
+                            </table>
                             <img src={coin.image} alt={coin.name} className="coin-image" />
                             <div className="coin-info">
                                 <span className="coin-name">{coin.name} ({coin.symbol.toUpperCase()})</span>
