@@ -19,7 +19,7 @@
 .summary-value {
   margin: 0;
   font-size: 2.5rem; /* Kích thước lớn, nổi bật */
-  color: #ffffff; /* Màu trắng */
+  color: greenyellow; /* Màu trắng */
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -28,4 +28,41 @@
 .summary-loading {
   color: #a9a9b3;
   font-style: italic;
+}
+
+.summary-details {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #444; /* Thêm đường kẻ ngang để phân tách */
+  display: flex; /* Dàn các mục con trên một hàng */
+  justify-content: space-around; /* Phân bổ khoảng trống đều */
+}
+
+.summary-details p {
+  margin: 0;
+  display: flex;
+  flex-direction: column; /* Xếp "Tổng vốn" và con số theo chiều dọc */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  font-size: 1rem;
+}
+
+.summary-details span:first-child {
+  color: #a9a9b3; /* Màu chữ xám nhạt cho tiêu đề */
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.summary-details span:last-child {
+  color: #ffffff; /* Màu chữ trắng cho con số */
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* --- Màu sắc cho Lời/Lỗ --- */
+.summary-details .profit {
+  color: #28a745 !important; /* Màu xanh lá cây, !important để ghi đè */
+}
+
+.summary-details .loss {
+  color: #dc3545 !important; /* Màu đỏ */
 }

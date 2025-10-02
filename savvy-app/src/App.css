@@ -2,6 +2,7 @@
   max-width: 1200px; /* Tăng max-width để tận dụng màn hình lớn */
   margin: 0 auto;
   padding: var(--spacing-4); /* Giảm padding cho màn hình nhỏ */
+  background-color: burlywood;
 }
 
 .app-header {

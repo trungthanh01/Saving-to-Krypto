@@ -28,6 +28,11 @@ export function Portfolio() {
         return (
             <section className="portfolio-section">
                 <h2>Danh mục Đầu tư Crypto</h2>
+                <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
+                <AddHoldingForm 
+                    isOpen={isAddHoldingModalOpen}
+                    onClose={closeAddHoldingModal}
+                />
                 <p>Danh mục đầu tư của bạn trống.</p>
             </section>
         )
