@@ -168,8 +168,25 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     return total;
   }, 0)
 
-  const totalProfitLoss = 
-    totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
+  const totalProfitLoss = totalCostBasis > 0 
+    ? portfolioTotalValue - totalCostBasis 
+    : 0
+  ;
+  
+  const total24hChangeValue = portfolioData.reduce((total, coin) => {
+    if(coin.price_change_24h){
+      const coin24hChange = coin.amount * coin.price_change_24h;
+      return total + coin24hChange;
+    }
+    return total;
+  }, 0)
+
+  const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
+
+  const totalChangePercentage = portfolioValueYesterday !== 0 
+    ? (total24hChangeValue / portfolioValueYesterday)*100 
+    : 0
+  ;
   
   const value = {
     holdings, 
@@ -185,6 +202,8 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     portfolioTotalValue,
     totalCostBasis,
     totalProfitLoss,
+    total24hChangeValue,
+    totalChangePercentage,
   };
 
   return (
