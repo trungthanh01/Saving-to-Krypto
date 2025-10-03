@@ -2,11 +2,11 @@ import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './Portfolio.css';
 import { AddHoldingForm } from "./AddHoldingForm.jsx";
-import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
+import { AddButton } from "../savvy/AddButton.jsx";
 import { HoldingItem } from "./HoldingItem.jsx";
+import './portfolio-table.css';
 
 export function Portfolio() {
-    // Bước 1: Dùng useContext để "đọc" dữ liệu đã được xử lý từ "tấm bảng" Context
     const { 
         portfolioData, 
         isLoading, 
@@ -24,65 +24,41 @@ export function Portfolio() {
         return <p style={{ color: 'red' }}>{error}</p>;
     }
     
-    if (!portfolioData || portfolioData.length === 0) {
-        return (
-            <section className="portfolio-section">
-                <h2>Danh mục Đầu tư Crypto</h2>
-                <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
-                <AddHoldingForm 
-                    isOpen={isAddHoldingModalOpen}
-                    onClose={closeAddHoldingModal}
-                />
-                <p>Danh mục đầu tư của bạn trống.</p>
-            </section>
-        )
-    }
-
-    // Bước 4: Cập nhật JSX để sử dụng `portfolioData`
-    // Dữ liệu trong `portfolioData` đã bao gồm cả `amount` nên ta có thể dùng trực tiếp
     return (
         <section className="portfolio-section">
-            <h2>Danh mục Đầu tư Crypto</h2>
-            <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
+            <div className="portfolio-header">
+                <h2>Danh mục Đầu tư Crypto</h2>
+                <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
+            </div>
+
             <AddHoldingForm 
                 isOpen={isAddHoldingModalOpen}
                 onClose={closeAddHoldingModal}
             />
-            <div className="portfolio-list">
-                {portfolioData.map((coin) => {
-                    const totalValue = coin.amount * coin.current_price;
-                    
-                    return (
-                        <div key={coin.id} className="portfolio-item">
-                            <table className="portfolio-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tên Coin</th>
-                                        <th>Giá</th>
-                                        <th>24H %</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {portfolioData.map(coin => (
-                                        <HoldingItem key={coin.id} coin={coin}/>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <img src={coin.image} alt={coin.name} className="coin-image" />
-                            <div className="coin-info">
-                                <span className="coin-name">{coin.name} ({coin.symbol.toUpperCase()})</span>
-                                <span className="coin-price">
-                                    ${coin.current_price.toLocaleString()}
-                                </span>
-                            </div>
-                            <div className="coin-holdings">
-                                <span className="coin-value">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                <span className="coin-amount">{coin.amount} {coin.symbol.toUpperCase()}</span>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+            
+            {(!portfolioData || portfolioData.length === 0) ? (
+                <p>Danh mục đầu tư của bạn trống.</p>
+            ) : (
+                <div className="table-container">
+                    <table className="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Tên Coin</th>
+                                <th>Giá</th>
+                                <th>24h %</th>
+                                <th>Số lượng</th>
+                                <th>Giá trị</th>
+                                <th>Lời/Lỗ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {portfolioData.map(coin => (
+                                <HoldingItem key={coin.id} coin={coin}/>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </section>
     );
 }

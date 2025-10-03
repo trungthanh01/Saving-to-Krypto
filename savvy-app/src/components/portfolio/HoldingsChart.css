@@ -1,5 +1,5 @@
 .chart-section {
-  background-color: var(--color-surface);
+  background-color: black;
   border-radius: 8px;
   border: 1px solid var(--color-border);
   padding: var(--spacing-4);

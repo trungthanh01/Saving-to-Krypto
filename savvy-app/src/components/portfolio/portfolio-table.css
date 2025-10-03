@@ -1,0 +1,110 @@
+/* --- General Table Styling --- */
+.portfolio-table {
+  width: 100%;
+  border-collapse: collapse; /* Gộp đường viền của các ô lại */
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.portfolio-table th,
+.portfolio-table td {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border); /* Đường kẻ ngang phân tách các hàng */
+}
+
+/* --- Table Header --- */
+.portfolio-table th {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* --- Table Body --- */
+.portfolio-table td {
+  color: var(--color-text-primary);
+  vertical-align: middle; /* Căn giữa nội dung theo chiều dọc */
+}
+
+/* --- Specific Column Styling --- */
+
+/* Cột Tên Coin */
+.coin-name-cell {
+  display: flex;
+  align-items: center;
+}
+
+.coin-logo {
+  width: 32px;
+  height: 32px;
+  margin-right: 1rem;
+  border-radius: 50%;
+}
+
+.coin-name-cell div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coin-symbol {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+/* Căn phải cho các cột số */
+.portfolio-table th:not(:first-child),
+.portfolio-table td:not(:first-child) {
+  text-align: right;
+}
+
+/* --- Profit/Loss Colors (Reusing from summary) --- */
+.profit {
+  color: var(--color-success) !important;
+}
+
+.loss {
+  color: var(--color-danger) !important;
+}
+
+/* --- Responsive Table --- */
+.table-container {
+  overflow-x: auto; /* Kích hoạt cuộn ngang KHI CẦN */
+  width: 100%;
+}
+
+/* Tùy chỉnh thanh cuộn cho các trình duyệt Webkit (Chrome, Safari) */
+.table-container::-webkit-scrollbar {
+  height: 8px; /* Chiều cao của thanh cuộn */
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #2c2c3e; /* Màu của rãnh cuộn */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #5a5a72; /* Màu của con trượt */
+    border-radius: 4px; /* Bo tròn con trượt */
+}
+
+/* --- Sticky First Column --- */
+.portfolio-table th:first-child,
+.portfolio-table td:first-child {
+    position: -webkit-sticky; /* Tương thích với Safari cũ */
+    position: sticky;
+    left: 0; /* Dính vào cạnh trái */
+    z-index: 2; /* Đảm bảo nó nổi lên trên các cột khác khi cuộn */
+}
+
+/* Đặt lại màu nền cho ô bị dính để nó không trong suốt */
+.portfolio-table td:first-child {
+    background-color: var(--color-surface);
+}
+.portfolio-table th:first-child {
+    background-color: var(--color-surface);
+}

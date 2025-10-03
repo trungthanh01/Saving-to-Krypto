@@ -37,9 +37,9 @@ export function App() {
         <PortfolioProvider setGoalMessage={setGoalMessage}>
           <div className="portfolio-container">
             <PortfolioSummary />
-            <Portfolio />
             <HoldingsChart />
           </div>
+            <Portfolio />
           <TransactionHistory />
         </PortfolioProvider>
 
