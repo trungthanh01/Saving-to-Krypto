@@ -110,14 +110,127 @@
 ### **Giai đoạn 5: Nâng cao và Tối ưu**
 *Mục tiêu: Quay trở lại kế hoạch ban đầu và bổ sung các tính năng nâng cao để hoàn thiện sản phẩm, mang lại trải nghiệm người dùng tốt hơn.*
 
-- [ ] **Task 5.1: Nâng cấp Chức năng 'Thêm Giao dịch' với Modal**
+- [x] **Task 5.1: Nâng cấp Chức năng 'Thêm Giao dịch' với Modal**
   - **Mục đích:** Cải thiện trải nghiệm người dùng bằng cách sử dụng Modal cho việc thêm/sửa giao dịch, thay vì form tĩnh.
   - **Hành động:**
     - Tái sử dụng hoặc tạo mới một component Modal.
     - Tích hợp form thêm giao dịch vào bên trong Modal.
 
-- [ ] **Task 5.2: Hiển thị Tổng quan Portfolio (Summary)**
+- [x] **Task 5.2: Hiển thị Tổng quan Portfolio (Summary)**
   - **Mục đích:** Cung cấp cho người dùng cái nhìn tổng quan nhanh về hiệu suất danh mục đầu tư.
   - **Hành động:**
     - Tạo component `PortfolioSummary.jsx`.
-    - Tính toán và hiển thị các thông tin như: tổng giá trị, tổng lời/lỗ, và thay đổi trong 24 giờ.
+    - Tính toán và hiển thị các thông tin như: tổng giá trị, tổng vốn, và tổng lời/lỗ.
+
+---
+
+### **Giai đoạn 6: Nâng cao Trải nghiệm Người dùng (UX Enhancement)**
+*Mục tiêu: Dựa trên kế hoạch chi tiết, chúng ta sẽ bổ sung các tính năng làm cho ứng dụng trở nên chuyên nghiệp và hữu ích hơn, tập trung vào việc cung cấp thêm thông tin chi tiết cho người dùng.*
+
+- [x] **Task 6.1: Nâng cấp `PortfolioSummary` với Dữ liệu 24h** (Ref: task-invest 4.1)
+  - **Mục đích:** Cung cấp cho người dùng thông tin nhanh về sự biến động của thị trường trong ngày gần nhất.
+  - **Hành động:**
+    - Lấy thêm dữ liệu `price_change_percentage_24h` và `price_change_24h` từ API.
+    - Tính toán tổng thay đổi (dưới dạng tiền và %) của toàn bộ danh mục trong 24 giờ.
+    - Hiển thị thông tin này trong component `PortfolioSummary`.
+
+- [ ] **Task 6.2: Nâng cấp `Portfolio` thành Bảng Dữ liệu Chi tiết** (Ref: task-invest 5.1, 5.2)
+  - **Mục đích:** Thay thế danh sách đơn giản bằng một bảng dữ liệu chuyên nghiệp, cung cấp nhiều thông tin hơn và cho phép tương tác.
+  - **Hành động:**
+    - Chuyển đổi layout của `Portfolio.jsx` sang dạng bảng (`<table>`).
+    - Tạo component con `HoldingItem.jsx` cho mỗi hàng trong bảng.
+    - Bổ sung các cột mới: Giá, Thay đổi 1h/24h/7d (%), Lời/Lỗ cho từng khoản đầu tư.
+    - Hiển thị logo, tên và ký hiệu của coin.
+    - (Nâng cao) Thêm chức năng sắp xếp bảng bằng cách click vào tiêu đề cột.
+
+- [ ] **Task 6.3: Xây dựng Biểu đồ Hiệu suất (Performance Chart)** (Ref: task-invest 4.3)
+  - **Mục đích:** Trực quan hóa sự tăng trưởng của danh mục đầu tư theo thời gian, giúp người dùng có cái nhìn dài hạn.
+  - **Hành động:**
+    - Tạo component `PerformanceChart.jsx`.
+    - Tìm hiểu cách lấy dữ liệu lịch sử (`market_chart`) từ API CoinGecko.
+    - Xây dựng bộ lọc thời gian (24h, 7d, 1m, 3m, 1y).
+    - Sử dụng `Recharts` để vẽ biểu đồ đường (Line Chart) thể hiện tổng giá trị danh mục theo thời gian.
+
+---
+
+### **Giai đoạn 7: Hoàn thiện Tính năng Quản lý**
+*Mục tiêu: Cung cấp cho người dùng đầy đủ các công cụ để quản lý giao dịch của họ một cách hiệu quả.*
+
+- [ ] **Task 7.1: Nâng cấp Modal 'Thêm Giao dịch' với Autocomplete** (Ref: task-invest 5.3)
+  - **Mục đích:** Cải thiện trải nghiệm nhập liệu, giúp người dùng tìm kiếm và chọn coin một cách chính xác.
+  - **Hành động:**
+    - Tìm một API endpoint của CoinGecko để lấy danh sách tất cả các coin (`/coins/list`).
+    - Tích hợp một thư viện autocomplete hoặc tự xây dựng logic tìm kiếm.
+    - Khi người dùng gõ, hiển thị một danh sách gợi ý các coin phù hợp.
+
+- [ ] **Task 7.2: Xây dựng Chức năng Sửa Giao dịch** (Ref: task-invest 5.4)
+  - **Mục đích:** Cho phép người dùng chỉnh sửa các giao dịch đã nhập sai (ví dụ: sai số lượng, sai giá mua, sai ngày).
+  - **Hành động:**
+    - Tạo một Modal `EditTransactionModal.jsx`.
+    - Khi người dùng click nút "Sửa" trên một giao dịch, Modal sẽ hiện ra với thông tin của giao dịch đó.
+    - Tạo hàm `handleEditTransaction` trong Context để xử lý logic cập nhật.
+
+- [ ] **Task 7.3: Nâng cấp Chức năng Xóa với Modal Xác nhận** (Ref: task-invest 5.5)
+  - **Mục đích:** Thay thế `window.confirm` mặc định bằng một modal xác nhận có giao diện đẹp và thân thiện hơn.
+  - **Hành động:**
+    - Tạo component `DeleteConfirmationModal.jsx`.
+    - Khi người dùng click nút "Xóa", hiển thị modal này để hỏi xác nhận.
+
+---
+
+### **Giai đoạn 8: Kiểm thử & Tối ưu hóa (Testing & Optimization)** (Ref: task-invest 8.1, 8.2, 8.3)
+*Mục tiêu: Đảm bảo chất lượng và hiệu suất của ứng dụng. Chúng ta sẽ học các kỹ thuật nâng cao để làm cho ứng dụng chạy nhanh, mượt và đáng tin cậy.*
+
+- [ ] **Task 8.1: Tối ưu hóa Hiệu suất Render**
+  - **Mục đích:** Ngăn chặn việc render lại không cần thiết, giúp ứng dụng phản hồi nhanh hơn.
+  - **Hành động:**
+    - Áp dụng `React.memo` cho các component ít thay đổi (ví dụ: `HoldingItem`).
+    - Sử dụng `useMemo` để "ghi nhớ" các kết quả tính toán phức tạp (ví dụ: `portfolioTotalValue`, `chartData`).
+    - Sử dụng `useCallback` để "ghi nhớ" các hàm được truyền xuống component con.
+
+- [ ] **Task 8.2: Xử lý Lỗi Nâng cao & Trạng thái Trống**
+  - **Mục đích:** Cải thiện trải nghiệm người dùng khi có lỗi hoặc không có dữ liệu.
+  - **Hành động:**
+    - Xây dựng các component hiển thị trạng thái "trống" (ví dụ: "Bạn chưa có giao dịch nào", "Không tìm thấy kết quả").
+    - Tìm hiểu về `Error Boundaries` để "bắt" các lỗi render và hiển thị giao diện dự phòng.
+
+- [ ] **Task 8.3: (Tùy chọn) Viết Unit Test cơ bản**
+  - **Mục đích:** Đảm bảo các hàm logic quan trọng (ví dụ: các hàm tính toán trong `utils`) hoạt động chính xác.
+  - **Hành động:**
+    - Cài đặt Jest và React Testing Library.
+    - Viết một vài bài test đơn giản cho các hàm tính toán `totalCostBasis`, `totalProfitLoss`.
+
+---
+
+### **Giai đoạn 9: Các Tính năng Mở rộng (Additional Features)** (Ref: task-invest 7.2, 7.3)
+*Mục tiêu: Bổ sung các tính năng hấp dẫn để tăng giá trị cho người dùng.*
+
+- [ ] **Task 9.1: Xây dựng Danh sách Theo dõi (Watchlist)**
+  - **Mục đích:** Cho phép người dùng theo dõi các đồng coin mà họ quan tâm nhưng chưa đầu tư.
+  - **Hành động:**
+    - Tạo một state mới cho `watchlist` trong Context.
+    - Xây dựng giao diện cho phép tìm kiếm, thêm và xóa coin khỏi Watchlist.
+
+- [ ] **Task 9.2: Cảnh báo Giá (Price Alerts)**
+  - **Mục đích:** Thông báo cho người dùng khi một đồng coin đạt đến một ngưỡng giá nhất định.
+  - **Hành động:**
+    - Cho phép người dùng đặt một mức giá mục tiêu cho một đồng coin.
+    - Xây dựng logic chạy nền (`setInterval` trong `useEffect`) để kiểm tra giá định kỳ.
+    - Hiển thị một thông báo nổi bật khi giá đạt mục tiêu.
+
+---
+
+### **Giai đoạn 10: Hoàn thiện & Triển khai (Polish & Deployment)** (Ref: task-invest 9.1, 9.3)
+*Mục tiêu: Đóng gói sản phẩm và đưa nó ra mắt công chúng.*
+
+- [ ] **Task 10.1: Viết Tài liệu Hướng dẫn & Hoàn thiện README**
+  - **Mục đích:** Giúp người dùng khác (hoặc chính bạn trong tương lai) có thể dễ dàng cài đặt và hiểu được project.
+  - **Hành động:**
+    - Cập nhật file `README.md` với hướng dẫn cài đặt, mô tả các tính năng, và giải thích cấu trúc project.
+
+- [ ] **Task 10.2: Triển khai Ứng dụng**
+  - **Mục đích:** Đưa ứng dụng của bạn lên Internet để mọi người có thể truy cập.
+  - **Hành động:**
+    - Tìm hiểu về các nền tảng triển khai miễn phí như Vercel hoặc Netlify.
+    - Thực hiện build ứng dụng cho môi trường production.
+    - Triển khai và nhận về một đường link công khai cho ứng dụng của bạn.
