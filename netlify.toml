@@ -1,0 +1,17 @@
+# Cấu hình build cho Netlify
+
+[build]
+  # Thư mục gốc của ứng dụng React
+  base = "savvy-app"
+  
+  # Lệnh để build ứng dụng (sẽ được chạy bên trong thư mục 'base')
+  command = "npm run build"
+  
+  # Thư mục chứa kết quả build (tương đối so với thư mục 'base')
+  publish = "dist"
+
+# Quy tắc chuyển hướng cho ứng dụng Single Page
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
