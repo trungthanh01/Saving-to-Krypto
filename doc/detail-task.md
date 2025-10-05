@@ -156,7 +156,7 @@
 ### **Giai đoạn 7: Đại tu Logic Giao dịch & PnL Chính xác**
 *Mục tiêu: Nâng cấp hệ thống từ một công cụ theo dõi đơn giản thành một công cụ quản lý danh mục đầu tư thực thụ bằng cách xử lý logic Mua/Bán và tính toán Lời/Lỗ dựa trên giá vốn thực tế.*
 
-- [ ] **Task 7.1: Nâng cấp Cấu trúc Dữ liệu Giao dịch**
+- [x] **Task 7.1: Nâng cấp Cấu trúc Dữ liệu Giao dịch**
   - **Mục đích:** Mở rộng mô hình dữ liệu để lưu trữ thông tin quan trọng cho việc tính toán PnL.
   - **Hành động:**
     - Cập nhật cấu trúc của một object `transaction` trong state để bao gồm: `type: 'buy' | 'sell'` và `pricePerCoin: number`.
