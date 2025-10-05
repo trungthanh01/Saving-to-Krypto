@@ -161,7 +161,7 @@
   - **Hành động:**
     - Cập nhật cấu trúc của một object `transaction` trong state để bao gồm: `type: 'buy' | 'sell'` và `pricePerCoin: number`.
 
-- [ ] **Task 7.2: Tái cấu trúc Form & Logic Thêm Giao dịch**
+- [x] **Task 7.2: Tái cấu trúc Form & Logic Thêm Giao dịch**
   - **Mục đích:** Cập nhật giao diện và hàm xử lý để người dùng có thể nhập giao dịch Mua/Bán với giá cụ thể.
   - **Hành động:**
     - Đổi tên `AddHoldingForm.jsx` thành `AddTransactionForm.jsx`.

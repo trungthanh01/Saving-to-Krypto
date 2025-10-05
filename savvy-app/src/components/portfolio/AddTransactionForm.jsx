@@ -4,9 +4,11 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
 
 export function AddTransactionForm({isOpen, onClose}) {
-  const { addHolding } = useContext(PortfolioContext);
+  const { addTransaction } = useContext(PortfolioContext);
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');
+  const [type, setType] = useState('buy');
+  const [pricePerCoin, setPricePerCoin] = useState('');
 
   if(!isOpen) {
     return null;
@@ -20,17 +22,19 @@ export function AddTransactionForm({isOpen, onClose}) {
       return;
     }
 
-    const newHolding = {
-      id: coinId.toLowerCase().trim(),
-      amount: parseFloat(amount)
+    const transactionData = {
+      amount: parseFloat(amount),
+      type: type,
+      pricePerCoin: parseFloat(pricePerCoin),
+      coinId: coinId.toLowerCase().trim(),
     };
     
-    console.log('Form Submitted!', newHolding);
-    addHolding(newHolding);
-
-    // Dọn dẹp và đóng modal
+    console.log('Form Submitted!', transactionData);
+    addTransaction(transactionData);
     setCoinId('');
     setAmount('');
+    setType('buy');
+    setPricePerCoin('');
     onClose(); 
   };
   
@@ -52,6 +56,26 @@ export function AddTransactionForm({isOpen, onClose}) {
                     onChange={(e) => setCoinId(e.target.value)}
                 />
             </div>
+            <div className="formGroup">
+                <label htmlFor="type">Loại giao dịch</label>
+                <select id="type" value={type} onChange={(e) => setType(e.target.value)}>
+                    <option value="buy">Mua</option>
+                    <option value="sell">Bán</option>
+                </select>
+            </div>
+            <div className="formGroup">
+                <label htmlFor="pricePerCoin">Giá mỗi coin</label>
+                <input
+                    id="pricePerCoin"
+                    type="number"
+                    placeholder="0"
+                    value={pricePerCoin}
+                    onChange={(e) => setPricePerCoin(e.target.value)}
+                    min="0"
+                    step="any" 
+                />
+            </div>
+          
             <div className="formGroup">
                 <label htmlFor="amount">Số lượng</label>
                 <input
