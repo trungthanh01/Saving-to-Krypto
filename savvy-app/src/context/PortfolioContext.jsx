@@ -16,51 +16,67 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
   
   const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
 
-  async function handleAddHolding(newHolding) {
+  async function handleAddTransaction(transactionData) {
 
     try {
-      const marketData = await fetchCoinData([newHolding.id]);
+      const marketData = await fetchCoinData([transactionData.coinId]);
 
       if(!marketData || marketData.length === 0) {
-        throw new Error(`Không thể tìm thấy dữ liệu cho coin: ${newHolding.id}`)
+        throw new Error(`Không thể tìm thấy dữ liệu cho coin: ${transactionData.coinId}`)
+      }
+      const current_price = marketData[0].current_price;
+      console.log('Context đã nhận được holding mới:', transactionData);
+      const existingHolding = holdings.find(h => h.id === transactionData.coinId);
+      if(transactionData.type === 'sell' && existingHolding && transactionData.amount > existingHolding.amount) {
+        throw new Error(`Số lượng bán vượt quá số lượng hiện có: ${existingHolding.amount}`);
+        return;
+      }
+      if(transactionData.type === 'sell' && !existingHolding) {
+        throw new Error(`Coin không tồn tại trong danh mục: ${transactionData.coinId}`);
+        return;
       }
       
-      const current_price = marketData[0].current_price;
-      
-      console.log('Context đã nhận được holding mới:', newHolding);
-      
       setHoldings(prevHoldings => {
-        const existingHolding = prevHoldings.find(h => h.id === newHolding.id);
         if (existingHolding) {
           console.log('Coin đã tồn tại. Cập nhật số lượng trong Context.');
-          return prevHoldings.map(h =>
-            h.id === newHolding.id
-              ? { ...h, amount: h.amount + newHolding.amount }
-              : h
-            );
-        } else {
+          return prevHoldings.map(h => {
+            if(h.id === transactionData.coinId) {
+              const newAmount = transactionData.type === 'buy' 
+                ? h.amount + transactionData.amount 
+                : h.amount - transactionData.amount;
+              return { ...h, amount: newAmount };
+            } else {
+              return h;
+            }
+          });
+        } 
+        else {
           console.log('Coin mới. Thêm vào danh mục trong Context.');
-          return [newHolding, ...prevHoldings];
+          return [{
+            id: transactionData.coinId, 
+            amount: transactionData.amount}, 
+            ...prevHoldings
+          ];
         }
       });
-
+      
+     
       const newTransaction = {
         id: 't_' + new Date().getTime(),
-        coinId: newHolding.id,
-        amount: newHolding.amount,
-        purchasePrice: current_price,
+        coinId:transactionData.coinId,
+        amount: transactionData.amount,
+        type: 'buy',
+        pricePerCoin: current_price,
         date: new Date().toISOString().split('T')[0],
       };
-
       setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
-      setGoalMessage(`Đã thêm ${newHolding.amount} ${newHolding.id.toUpperCase()}!`);
-      
+      setGoalMessage(`Đã thêm ${transactionData.amount} ${transactionData.coinId.toUpperCase()}!`);      
     } catch (error) {
       console.error("Lỗi khi thêm giao dịch:", error)
       alert(error.message)
     }
   }
-
+//------------------------
 
   function handleDeleteTransaction(transactionIdToDelete) {
     const userConfirmed = window.confirm(
@@ -190,7 +206,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
   
   const value = {
     holdings, 
-    addHolding: handleAddHolding, 
+    addTransaction: handleAddTransaction, 
     deleteTransaction: handleDeleteTransaction, 
     isAddHoldingModalOpen, 
     openAddHoldingModal: handleOpenAddHoldingModal, 
