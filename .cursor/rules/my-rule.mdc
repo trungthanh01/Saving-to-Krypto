@@ -75,17 +75,21 @@ Khi tôi yêu cầu **"giải thích kỹ thuật chi tiết"** hoặc cảm th�
     Phân tích: Chia thành các module/component logic
     Roadmap: Đề xuất thứ tự thực hiện từ dễ → khó
     Tech Stack: Giải thích công nghệ/thư viện cần dùng và TẠI SAO
-**Phase 2: HƯỚNG DẪN TỪNG BƯỚC (THEO MICRO-STEPS)**
-    Cho mỗi bước:
-    Tiêu đề bước + Mục tiêu
-    Giải thích khái niệm liên quan
-    Gợi ý công cụ/method cần dùng
-    Cảnh báo lỗi thường gặp
-    Checklist để tự kiểm tra
-    **Checkpoint:** Dừng lại và hỏi "Bạn đã hiểu rõ phần này chưa?"
-    KHÔNG VIẾT CODE trừ khi tôi nói "show code"
 
-**Phase 3: HỖ TRỢ THỰC HIỆN**
+**Phase 2: TRIỂN KHAI THEO PHƯƠNG PHÁP "DẪN DẮT & KHÁM PHÁ"**
+Đây là phương pháp học tập cốt lõi của chúng ta, tập trung vào việc bạn **tự mình giải quyết vấn đề** dưới sự hướng dẫn. Quy trình cho mỗi micro-task sẽ như sau:
+1.  **Xác định Vấn đề:** Bạn giúp tôi nêu rõ mục tiêu của bước cần làm.
+2.  **Gợi mở bằng Câu hỏi:** Bạn sẽ đặt ra một chuỗi câu hỏi để dẫn dắt suy nghĩ của tôi, giúp tôi tự tìm ra giải pháp.
+3.  **Gợi ý Cú pháp (Khi cần):** Nếu tôi gặp khó khăn về cú pháp, bạn sẽ chỉ cung cấp một ví dụ chung, không phải code giải quyết trực tiếp vấn đề.
+4.  **Tôi là người Viết Code:** Dựa trên những suy luận của mình, tôi sẽ là người tự tay viết code.
+5.  **Đánh giá & Phản hồi:** Sau khi tôi cung cấp code, bạn sẽ review, giải thích các điểm hay, các điểm cần cải thiện và thảo luận về các phương án khác.
+6. **Sửa Lỗi:** Sau khi tôi nói *provide Code* nghĩa là tôi hoàn toàn bị kẹt và không tìm được cách giải, bạn sẽ giúp tôi cung cấp code và đưa ra đáp án.
+
+**Phase 3: HOÀN THIỆN & TỔNG KẾT**
+- Sau khi hoàn thành một task lớn, chúng ta sẽ cùng nhau review lại toàn bộ quá trình.
+- Củng cố kiến thức bằng các câu hỏi hoặc quiz ngắn.
+- Cập nhật file `doc/detail-task.md` để ghi lại tiến độ.
+
 ### Cấu trúc câu:
 - Câu ngắn, súc tích
 - Dùng bullet points cho danh sách
@@ -127,64 +131,4 @@ Khi tôi yêu cầu **"giải thích kỹ thuật chi tiết"** hoặc cảm th�
 
 * **Tên file và thư mục:** Dùng chữ thường, nối với nhau bằng dấu gạch ngang (`kebab-case`). Ví dụ: `auth-form`, `user-profile`.
 * **Tên component:** Dùng `PascalCase`. Ví dụ: `UserProfile`, `PrimaryButton`.
-* **Tên biến và hàm:** Dùng `camelCase`. Ví dụ: `isLoading`, `fetchUserData`. Sử dụng các tiền tố như `is`, `has`, `should` cho các biến boolean để tăng tính dễ đọc.
-* **Export:** Ưu tiên sử dụng **named export** thay vì `export default` để tránh nhầm lẫn khi import.
-* **Cú pháp ES6+:** Tận dụng các tính năng hiện đại của JavaScript như `const`/`let`, arrow functions (`=>`), destructuring, spread/rest operators (`...`).
-* **JSX rõ ràng:** Viết JSX có tính khai báo (declarative), dễ đọc. Tránh logic phức tạp bên trong JSX. Nếu cần, hãy tách logic ra các hàm hoặc biến riêng.
-
----
-
-## **# 3. Styling, CSS & UI**
-
-* **Phương pháp Styling:** Hướng dẫn sử dụng **CSS Modules** để đóng gói style cho từng component. Hoặc có thể dùng các thư viện phổ biến như **Tailwind CSS** nếu tôi muốn. Tránh viết CSS inline trừ khi thực sự cần thiết.
-* **Thiết kế Responsive:** Sử dụng **Flexbox**, **Grid** và **Media Queries** trong CSS để đảm bảo ứng dụng hoạt động tốt trên mọi kích thước màn hình.
-* **Dark Mode:** Hướng dẫn cách triển khai Dark Mode bằng cách sử dụng **biến CSS (CSS Variables)** và media query `prefers-color-scheme`.
-* **Tiếp cận (Accessibility - a11y):** Luôn đảm bảo các tiêu chuẩn về khả năng tiếp cận. Sử dụng HTML ngữ nghĩa (semantic HTML), các thuộc tính **ARIA** khi cần thiết.
-
----
-
-## **# 4. Công cụ & Môi trường**
-
-* **Khởi tạo dự án:** Hướng dẫn sử dụng các công cụ hiện đại như **Vite** để tạo dự án React vì tốc độ và sự đơn giản của nó.
-* **Code Formatting:** Sử dụng **Prettier** để tự động định dạng code một cách nhất quán.
-* **Code Linting:** Sử dụng **ESLint** để phát hiện các lỗi tiềm ẩn và đảm bảo code tuân thủ các quy tắc tốt nhất.
-
----
-
-## **# 5. Cấu trúc thư mục dự án cụ thể (Specific Project Architecture)**
-Trong suốt dự án này, chúng ta sẽ tuân thủ nghiêm ngặt cấu trúc thư mục sau đây. Mọi file mới đều phải được đặt đúng vị trí quy định.
-
-Thành phần hệ thống cốt lõi (Core System):
-
-Logic ứng dụng chính: src/core
-
-Các tiện ích và hàm trợ giúp dùng chung: src/utils
-
-Cấu hình và cài đặt: src/config
-
-Cấu trúc code Frontend:
-
-Các component UI: src/components/
-
-Các trang (views) của ứng dụng: src/pages/
-
-Styles chung hoặc cho từng component: src/styles/
-
-Kiểm thử & Gỡ lỗi (Testing & Debugging):
-
-Các bài test cho từng component: đặt trong thư mục của component đó (ví dụ: src/components/Button/Button.test.js)
-
-Các kịch bản gỡ lỗi: scripts/debugging/
----
-## **# 6. Nguồn kiến thức**
-(Đặc biệt ưu tiên) Sử dụng kiến thức từ thư viện React thông qua link sau: https://react.dev/learn 
-Những kiến thức trong này sẽ giúp code của tôi và bạn clean hơn và có hệ thống hơn
-
-## **# 7. Lưu trữ quá trình thực hiện**
-Sau khi hoàn thành task bạn sẽ update file doc/progress.md để lưu lại quá các bước hoàn thành task theo dạng step by step.
-**ví dụ: sau khi hoàn thành một task thì bạn lưu lại các bước như:
-- Bước 1: truyền props xuống...
-- Bước 2: lấy filter()...**
-
-## **# 8. Luôn gắn console.log()**
-Tôi muốn nhìn thấy trên browser các kết quả thực hiện
+* **Tên biến và hàm:** Dùng `
