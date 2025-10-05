@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './Portfolio.css';
-import { AddHoldingForm } from "./AddHoldingForm.jsx";
+import { AddTransactionForm } from "./AddTransactionForm.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 import { HoldingItem } from "./HoldingItem.jsx";
 import './portfolio-table.css';
@@ -31,7 +31,7 @@ export function Portfolio() {
                 <AddButton onClick={openAddHoldingModal}>Thêm Giao Dịch</AddButton>
             </div>
 
-            <AddHoldingForm 
+            <AddTransactionForm 
                 isOpen={isAddHoldingModalOpen}
                 onClose={closeAddHoldingModal}
             />

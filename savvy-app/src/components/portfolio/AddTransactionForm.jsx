@@ -3,7 +3,7 @@ import './add-holding-form.css'; // Sửa lại cách import
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
 
-export function AddHoldingForm({isOpen, onClose}) {
+export function AddTransactionForm({isOpen, onClose}) {
   const { addHolding } = useContext(PortfolioContext);
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');

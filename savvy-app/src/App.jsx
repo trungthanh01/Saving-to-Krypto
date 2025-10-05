@@ -1,7 +1,7 @@
 import './App.css';
 import { useState, useEffect, useContext } from 'react';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
-import { AddHoldingForm } from './components/portfolio/AddHoldingForm.jsx';
+import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx';
 import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
 import { Savvy } from './components/savvy/Savvy.jsx';
 import { SavvyProvider } from './context/SavvyContext.jsx';
