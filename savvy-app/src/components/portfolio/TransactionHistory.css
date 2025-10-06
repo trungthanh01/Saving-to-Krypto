@@ -1,67 +1,89 @@
 .transaction-history {
-    background-color: #2c2c3e;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-top: 1.5rem;
     width: 100%;
-    box-sizing: border-box;
+    padding: 1rem;
+    background-color: #1e1e2f;
+    border-radius: 8px;
+    margin-top: 1rem;
 }
 
-.transaction-history h3 {
+.transaction-history h4 {
     margin-top: 0;
-    color: #e0e0e0;
-    border-bottom: 1px solid #444;
-    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #c2c2d6;
 }
 
-.transaction-history ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    max-height: 200px;
+.transaction-history .table-container {
+    max-height: 400px;
     overflow-y: auto;
 }
 
-.transaction-history li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.transaction-history table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #c2c2d6;
+}
+
+.transaction-history th,
+.transaction-history td {
     padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #3a3a4a;
-    color: #c5c5c5;
+    text-align: left;
+    border-bottom: 1px solid #2c2c3e;
 }
 
-.transaction-history li:last-child {
-    border-bottom: none;
+.transaction-history thead th {
+    position: sticky;
+    top: 0;
+    background-color: #1e1e2f;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #8a8aa0;
 }
 
-.transaction-history .date {
-    font-size: 0.9em;
-    color: #888;
+.transaction-history .coin-name {
+    font-weight: 600;
 }
 
+.transaction-history .type {
+    text-transform: capitalize;
+    font-weight: 600;
+}
 
-.transaction-history .details {
-    font-weight: bold;
-    color: #fff;
+.transaction-history .type-buy {
+    color: #28a745; /* Green */
+}
+
+.transaction-history .type-sell {
+    color: #dc3545; /* Red */
+}
+
+.transaction-history .align-right {
+    text-align: right;
+}
+
+.transaction-history .align-center {
+    text-align: center;
 }
 
 .transaction-history .delete-btn {
-    background: #5a3e3e;
-    color: #ffacac;
+    background: #444;
+    color: #fff;
     border: none;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    font-size: 14px;
-    line-height: 22px;
-    text-align: center;
+    font-size: 1rem;
+    line-height: 24px;
     padding: 0;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
 }
 
 .transaction-history .delete-btn:hover {
-    background: #7a4f4f;
-    color: #fff;
+    background-color: #dc3545;
+}
+
+.transaction-history .empty-state p {
+    color: #8a8aa0;
+    text-align: center;
+    padding: 2rem;
 }

@@ -177,9 +177,12 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
   }, 0);
 
   const totalCostBasis = transactions.reduce((total, transaction) => {
-    if(transaction.purchasePrice) {
-      const transactionValue = transaction.amount * transaction.purchasePrice
+    if(transaction.type === 'buy') {
+      const transactionValue = transaction.amount * transaction.pricePerCoin
       return total + transactionValue
+    } else if(transaction.type === 'sell') {
+      const transactionValue = transaction.amount * transaction.pricePerCoin
+      return total - transactionValue 
     }
     return total;
   }, 0)

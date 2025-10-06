@@ -1,38 +1,68 @@
 import { useContext } from "react";
-import { PortfolioContext } from "../../context/PortfolioContext.jsx"; // Thêm .jsx cho rõ ràng
-import './TransactionHistory.css'; // Import file css
+import { PortfolioContext } from "../../context/PortfolioContext.jsx";
+import './TransactionHistory.css';
 
 export function TransactionHistory() {
-    // Sửa lại tên hàm cho đúng với key trong context
     const { transactions, deleteTransaction } = useContext(PortfolioContext);
-    console.log('Dữ liệu transactions', transactions);
 
-    // Xử lý trường hợp không có giao dịch
-    if (!transactions || transactions.length === 0) {
+    if (transactions.length === 0) {
         return (
-            <div className="transaction-history">
-                <h3>Lịch Sử Giao Dịch</h3>
-                <p>Chưa có giao dịch nào.</p>
+            <div className="transaction-history empty-state">
+                <h4>Lịch Sử Giao Dịch</h4>
+                <p>Bạn chưa có giao dịch nào.</p>
             </div>
         );
     }
 
+    const formatCurrency = (number) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(number);
+    };
+
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+        }).format(number);
+    };
+
     return (
         <div className="transaction-history">
-            <h3>Lịch Sử Giao Dịch</h3>
-            <ul>
-            {transactions.map(transaction => (
-                <li key={transaction.id}>
-                    <span className="date">{transaction.date}</span>
-                    <span className="details">
-                        {transaction.amount} {transaction.coinId.toUpperCase()}
-                    </span>
-                    <button className="delete-btn" onClick={() => deleteTransaction(transaction.id)}>
-                        &times;
-                    </button>
-                </li>
-            ))}
-            </ul>
+            <h4>Lịch Sử Giao Dịch</h4>
+            <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Coin</th>
+                            <th>Loại</th>
+                            <th className="align-right">Số lượng</th>
+                            <th className="align-right">Giá</th>
+                            <th className="align-center">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.map(transaction => (
+                            <tr key={transaction.id}>
+                                <td>{transaction.date}</td>
+                                <td className="coin-name">{transaction.coinId.toUpperCase()}</td>
+                                <td className={`type ${transaction.type === 'buy' ? 'type-buy' : 'type-sell'}`}>
+                                    {transaction.type}
+                                </td>
+                                <td className="align-right">{formatNumber(transaction.amount)}</td>
+                                <td className="align-right">{formatCurrency(transaction.pricePerCoin)}</td>
+                                <td className="align-center">
+                                    <button className="delete-btn" onClick={() => deleteTransaction(transaction.id)}>
+                                        &times;
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
