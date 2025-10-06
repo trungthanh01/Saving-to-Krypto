@@ -65,7 +65,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
         id: 't_' + new Date().getTime(),
         coinId:transactionData.coinId,
         amount: transactionData.amount,
-        type: 'buy',
+        type: transactionData.type,
         pricePerCoin: current_price,
         date: new Date().toISOString().split('T')[0],
       };
