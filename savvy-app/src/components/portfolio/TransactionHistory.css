@@ -15,6 +15,7 @@
 .transaction-history .table-container {
     max-height: 400px;
     overflow-y: auto;
+    overflow-x: auto; 
 }
 
 .transaction-history table {
@@ -88,3 +89,19 @@
     text-align: center;
     padding: 2rem;
 }
+
+.transaction-history .table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto; 
+}
+
+.transaction-history th:first-child,
+.transaction-history td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #1e1e2f; 
+    min-width: 110px;          
+}
+
