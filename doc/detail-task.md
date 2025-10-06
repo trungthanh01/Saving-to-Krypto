@@ -168,7 +168,7 @@
     - Thêm các trường nhập liệu mới vào form: Lựa chọn Mua/Bán, Input cho "Giá mỗi coin".
     - Sửa đổi hàm `handleAddTransaction` (trước là `handleAddHolding`) để nhận và xử lý các dữ liệu mới này.
 
-- [ ] **Task 7.3: Triển khai Logic Cập nhật `holdings` cho Mua/Bán**
+- [x] **Task 7.3: Triển khai Logic Cập nhật `holdings` cho Mua/Bán**
   - **Mục đích:** Xây dựng logic nền tảng để cập nhật chính xác danh mục tài sản sau mỗi giao dịch.
   - **Hành động:**
     - Bên trong `handleAddTransaction`, triển khai logic:
