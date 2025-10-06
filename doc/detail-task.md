@@ -176,13 +176,13 @@
       - Nếu là `sell`: Trừ bớt số lượng khỏi `holdings`.
     - Đảm bảo xử lý trường hợp một coin mới được mua lần đầu.
 
-- [ ] **Task 7.4: Viết lại Logic tính `costBasis` và `profitLoss`**
+- [x] **Task 7.4: Viết lại Logic tính `costBasis` và `profitLoss`**
   - **Mục đích:** Tính toán Lời/Lỗ một cách chính xác dựa trên lịch sử giao dịch.
   - **Hành động:**
     - Trong `PortfolioContext.jsx`, tạo một hàm tính toán `costBasis` (giá vốn) cho mỗi coin bằng cách duyệt qua mảng `transactions`.
     - Cập nhật lại công thức tính `profitLoss` trong `HoldingItem.jsx` và `PortfolioSummary.jsx` để sử dụng `costBasis` mới.
 
-- [ ] **Task 7.5: Cập nhật Giao diện Lịch sử Giao dịch**
+- [x] **Task 7.5: Cập nhật Giao diện Lịch sử Giao dịch**
   - **Mục đích:** Hiển thị đầy đủ thông tin giao dịch cho người dùng.
   - **Hành động:**
     - Trong `TransactionHistory.jsx`, thêm các cột mới để hiển thị `Loại` (Mua/Bán) và `Giá giao dịch`.
