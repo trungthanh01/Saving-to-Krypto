@@ -92,6 +92,38 @@ export function PortfolioProvider({ children, setGoalMessage }) {
   }
 
 //------------------------
+  function handleEditTransaction(transactionData) {
+    setTransactions(prevTransactions => 
+      prevTransactions.map(transaction => 
+        transaction.id === transactionData.id 
+        ? transactionData : transaction))
+      ;
+    setGoalMessage(`Đã sửa ${transactionData.amount} ${transactionData.coinId.toUpperCase()}!`);
+
+    const updatedTransactions = transactions.map(transaction => 
+      transaction.id === transactionData.id 
+        ? transactionData : transaction);
+    setTransactions(updatedTransactions);
+
+    const updatedHoldings = transactions.map(transaction => {
+      if(transaction.id === transactionData.id) {
+        const newHoldings = transactionData.type === 'buy' 
+          ? transaction.amount + transactionData.amount 
+          : transaction.amount - transactionData.amount;
+        return { ...transaction, 
+          amount: newHoldings,
+          pricePerCoin: transactionData.pricePerCoin,
+          date: transactionData.date,
+          type: transactionData.type,
+          coinId: transactionData.coinId,
+        };
+      }
+      return transaction; 
+    });
+    setHoldings(updatedHoldings);
+  }
+
+//--------------------------------
 
   function handleDeleteTransaction(transactionIdToDelete) {
     const userConfirmed = window.confirm(
@@ -238,6 +270,7 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     total24hChangeValue,
     totalChangePercentage,
     coinList,
+    editTransaction: handleEditTransaction,
   };
 
   return (

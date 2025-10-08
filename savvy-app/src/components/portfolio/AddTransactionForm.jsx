@@ -3,13 +3,15 @@ import './AddTransactionForm.css'; // Sửa lại cách import
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
 
-export function AddTransactionForm({isOpen, onClose}) {
-  const { addTransaction, coinList } = useContext(PortfolioContext);
+export function AddTransactionForm({isOpen, onClose, transactionToEdit}) {
+  const { addTransaction, coinList, editTransaction } = useContext(PortfolioContext);
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('buy');
   const [pricePerCoin, setPricePerCoin] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const isEditMode = Boolean(transactionToEdit);
+
   useEffect(() => {
     if (coinId.length === 0) {
       setSuggestions([]);
@@ -23,6 +25,20 @@ export function AddTransactionForm({isOpen, onClose}) {
       setSuggestions(filteredSuggestions);
     }
   }, [coinId, coinList])
+
+  useEffect(() => {
+    if (isEditMode) {
+      setCoinId(transactionToEdit.coinId);
+      setAmount(transactionToEdit.amount);
+      setType(transactionToEdit.type);
+      setPricePerCoin(transactionToEdit.pricePerCoin);
+    } else {
+      setCoinId('');
+      setAmount('');
+      setType('buy');
+      setPricePerCoin('');
+    }
+  }, [transactionToEdit, isEditMode])
   
   if(!isOpen) {
     return null;
@@ -35,14 +51,20 @@ export function AddTransactionForm({isOpen, onClose}) {
       alert("Vui lòng nhập đủ thông tin Coin ID và Số lượng.");
       return;
     }
-
     const transactionData = {
+      id: isEditMode ? transactionToEdit.id : undefined,
       amount: parseFloat(amount),
       type: type,
       pricePerCoin: parseFloat(pricePerCoin),
       coinId: coinId.toLowerCase().trim(),
-    };
-    
+    }
+    if (isEditMode) {
+      console.log('Form Submitted in Add Model!', transactionData);
+      editTransaction( transactionData);
+    }else{
+      console.log('Form Submitted in Add Model!', transactionData);
+      addTransaction(transactionData);
+    }
     console.log('Form Submitted!', transactionData);
     addTransaction(transactionData);
     setCoinId('');
@@ -57,11 +79,11 @@ export function AddTransactionForm({isOpen, onClose}) {
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <header className="header">
-          <h2>Thêm Giao Dịch</h2>
+          <h2>{isEditMode ? 'Sửa Giao Dịch' : 'Thêm Giao Dịch'}</h2>
           <button className="closeButton" onClick={onClose}>&times;</button>
         </header>
         <form onSubmit={handleSubmit}>
-            <div className="formGroup suggestion-wrapper"> {/* Thêm class wrapper */}
+            <div className="formGroup suggestion-wrapper">  
                 <label htmlFor="coinId">Coin ID</label>
                 <input
                     id="coinId"
@@ -69,7 +91,7 @@ export function AddTransactionForm({isOpen, onClose}) {
                     placeholder="vd: bitcoin"
                     value={coinId}
                     onChange={(e) => setCoinId(e.target.value)}
-                    autoComplete="off" // Tắt autocomplete mặc định của trình duyệt
+                    autoComplete="off" 
                 />
                 {suggestions.length > 0 && (
                     <ul className="suggestion-list">
@@ -77,8 +99,8 @@ export function AddTransactionForm({isOpen, onClose}) {
                             <li 
                                 key={suggestion.id} 
                                 onClick={() => {
-                                    setCoinId(suggestion.id); // Cập nhật input
-                                    setSuggestions([]);      // Đóng danh sách gợi ý
+                                    setCoinId(suggestion.id); 
+                                    setSuggestions([]);      
                                 }}>
                                 <img className="suggestion-logo" src={suggestion.image} alt={suggestion.name} />
                                 {suggestion.name} ({suggestion.symbol})
@@ -88,12 +110,12 @@ export function AddTransactionForm({isOpen, onClose}) {
                 )}
             </div>
 
-            {/* ... các form group khác giữ nguyên ... */}
+            
 
             <div className="formGroup">
                 <label>Loại giao dịch</label>
                 <div className="radio-group">
-                    {/* Các input và label đứng trước */}
+                    
                     <input 
                         type="radio" 
                         id="buy" 
@@ -114,7 +136,7 @@ export function AddTransactionForm({isOpen, onClose}) {
                     />
                     <label htmlFor="sell" className="radio-label">Bán</label>
 
-                    {/* --- Di chuyển pill xuống cuối cùng --- */}
+
                     <div className="radio-pill"></div>
                 </div>
             </div>
@@ -145,7 +167,7 @@ export function AddTransactionForm({isOpen, onClose}) {
                 />
             </div>
           <div className="formActions">
-            <AddButton>Thêm</AddButton>
+            <AddButton>{isEditMode ? 'Lưu Thay Đổi' : 'Thêm'}</AddButton>
           </div>
         </form>
       </div>
