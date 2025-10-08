@@ -92,35 +92,48 @@ export function PortfolioProvider({ children, setGoalMessage }) {
   }
 
 //------------------------
-  function handleEditTransaction(transactionData) {
-    setTransactions(prevTransactions => 
-      prevTransactions.map(transaction => 
-        transaction.id === transactionData.id 
-        ? transactionData : transaction))
-      ;
-    setGoalMessage(`Đã sửa ${transactionData.amount} ${transactionData.coinId.toUpperCase()}!`);
+  function handleEditTransaction(updatedTransaction) {
+    // --- BƯỚC 1: Tạo ra danh sách transactions mới nhất ---
+    // Dùng .map để thay thế giao dịch cũ bằng giao dịch đã cập nhật
+    const newTransactions = transactions.map(t => 
+      t.id === updatedTransaction.id ? updatedTransaction : t
+    );
+    
+    // Cập nhật state transactions một lần duy nhất
+    setTransactions(newTransactions);
 
-    const updatedTransactions = transactions.map(transaction => 
-      transaction.id === transactionData.id 
-        ? transactionData : transaction);
-    setTransactions(updatedTransactions);
+    // --- BƯỚC 2: Tính toán lại TOÀN BỘ holdings từ đầu ---
+    // Dùng .reduce để tính tổng số lượng cho mỗi coin
+    const holdingsSummary = newTransactions.reduce((acc, transaction) => {
+      const { coinId, amount, type } = transaction;
 
-    const updatedHoldings = transactions.map(transaction => {
-      if(transaction.id === transactionData.id) {
-        const newHoldings = transactionData.type === 'buy' 
-          ? transaction.amount + transactionData.amount 
-          : transaction.amount - transactionData.amount;
-        return { ...transaction, 
-          amount: newHoldings,
-          pricePerCoin: transactionData.pricePerCoin,
-          date: transactionData.date,
-          type: transactionData.type,
-          coinId: transactionData.coinId,
-        };
+      // Nếu coin chưa có trong summary, khởi tạo nó
+      if (!acc[coinId]) {
+        acc[coinId] = 0;
       }
-      return transaction; 
-    });
-    setHoldings(updatedHoldings);
+      
+      // Cộng hoặc trừ dựa trên loại giao dịch
+      if (type === 'buy') {
+        acc[coinId] += amount;
+      } else if (type === 'sell') {
+        acc[coinId] -= amount;
+      }
+
+      return acc;
+    }, {}); // Bắt đầu với một object rỗng
+
+    // --- BƯỚC 3: Chuyển đổi summary object thành mảng holdings ---
+    // Dùng Object.keys để lấy danh sách coin IDs, sau đó .map
+    const newHoldingsArray = Object.keys(holdingsSummary).map(coinId => ({
+      id: coinId,
+      amount: holdingsSummary[coinId]
+    })).filter(h => h.amount > 0.000001); // Lọc bỏ những coin đã bán hết
+
+    // Cập nhật state holdings một lần duy nhất
+    setHoldings(newHoldingsArray);
+    
+    // --- BƯỚC 4: Thông báo cho người dùng ---
+    setGoalMessage(`Đã cập nhật giao dịch cho ${updatedTransaction.coinId.toUpperCase()}!`);
   }
 
 //--------------------------------
