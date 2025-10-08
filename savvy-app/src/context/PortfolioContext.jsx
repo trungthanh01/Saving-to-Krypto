@@ -1,21 +1,35 @@
 import { createContext, useState, useEffect } from "react";
-import { fetchCoinData } from "../services/crypto-api.js"; // Sửa đường dẫn
+import { fetchCoinData } from "../services/crypto-api.js"; 
+import { fetchCoinList } from "../services/crypto-api.js";
 export const PortfolioContext = createContext();
 
-export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận setGoalMessage
-  // --- Bước 1: Di chuyển state và logic xử lý lên trên cùng ---
+export function PortfolioProvider({ children, setGoalMessage }) { 
+  
   const [holdings, setHoldings] = useState(() => {
     const savedHoldings = localStorage.getItem('portfolio-holdings');
     return savedHoldings ? JSON.parse(savedHoldings) : [];
   });
   
   const [transactions, setTransactions] = useState(() => {
-    const savedTransactions = localStorage.getItem('portfolio-transactions'); // Sửa lại key cho đúng
+    const savedTransactions = localStorage.getItem('portfolio-transactions'); 
     return savedTransactions ? JSON.parse(savedTransactions) : [];
   })
   
   const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
-
+  const [coinList, setCoinList] = useState([]);
+  
+  useEffect(() => {
+    async function loadCoinList() {
+      try {
+        const fullCoinList = await fetchCoinList();
+        console.log('Danh sách coin đã được lấy từ API:', fullCoinList);
+        setCoinList(fullCoinList);
+      } catch (err) {
+        console.error('Không thể tải danh sách coin:', err);
+      }
+    }
+    loadCoinList();
+  }, [])
   async function handleAddTransaction(transactionData) {
 
     try {
@@ -60,7 +74,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
         }
       });
       
-     
+      
       const newTransaction = {
         id: 't_' + new Date().getTime(),
         coinId:transactionData.coinId,
@@ -76,6 +90,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
       alert(error.message)
     }
   }
+
 //------------------------
 
   function handleDeleteTransaction(transactionIdToDelete) {
@@ -131,7 +146,6 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
   }, [transactions]);
   
   
-  // --- Bước 2: State cho dữ liệu được gọi từ API ---
   const [portfolioData, setPortfolioData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -223,6 +237,7 @@ export function PortfolioProvider({ children, setGoalMessage }) { // 1. Nhận s
     totalProfitLoss,
     total24hChangeValue,
     totalChangePercentage,
+    coinList,
   };
 
   return (

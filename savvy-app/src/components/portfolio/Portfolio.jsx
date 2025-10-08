@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
-import './Portfolio.css';
 import { AddTransactionForm } from "./AddTransactionForm.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 import { HoldingItem } from "./HoldingItem.jsx";
 import './portfolio-table.css';
+import './Portfolio.css';
 
 export function Portfolio() {
     const { 

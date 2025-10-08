@@ -192,7 +192,7 @@
 ### **Giai đoạn 8: Hoàn thiện Tính năng Quản lý**
 *Mục tiêu: Cung cấp cho người dùng đầy đủ các công cụ để quản lý giao dịch của họ một cách hiệu quả.*
 
-- [ ] **Task 8.1: Nâng cấp Modal 'Thêm Giao dịch' với Autocomplete** (Ref: task-invest 5.3)
+- [x] **Task 8.1: Nâng cấp Modal 'Thêm Giao dịch' với Autocomplete** (Ref: task-invest 5.3)
   - **Mục đích:** Cải thiện trải nghiệm nhập liệu, giúp người dùng tìm kiếm và chọn coin một cách chính xác.
   - **Hành động:**
     - Tìm một API endpoint của CoinGecko để lấy danh sách tất cả các coin (`/coins/list`).
