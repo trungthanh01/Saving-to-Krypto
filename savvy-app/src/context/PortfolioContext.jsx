@@ -95,9 +95,9 @@ export function PortfolioProvider({ children, setGoalMessage }) {
   function handleEditTransaction(updatedTransaction) {
     // --- BƯỚC 1: Tạo ra danh sách transactions mới nhất ---
     // Dùng .map để thay thế giao dịch cũ bằng giao dịch đã cập nhật
-    const newTransactions = transactions.map(t => 
-      t.id === updatedTransaction.id ? updatedTransaction : t
-    );
+   const newTransactions = transactions.map(transaction => 
+    transaction.id === updatedTransaction.id ? updatedTransaction : transaction
+   );
     
     // Cập nhật state transactions một lần duy nhất
     setTransactions(newTransactions);
@@ -105,22 +105,17 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     // --- BƯỚC 2: Tính toán lại TOÀN BỘ holdings từ đầu ---
     // Dùng .reduce để tính tổng số lượng cho mỗi coin
     const holdingsSummary = newTransactions.reduce((acc, transaction) => {
-      const { coinId, amount, type } = transaction;
-
-      // Nếu coin chưa có trong summary, khởi tạo nó
+      const {coinId, amount, type} = transaction;
       if (!acc[coinId]) {
         acc[coinId] = 0;
       }
-      
-      // Cộng hoặc trừ dựa trên loại giao dịch
       if (type === 'buy') {
         acc[coinId] += amount;
       } else if (type === 'sell') {
         acc[coinId] -= amount;
       }
-
       return acc;
-    }, {}); // Bắt đầu với một object rỗng
+    }, {});
 
     // --- BƯỚC 3: Chuyển đổi summary object thành mảng holdings ---
     // Dùng Object.keys để lấy danh sách coin IDs, sau đó .map
