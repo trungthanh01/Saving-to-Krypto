@@ -1,298 +1,153 @@
-import { createContext, useState, useEffect } from "react";
-import { fetchCoinData } from "../services/crypto-api.js"; 
-import { fetchCoinList } from "../services/crypto-api.js";
+import { createContext, useState, useEffect, useRef } from "react";
+import { fetchCoinData, fetchCoinList } from "../services/crypto-api.js";
+
 export const PortfolioContext = createContext();
 
-export function PortfolioProvider({ children, setGoalMessage }) { 
-  
-  const [holdings, setHoldings] = useState(() => {
-    const savedHoldings = localStorage.getItem('portfolio-holdings');
-    return savedHoldings ? JSON.parse(savedHoldings) : [];
-  });
-  
-  const [transactions, setTransactions] = useState(() => {
-    const savedTransactions = localStorage.getItem('portfolio-transactions'); 
-    return savedTransactions ? JSON.parse(savedTransactions) : [];
-  })
-  
-  const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
-  const [coinList, setCoinList] = useState([]);
-  const [editingTransaction, setEditingTransaction] = useState(null); // ĐỔI TÊN STATE
-  
-  useEffect(() => {
-    async function loadCoinList() {
-      try {
-        const fullCoinList = await fetchCoinList();
-        console.log('Danh sách coin đã được lấy từ API:', fullCoinList);
-        setCoinList(fullCoinList);
-      } catch (err) {
-        console.error('Không thể tải danh sách coin:', err);
-      }
-    }
-    loadCoinList();
-  }, [])
-  async function handleAddTransaction(transactionData) {
-
-    try {
-      const marketData = await fetchCoinData([transactionData.coinId]);
-
-      if(!marketData || marketData.length === 0) {
-        throw new Error(`Không thể tìm thấy dữ liệu cho coin: ${transactionData.coinId}`)
-      }
-      // Không cần lấy current_price ở đây nữa vì form đã cung cấp
-      
-      console.log('Context đã nhận được holding mới:', transactionData);
-      const existingHolding = holdings.find(h => h.id === transactionData.coinId);
-      if(transactionData.type === 'sell' && existingHolding && transactionData.amount > existingHolding.amount) {
-        throw new Error(`Số lượng bán vượt quá số lượng hiện có: ${existingHolding.amount}`);
-        return;
-      }
-      if(transactionData.type === 'sell' && !existingHolding) {
-        throw new Error(`Coin không tồn tại trong danh mục: ${transactionData.coinId}`);
-        return;
-      }
-      
-      setHoldings(prevHoldings => {
-        if (existingHolding) {
-          console.log('Coin đã tồn tại. Cập nhật số lượng trong Context.');
-          return prevHoldings.map(h => {
-            if(h.id === transactionData.coinId) {
-              const newAmount = transactionData.type === 'buy' 
-                ? h.amount + transactionData.amount 
-                : h.amount - transactionData.amount;
-              return { ...h, amount: newAmount };
-            } else {
-              return h;
-            }
-          });
-        } 
-        else {
-          console.log('Coin mới. Thêm vào danh mục trong Context.');
-          return [{
-            id: transactionData.coinId, 
-            amount: transactionData.amount}, 
-            ...prevHoldings
-          ];
-        }
-      });
-      
-      
-      // GỌI setTransactions với transactionData trực tiếp từ form
-      setTransactions(prevTransactions => [transactionData, ...prevTransactions]);
-      
-      setGoalMessage(`Đã thêm ${transactionData.amount} ${transactionData.coinId.toUpperCase()}!`);      
-    } catch (error) {
-      console.error("Lỗi khi thêm giao dịch:", error)
-      alert(error.message)
-    }
-  }
-
-//------------------------
-  function handleEditTransaction(updatedTransaction) {
-    // --- BƯỚC 1: Tạo ra danh sách transactions mới nhất ---
-    // Dùng .map để thay thế giao dịch cũ bằng giao dịch đã cập nhật
-   const newTransactions = transactions.map(transaction => 
-    transaction.id === updatedTransaction.id ? updatedTransaction : transaction
-   );
-    
-    // Cập nhật state transactions một lần duy nhất
-    setTransactions(newTransactions);
-
-    // --- BƯỚC 2: Tính toán lại TOÀN BỘ holdings từ đầu ---
-    // Dùng .reduce để tính tổng số lượng cho mỗi coin
-    const holdingsSummary = newTransactions.reduce((acc, transaction) => {
-      const {coinId, amount, type} = transaction;
-      if (!acc[coinId]) {
-        acc[coinId] = 0;
-      }
-      if (type === 'buy') {
-        acc[coinId] += amount;
-      } else if (type === 'sell') {
-        acc[coinId] -= amount;
-      }
-      return acc;
-    }, {});
-
-    // --- BƯỚC 3: Chuyển đổi summary object thành mảng holdings ---
-    // Dùng Object.keys để lấy danh sách coin IDs, sau đó .map
-    const newHoldingsArray = Object.keys(holdingsSummary).map(coinId => ({
-      id: coinId,
-      amount: holdingsSummary[coinId]
-    })).filter(h => h.amount > 0.000001); // Lọc bỏ những coin đã bán hết
-
-    // Cập nhật state holdings một lần duy nhất
-    setHoldings(newHoldingsArray);
-    
-    // --- BƯỚC 4: Thông báo cho người dùng ---
-    setGoalMessage(`Đã cập nhật giao dịch cho ${updatedTransaction.coinId.toUpperCase()}!`);
-  }
-
-//--------------------------------
-
-  function handleDeleteTransaction(transactionIdToDelete) {
-    const userConfirmed = window.confirm(
-      "Bạn có chắc muốn xóa giao dịch này không? Hành động này sẽ hoàn trả lại số coin vào danh mục của bạn."
-    );
-    if (!userConfirmed) {
-      return;
-    }
-    
-    const transactionToDelete = transactions.find(
-      (transaction) => transaction.id === transactionIdToDelete
-    );
-    
-    if (!transactionToDelete) {
-      console.error("Không tìm thấy giao dịch để xóa!");
-      return;
-    }
-
-    setHoldings(prevHoldings => {
-      const updatedHoldings = prevHoldings.map(holding => {
-        if (holding.id === transactionToDelete.coinId) {
-          return { ...holding, amount: holding.amount - transactionToDelete.amount };
-        }
-        return holding;
-      });
-      return updatedHoldings.filter(holding => holding.amount > 0.000001); // Thêm ngưỡng nhỏ để tránh lỗi float
+export function PortfolioProvider({ children, setGoalMessage }) {
+    // --- STATE MANAGEMENT ---
+    const [holdings, setHoldings] = useState(() => {
+        const saved = localStorage.getItem('portfolio-holdings');
+        return saved ? JSON.parse(saved) : [];
     });
 
-    const newTransactions = transactions.filter(
-      (transaction) => transaction.id !== transactionIdToDelete
-    );
-    setTransactions(newTransactions);
-  }
-  
-  function handleOpenAddHoldingModal() {
-    setIsAddHoldingModalOpen(true);
-  }
+    const [transactions, setTransactions] = useState(() => {
+        const saved = localStorage.getItem('portfolio-transactions');
+        return saved ? JSON.parse(saved) : [];
+    });
 
-  function handleCloseAddHoldingModal() {
-    setIsAddHoldingModalOpen(false);
+    const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
+    const [coinList, setCoinList] = useState([]);
+    const [editingTransaction, setEditingTransaction] = useState(null);
 
-  }
-  
-  const handleOpenEditModal = (transaction) => {
-    setEditingTransaction(transaction); // CẬP NHẬT Ở ĐÂY
-    handleOpenAddHoldingModal();
-  }
-  const handleCloseModal = () => {
-    setEditingTransaction(null); // CẬP NHẬT Ở ĐÂY
-    handleCloseAddHoldingModal();
-  }
-  
-  useEffect( () => {
-    localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
-    console.log('Danh mục holdings đã được lưu vào local storage!')
-  },[holdings])
-  
-  // Thêm useEffect để lưu transactions
-  useEffect(() => {
-    localStorage.setItem('portfolio-transactions', JSON.stringify(transactions));
-    console.log('Lịch sử giao dịch đã được lưu vào local storage!');
-  }, [transactions]);
-  
-  
-  const [portfolioData, setPortfolioData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    const loadPortfolioData = async () => {
-      if (holdings.length === 0) {
-        setPortfolioData([]);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-        const ids = holdings.map(coin => coin.id);
-        const marketData = await fetchCoinData(ids);
-
-        const combinedData = marketData.map(marketCoin => {
-          const holding = holdings.find(h => h.id === marketCoin.id);
-          return {
-            ...marketCoin, // Dữ liệu từ API (giá, ảnh, tên...)
-            amount: holding ? holding.amount : 0, // Số lượng từ state
-          };
-        });
-
-        setPortfolioData(combinedData);
+    // --- API DATA FETCHING ---
+    const apiCallGuard = useRef(false); // Dùng chung cho các lần gọi API
+    useEffect(() => {
+        if (apiCallGuard.current) return;
         
-      } catch (err) {
-        setError("Có lỗi xảy ra, không thể tải dữ liệu danh mục.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+        const loadCoinList = async () => {
+            try {
+                const fullCoinList = await fetchCoinList();
+                setCoinList(fullCoinList);
+            } catch (err) {
+                console.error("Không thể tải danh sách coin:", err);
+            }
+        };
+        loadCoinList();
+        apiCallGuard.current = true;
+    }, []);
+
+    // --- CORE LOGIC: holdings LUÔN ĐƯỢC TÍNH TOÁN TỪ transactions ---
+    useEffect(() => {
+        const holdingsSummary = transactions.reduce((acc, t) => {
+            const { coinId, amount, type } = t;
+            if (!acc[coinId]) {
+                acc[coinId] = 0;
+            }
+            if (type === 'buy') {
+                acc[coinId] += amount;
+            } else if (type === 'sell') {
+                acc[coinId] -= amount;
+            }
+            return acc;
+        }, {});
+
+        const newHoldingsArray = Object.keys(holdingsSummary)
+            .map(id => ({ id, amount: holdingsSummary[id] }))
+            .filter(h => h.amount > 0.000001); // Lọc coin đã bán hết
+
+        setHoldings(newHoldingsArray);
+        localStorage.setItem('portfolio-transactions', JSON.stringify(transactions));
+    }, [transactions]);
+
+    // --- TRANSACTION HANDLERS (Đã được đơn giản hóa) ---
+    function handleAddTransaction(newTransaction) {
+        setTransactions(prev => [newTransaction, ...prev]);
+        setGoalMessage(`Đã thêm ${newTransaction.coinId.toUpperCase()}!`);
+    }
+
+    function handleEditTransaction(updatedTransaction) {
+        setTransactions(prev => prev.map(t =>
+            t.id === updatedTransaction.id ? updatedTransaction : t
+        ));
+        setGoalMessage(`Đã cập nhật giao dịch cho ${updatedTransaction.coinId.toUpperCase()}!`);
+    }
+
+    function handleDeleteTransaction(transactionIdToDelete) {
+        const userConfirmed = window.confirm("Bạn có chắc muốn xóa giao dịch này không?");
+        if (userConfirmed) {
+            setTransactions(prev => prev.filter(t => t.id !== transactionIdToDelete));
+        }
+    }
+
+    // --- MODAL LOGIC ---
+    const handleOpenAddHoldingModal = () => setIsAddHoldingModalOpen(true);
+    const handleCloseModal = () => {
+        setIsAddHoldingModalOpen(false);
+        setEditingTransaction(null); // Reset cả state edit khi đóng
+    };
+    const handleOpenEditModal = (transaction) => {
+        setEditingTransaction(transaction);
+        handleOpenAddHoldingModal();
     };
 
-    loadPortfolioData();
-  }, [holdings]); 
+    // --- DERIVED DATA & SIDE EFFECTS ---
+    useEffect(() => {
+        localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
+    }, [holdings]);
+    
+    const [portfolioData, setPortfolioData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        const loadPortfolioData = async () => {
+            if (holdings.length === 0) {
+                setPortfolioData([]);
+                setIsLoading(false);
+                return;
+            }
+            try {
+                setIsLoading(true);
+                setError(null);
+                const ids = holdings.map(coin => coin.id);
+                const marketData = await fetchCoinData(ids);
+                const combinedData = marketData.map(marketCoin => {
+                    const holding = holdings.find(h => h.id === marketCoin.id);
+                    return { ...marketCoin, amount: holding ? holding.amount : 0 };
+                });
+                setPortfolioData(combinedData);
+            } catch (err) {
+                setError("Có lỗi xảy ra, không thể tải dữ liệu danh mục.");
+                console.error(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadPortfolioData();
+    }, [holdings]);
+    
+    const portfolioTotalValue = portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
+    const totalCostBasis = transactions.reduce((total, t) => {
+        const value = t.amount * t.pricePerCoin;
+        return t.type === 'buy' ? total + value : total - value;
+    }, 0);
+    const totalProfitLoss = totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
+    const total24hChangeValue = portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
+    const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
+    const totalChangePercentage = portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
 
-  const portfolioTotalValue = portfolioData.reduce((total, coin) => {
-    const coinValue = coin.amount * coin.current_price;
-    return total + coinValue;
-  }, 0);
+    const value = {
+        holdings, transactions, portfolioData, isLoading, error, coinList,
+        isAddHoldingModalOpen, editingTransaction, addTransaction: handleAddTransaction,
+        editTransaction: handleEditTransaction, deleteTransaction: handleDeleteTransaction,
+        openAddHoldingModal: handleOpenAddHoldingModal, openEditModal: handleOpenEditModal,
+        closeModal: handleCloseModal, portfolioTotalValue, totalCostBasis,
+        totalProfitLoss, total24hChangeValue, totalChangePercentage,
+    };
 
-  const totalCostBasis = transactions.reduce((total, transaction) => {
-    if(transaction.type === 'buy') {
-      const transactionValue = transaction.amount * transaction.pricePerCoin
-      return total + transactionValue
-    } else if(transaction.type === 'sell') {
-      const transactionValue = transaction.amount * transaction.pricePerCoin
-      return total - transactionValue 
-    }
-    return total;
-  }, 0)
-
-  const totalProfitLoss = totalCostBasis > 0 
-    ? portfolioTotalValue - totalCostBasis 
-    : 0
-  ;
-  
-  const total24hChangeValue = portfolioData.reduce((total, coin) => {
-    if(coin.price_change_24h){
-      const coin24hChange = coin.amount * coin.price_change_24h;
-      return total + coin24hChange;
-    }
-    return total;
-  }, 0)
-
-  const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
-
-  const totalChangePercentage = portfolioValueYesterday !== 0 
-    ? (total24hChangeValue / portfolioValueYesterday)*100 
-    : 0
-  ;
-  
-  const value = {
-    holdings, 
-    addTransaction: handleAddTransaction, 
-    deleteTransaction: handleDeleteTransaction, 
-    isAddHoldingModalOpen, 
-    openAddHoldingModal: handleOpenAddHoldingModal, 
-    portfolioData, 
-    isLoading, 
-    error, 
-    transactions,
-    portfolioTotalValue,
-    totalCostBasis,
-    totalProfitLoss,
-    total24hChangeValue,
-    totalChangePercentage,
-    coinList,
-    editTransaction: handleEditTransaction,
-    openEditModal: handleOpenEditModal,
-    closeModal: handleCloseModal, 
-    editingTransaction, // EXPORT STATE VỚI TÊN MỚI
-    // Bỏ key `editTransaction,` bị trùng ở đây
-  };
-
-  return (
-    <PortfolioContext.Provider value={value}>
-      {children}
-    </PortfolioContext.Provider>
-  )
+    return (
+        <PortfolioContext.Provider value={value}>
+            {children}
+        </PortfolioContext.Provider>
+    );
 }
