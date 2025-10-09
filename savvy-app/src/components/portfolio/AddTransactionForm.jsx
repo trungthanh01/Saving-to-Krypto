@@ -4,7 +4,8 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx"; // Import nút bấm
 
 export function AddTransactionForm({isOpen, onClose, transactionToEdit}) {
-  const { addTransaction, coinList, editTransaction } = useContext(PortfolioContext);
+  // Sửa ở đây: Lấy cả editTransaction từ context
+  const { addTransaction, editTransaction, coinList } = useContext(PortfolioContext);
   const [coinId, setCoinId] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('buy');
@@ -29,16 +30,16 @@ export function AddTransactionForm({isOpen, onClose, transactionToEdit}) {
   useEffect(() => {
     if (isEditMode) {
       setCoinId(transactionToEdit.coinId);
-      setAmount(transactionToEdit.amount);
+      setAmount(transactionToEdit.amount || ''); // Đảm bảo là chuỗi
       setType(transactionToEdit.type);
-      setPricePerCoin(transactionToEdit.pricePerCoin);
+      setPricePerCoin(transactionToEdit.pricePerCoin || ''); // Đảm bảo là chuỗi
     } else {
       setCoinId('');
       setAmount('');
       setType('buy');
       setPricePerCoin('');
     }
-  }, [transactionToEdit, isEditMode])
+  }, [transactionToEdit, isEditMode]);
   
   if(!isOpen) {
     return null;
@@ -47,31 +48,30 @@ export function AddTransactionForm({isOpen, onClose, transactionToEdit}) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (coinId.length === 0 || amount.length === 0) {
-      alert("Vui lòng nhập đủ thông tin Coin ID và Số lượng.");
+    if (coinId.length === 0 || amount.length === 0 || pricePerCoin.length === 0) {
+      alert("Vui lòng nhập đủ thông tin.");
       return;
     }
+
+    // TẠO transactionData TRƯỚC
     const transactionData = {
-      id: isEditMode ? transactionToEdit.id : undefined,
+      id: isEditMode ? transactionToEdit.id : 't_' + new Date().getTime(),
+      coinId: coinId.toLowerCase().trim(),
       amount: parseFloat(amount),
       type: type,
       pricePerCoin: parseFloat(pricePerCoin),
-      coinId: coinId.toLowerCase().trim(),
-    }
+      // Giữ lại date cũ khi sửa, hoặc tạo date mới khi thêm
+      date: isEditMode ? transactionToEdit.date : new Date().toISOString().split('T')[0],
+    };
+
+    // CHỈ GỌI MỘT TRONG HAI
     if (isEditMode) {
-      console.log('Form Submitted in Add Model!', transactionData);
-      editTransaction( transactionData);
-    }else{
-      console.log('Form Submitted in Add Model!', transactionData);
+      editTransaction(transactionData);
+    } else {
       addTransaction(transactionData);
     }
-    console.log('Form Submitted!', transactionData);
-    addTransaction(transactionData);
-    setCoinId('');
-    setAmount('');
-    setType('buy');
-    setPricePerCoin('');
-    onClose(); 
+
+    onClose(); // Đóng modal sau khi xử lý
   };
 
   

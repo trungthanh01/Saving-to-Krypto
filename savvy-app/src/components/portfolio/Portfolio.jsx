@@ -13,7 +13,8 @@ export function Portfolio() {
         error, 
         openAddHoldingModal,
         isAddHoldingModalOpen,
-        closeAddHoldingModal
+        closeModal,
+        editingTransaction, // LẤY STATE VỚI TÊN MỚI
     } = useContext(PortfolioContext);
 
 
@@ -33,7 +34,8 @@ export function Portfolio() {
 
             <AddTransactionForm 
                 isOpen={isAddHoldingModalOpen}
-                onClose={closeAddHoldingModal}
+                onClose={closeModal}
+                transactionToEdit={editingTransaction} // TRUYỀN PROP VỚI TÊN MỚI
             />
             
             {(!portfolioData || portfolioData.length === 0) ? (

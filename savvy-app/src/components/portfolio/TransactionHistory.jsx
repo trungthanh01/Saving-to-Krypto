@@ -3,7 +3,13 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './TransactionHistory.css';
 
 export function TransactionHistory() {
-    const { transactions, deleteTransaction } = useContext(PortfolioContext);
+    const { 
+        transactions, 
+        deleteTransaction, 
+        openEditModal, 
+        closeModal, 
+        editTransaction 
+    } = useContext(PortfolioContext);
 
     if (transactions.length === 0) {
         return (
@@ -40,6 +46,7 @@ export function TransactionHistory() {
                             <th>Loại</th>
                             <th className="align-right">Số lượng</th>
                             <th className="align-right">Giá</th>
+                            <th className="align-center">Sửa</th>
                             <th className="align-center">Xóa</th>
                         </tr>
                     </thead>
@@ -53,6 +60,11 @@ export function TransactionHistory() {
                                 </td>
                                 <td className="align-right">{formatNumber(transaction.amount)}</td>
                                 <td className="align-right">{formatCurrency(transaction.pricePerCoin)}</td>
+                                <td className="align-center">
+                                    <button className="edit-btn" onClick={() => openEditModal(transaction)}>
+                                    ✏️
+                                    </button>
+                                </td>
                                 <td className="align-center">
                                     <button className="delete-btn" onClick={() => deleteTransaction(transaction.id)}>
                                         &times;

@@ -17,6 +17,7 @@ export function PortfolioProvider({ children, setGoalMessage }) {
   
   const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
   const [coinList, setCoinList] = useState([]);
+  const [editingTransaction, setEditingTransaction] = useState(null); // ĐỔI TÊN STATE
   
   useEffect(() => {
     async function loadCoinList() {
@@ -38,7 +39,8 @@ export function PortfolioProvider({ children, setGoalMessage }) {
       if(!marketData || marketData.length === 0) {
         throw new Error(`Không thể tìm thấy dữ liệu cho coin: ${transactionData.coinId}`)
       }
-      const current_price = marketData[0].current_price;
+      // Không cần lấy current_price ở đây nữa vì form đã cung cấp
+      
       console.log('Context đã nhận được holding mới:', transactionData);
       const existingHolding = holdings.find(h => h.id === transactionData.coinId);
       if(transactionData.type === 'sell' && existingHolding && transactionData.amount > existingHolding.amount) {
@@ -75,15 +77,9 @@ export function PortfolioProvider({ children, setGoalMessage }) {
       });
       
       
-      const newTransaction = {
-        id: 't_' + new Date().getTime(),
-        coinId:transactionData.coinId,
-        amount: transactionData.amount,
-        type: transactionData.type,
-        pricePerCoin: current_price,
-        date: new Date().toISOString().split('T')[0],
-      };
-      setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+      // GỌI setTransactions với transactionData trực tiếp từ form
+      setTransactions(prevTransactions => [transactionData, ...prevTransactions]);
+      
       setGoalMessage(`Đã thêm ${transactionData.amount} ${transactionData.coinId.toUpperCase()}!`);      
     } catch (error) {
       console.error("Lỗi khi thêm giao dịch:", error)
@@ -169,10 +165,20 @@ export function PortfolioProvider({ children, setGoalMessage }) {
   function handleOpenAddHoldingModal() {
     setIsAddHoldingModalOpen(true);
   }
+
   function handleCloseAddHoldingModal() {
     setIsAddHoldingModalOpen(false);
+
   }
   
+  const handleOpenEditModal = (transaction) => {
+    setEditingTransaction(transaction); // CẬP NHẬT Ở ĐÂY
+    handleOpenAddHoldingModal();
+  }
+  const handleCloseModal = () => {
+    setEditingTransaction(null); // CẬP NHẬT Ở ĐÂY
+    handleCloseAddHoldingModal();
+  }
   
   useEffect( () => {
     localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
@@ -267,7 +273,6 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     deleteTransaction: handleDeleteTransaction, 
     isAddHoldingModalOpen, 
     openAddHoldingModal: handleOpenAddHoldingModal, 
-    closeAddHoldingModal: handleCloseAddHoldingModal, 
     portfolioData, 
     isLoading, 
     error, 
@@ -279,6 +284,10 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     totalChangePercentage,
     coinList,
     editTransaction: handleEditTransaction,
+    openEditModal: handleOpenEditModal,
+    closeModal: handleCloseModal, 
+    editingTransaction, // EXPORT STATE VỚI TÊN MỚI
+    // Bỏ key `editTransaction,` bị trùng ở đây
   };
 
   return (
