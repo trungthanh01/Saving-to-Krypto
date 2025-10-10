@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { useMemo,createContext, useState, useEffect, useRef } from "react";
 import { fetchCoinData, fetchCoinList } from "../services/crypto-api.js";
 
 export const PortfolioContext = createContext();
@@ -18,7 +18,6 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
-
     // --- API DATA FETCHING ---
     const apiCallGuard = useRef(false); // Dùng chung cho các lần gọi API
     useEffect(() => {
@@ -126,16 +125,31 @@ export function PortfolioProvider({ children, setGoalMessage }) {
         loadPortfolioData();
     }, [holdings]);
     
-    const portfolioTotalValue = portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
-    const totalCostBasis = transactions.reduce((total, t) => {
+    const portfolioTotalValue = useMemo(() => {
+      return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
+    }, [portfolioData])
+    
+    const totalCostBasis = useMemo(() => {
+      return transactions.reduce((total, t) => {
         const value = t.amount * t.pricePerCoin;
         return t.type === 'buy' ? total + value : total - value;
-    }, 0);
-    const totalProfitLoss = totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
-    const total24hChangeValue = portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
-    const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
-    const totalChangePercentage = portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
+      }, 0);
+    }, [transactions])
 
+    const totalProfitLoss = useMemo(() => {
+      return totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
+    }, [portfolioTotalValue, totalCostBasis])
+
+    const total24hChangeValue = useMemo(() => {
+      return portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
+    }, [portfolioData])
+    
+    const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
+    const totalChangePercentage = useMemo(() => {
+      return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
+    }, [portfolioValueYesterday, total24hChangeValue])
+    
+    
     const value = {
         holdings, transactions, portfolioData, isLoading, error, coinList,
         isAddHoldingModalOpen, editingTransaction, addTransaction: handleAddTransaction,

@@ -7,8 +7,6 @@ export function TransactionHistory() {
         transactions, 
         deleteTransaction, 
         openEditModal, 
-        closeModal, 
-        editTransaction 
     } = useContext(PortfolioContext);
 
     if (transactions.length === 0) {

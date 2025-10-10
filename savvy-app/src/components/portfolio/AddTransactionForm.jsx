@@ -87,7 +87,7 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
                         <input
                             id="coinId"
                             type="text"
-                            placeholder="vd: bitcoin"
+                            placeholder="vd: btc, eth, link, sol"
                             value={coinId}
                             onChange={(e) => setCoinId(e.target.value)}
                             autoComplete="off"
