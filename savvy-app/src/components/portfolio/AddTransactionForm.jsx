@@ -11,6 +11,7 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
     const [type, setType] = useState('buy');
     const [pricePerCoin, setPricePerCoin] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [date, setDate] = useState('');   
 
     const isEditMode = Boolean(transactionToEdit);
 
@@ -22,12 +23,14 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
                 setType(transactionToEdit.type);
                 setPricePerCoin(transactionToEdit.pricePerCoin || '');
                 setSuggestions([]);
+                setDate(transactionToEdit.date || '');
             } else {
                 setCoinId('');
                 setAmount('');
                 setType('buy');
                 setPricePerCoin('');
                 setSuggestions([]);
+                setDate(new Date().toISOString().split('T')[0]);
             }
         }
     }, [isOpen, isEditMode, transactionToEdit]);
@@ -62,7 +65,7 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
             amount: parseFloat(amount),
             type: type,
             pricePerCoin: parseFloat(pricePerCoin),
-            date: isEditMode ? transactionToEdit.date : new Date().toISOString().split('T')[0],
+            date: date,
         };
 
         if (isEditMode) {
@@ -109,6 +112,15 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
                                 ))}
                             </ul>
                         )}
+                    </div>
+                    <div className="formGroup">
+                        <label htmlFor="date">Ngày</label>
+                        <input 
+                            type="date" 
+                            id="date"
+                            name="date"
+                            value={date} onChange={(e) => setDate(e.target.value)} 
+                        />
                     </div>
                     
                     <div className="formGroup">
