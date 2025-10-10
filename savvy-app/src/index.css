@@ -14,8 +14,9 @@
   --color-secondary: limegreen;
   --color-background: black;
   --color-surface: #000B58;
-  --color-text-primary: white ;
+  --color-text-primary: lightgray ;
   --color-danger: #ef4444;
+  --color-border: #333333;
 
 
   /* Spacing */

@@ -1,51 +1,63 @@
 .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-2) var(--spacing-4);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-  }
-  
-  .details {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .description {
-    font-weight: 600;
-    color: var(--color-text-primary);
-  }
-  
-  .meta {
-    font-size: 0.875rem; /* 14px */
-    color: var(--color-text-secondary);
-  }
-  
-  .category {
-    font-style: italic;
-    margin-left: var(--spacing-2);
-  }
-  
-  .amount {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 600;
-    color: var(--color-primary);
-    margin: 0;
-  }
-  .actions{
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2)
-  }
-  .deleteButton{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.description {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.meta {
+  font-size: 0.875rem; /* 14px */
+  /* text-secondary chưa có, dùng tạm text-primary với độ mờ */
+  color: var(--color-text-primary); 
+  opacity: 0.8;
+}
+
+.category {
+  font-style: italic;
+  margin-left: var(--spacing-2);
+}
+
+.amount {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: var(--color-secondary); /* Đổi sang màu secondary cho nổi bật */
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.deleteButton {
+  background: var(--color-surface);
+    color: #fff;
     border: none;
-    background-color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    padding: var(--spacing-1);
-    color: red;
-    font-size: 1.5rem;
-    line-height: 1;
-    transition: color 0.2 ease-in-out;
-  }
+    font-size: 1rem;
+    line-height: 24px;
+    padding: 0;
+    transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: var(--color-danger);
+  transform: scale(1.1);
+}

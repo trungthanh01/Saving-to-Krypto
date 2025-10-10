@@ -28,7 +28,7 @@
 .transaction-history td {
     padding: 0.75rem 0.5rem;
     text-align: left;
-    border-bottom: 1px solid var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
     color: var(--color-text-primary);
 }
 
@@ -81,7 +81,7 @@
 }
 
 .transaction-history .delete-btn:hover {
-    background-color: #dc3545;
+    background-color: var(--color-danger);
 }
 
 .transaction-history .empty-state p {
@@ -103,5 +103,21 @@
     z-index: 2;
     background-color: var(--color-surface); 
     min-width: 110px;          
+}
+
+.edit-btn{
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+}
+.edit-btn:hover{
+    background-color: var(--color-secondary);
+}
+
+.delete-btn:hover{
+    background-color: var(--color-danger);
 }
 

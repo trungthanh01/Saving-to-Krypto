@@ -1,40 +1,12 @@
 /* Sử dụng các biến CSS toàn cục đã định nghĩa trong index.css */
 
 .card {
-    background-color: var(--color-surface);
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
-    padding: var(--spacing-4);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
-  
-   
-  .title {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 600;
-    color: var(--color-text-primary);
-  }
-  
-  .amount {
-    font-size: 1.125rem; /* 16px */
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    text-align: right;
-    margin-bottom: var(--spacing-2);
-  }
-  .progressBar {
-    background-color: #e2e8f0; /* Màu nền của thanh */
-    border-radius: 999px;
-    height: 8px;
-    margin-top: 8px;
-  }
-
-  .progress {
-    background-color: var(--color-primary); /* Màu của tiến trình */
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.3s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
-  }
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
 .cardHeader {
   display: flex;
@@ -44,18 +16,50 @@
 }
 
 .title {
-  /* Bỏ margin-bottom nếu có */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: var(--color-text-primary);
   margin: 0;
 }
-.deleteButton{
+
+.amount {
+  font-size: 1.125rem; /* 16px */
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: right;
+  margin-bottom: var(--spacing-2);
+}
+
+.progressBar {
+  background-color: var(--color-border); /* Màu nền của thanh */
+  border-radius: 999px;
+  height: 8px;
+  margin-top: 8px;
+}
+
+.progress {
+  background-color: var(--color-secondary); /* Màu của tiến trình */
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease-in-out;
+}
+
+.deleteButton {
+  background: var(--color-surface);
+  margin-left: 10px;
+    color: #fff;
     border: none;
-    background-color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    padding: var(--spacing-1);
-    color: red;
-    font-size: 1.5rem;
-    font-weight: 500;
-    line-height: 1;
-    transition: color 0.2 ease-in-out;
-    margin-left: 10px;
+    font-size: 1rem;
+    line-height: 24px;
+    padding: 0;
+    transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: var(--color-danger);
+  transform: scale(1.1);
 }
