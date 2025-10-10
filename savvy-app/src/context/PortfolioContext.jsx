@@ -15,11 +15,19 @@ export function PortfolioProvider({ children, setGoalMessage }) {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const [confirmationModal, setConfirmationModal] = useState({
+        isOpen: false,
+        message: '',
+        onConfirm: () => {},
+    });
+    const message = {
+      deleteTransaction: 'Bạn có chắc muốn xóa giao dịch này không?',
+    };
     const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
-    // --- API DATA FETCHING ---
-    const apiCallGuard = useRef(false); // Dùng chung cho các lần gọi API
+
+    const apiCallGuard = useRef(false);
     useEffect(() => {
         if (apiCallGuard.current) return;
         
@@ -35,7 +43,6 @@ export function PortfolioProvider({ children, setGoalMessage }) {
         apiCallGuard.current = true;
     }, []);
 
-    // --- CORE LOGIC: holdings LUÔN ĐƯỢC TÍNH TOÁN TỪ transactions ---
     useEffect(() => {
         const holdingsSummary = transactions.reduce((acc, t) => {
             const { coinId, amount, type } = t;
@@ -72,10 +79,25 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     }
 
     function handleDeleteTransaction(transactionIdToDelete) {
-        const userConfirmed = window.confirm("Bạn có chắc muốn xóa giao dịch này không?");
-        if (userConfirmed) {
-            setTransactions(prev => prev.filter(t => t.id !== transactionIdToDelete));
-        }
+      handleOpenConfirmationModal(message.deleteTransaction, () => {
+        setTransactions(prev => prev.filter(t => t.id !== transactionIdToDelete));
+      });
+    }
+
+    function handleOpenConfirmationModal(message, onConfirm) {
+        setConfirmationModal({
+            isOpen: true,
+            message: message,
+            onConfirm,
+        });
+    }
+
+    function handleCloseConfirmationModal() {
+        setConfirmationModal({
+            isOpen: false,
+            message: '',
+            onConfirm: () => {},
+        });
     }
 
     // --- MODAL LOGIC ---
@@ -153,10 +175,15 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     const value = {
         holdings, transactions, portfolioData, isLoading, error, coinList,
         isAddHoldingModalOpen, editingTransaction, addTransaction: handleAddTransaction,
-        editTransaction: handleEditTransaction, deleteTransaction: handleDeleteTransaction,
-        openAddHoldingModal: handleOpenAddHoldingModal, openEditModal: handleOpenEditModal,
+        editTransaction: handleEditTransaction, 
+        deleteTransaction: handleDeleteTransaction,
+        openAddHoldingModal: handleOpenAddHoldingModal, 
+        openEditModal: handleOpenEditModal,
         closeModal: handleCloseModal, portfolioTotalValue, totalCostBasis,
-        totalProfitLoss, total24hChangeValue, totalChangePercentage,
+          totalProfitLoss, total24hChangeValue, totalChangePercentage,
+        confirmationModal,
+        handleOpenConfirmationModal,
+        handleCloseConfirmationModal,
     };
 
     return (

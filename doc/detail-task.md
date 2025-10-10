@@ -199,17 +199,17 @@
     - Tích hợp một thư viện autocomplete hoặc tự xây dựng logic tìm kiếm.
     - Khi người dùng gõ, hiển thị một danh sách gợi ý các coin phù hợp.
 
-- [ ] **Task 8.2: Xây dựng Chức năng Sửa Giao dịch** (Ref: task-invest 5.4)
+- [x] **Task 8.2: Xây dựng Chức năng Sửa Giao dịch** (Ref: task-invest 5.4)
   - **Mục đích:** Cho phép người dùng chỉnh sửa các giao dịch đã nhập sai (ví dụ: sai số lượng, sai giá mua, sai ngày).
   - **Hành động:**
     - Tạo một Modal `EditTransactionModal.jsx`.
     - Khi người dùng click nút "Sửa" trên một giao dịch, Modal sẽ hiện ra với thông tin của giao dịch đó.
     - Tạo hàm `handleEditTransaction` trong Context để xử lý logic cập nhật.
 
-- [ ] **Task 8.3: Nâng cấp Chức năng Xóa với Modal Xác nhận** (Ref: task-invest 5.5)
+- [x] **Task 8.3: Nâng cấp Chức năng Xóa với Modal Xác nhận** (Ref: task-invest 5.5)
   - **Mục đích:** Thay thế `window.confirm` mặc định bằng một modal xác nhận có giao diện đẹp và thân thiện hơn.
   - **Hành động:**
-    - Tạo component `DeleteConfirmationModal.jsx`.
+    - Tạo component `ConfirmationModal.jsx`.
     - Khi người dùng click nút "Xóa", hiển thị modal này để hỏi xác nhận.
 
 ---

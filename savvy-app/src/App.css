@@ -2,7 +2,7 @@
   max-width: 1200px; /* Tăng max-width để tận dụng màn hình lớn */
   margin: 0 auto;
   padding: var(--spacing-4); /* Giảm padding cho màn hình nhỏ */
-  background-color: burlywood;
+  background-color: var(--color-background);
 }
 
 .app-header {
@@ -16,8 +16,8 @@
 }
 
 .goalMessage {
-  background-color: hsla(140, 60%, 85%, 0.7);
-  color: var(--color-success-dark);
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: var(--border-radius-md);
   margin-top: var(--spacing-2);
