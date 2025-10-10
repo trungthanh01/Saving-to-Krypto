@@ -50,6 +50,8 @@ export function Portfolio() {
                                 <th>24h %</th>
                                 <th>Số lượng</th>
                                 <th>Giá trị</th>
+                                <th>Vốn</th>
+                                <th>Giá TB</th>
                                 <th>Lời/Lỗ</th>
                             </tr>
                         </thead>
