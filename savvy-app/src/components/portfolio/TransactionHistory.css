@@ -1,7 +1,7 @@
 .transaction-history {
     width: 100%;
     padding: 1rem;
-    background-color: #1e1e2f;
+    background-color: var(--color-surface);
     border-radius: 8px;
     margin-top: 1rem;
 }
@@ -9,7 +9,7 @@
 .transaction-history h4 {
     margin-top: 0;
     margin-bottom: 1rem;
-    color: #c2c2d6;
+    color: var(--color-text-primary);
 }
 
 .transaction-history .table-container {
@@ -21,24 +21,24 @@
 .transaction-history table {
     width: 100%;
     border-collapse: collapse;
-    color: #c2c2d6;
+    color: var(--color-text-primary);
 }
 
 .transaction-history th,
 .transaction-history td {
     padding: 0.75rem 0.5rem;
     text-align: left;
-    border-bottom: 1px solid #2c2c3e;
-    color: #c2c2d6;
+    border-bottom: 1px solid var(--color-surface);
+    color: var(--color-text-primary);
 }
 
 .transaction-history thead th {
     position: sticky;
     top: 0;
-    background-color: #1e1e2f;
+    background-color: var(--color-surface);
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: #8a8aa0;
+    color: var(--color-text-primary);
 }
 
 .transaction-history .coin-name {
@@ -51,11 +51,11 @@
 }
 
 .transaction-history .type-buy {
-    color: #28a745; /* Green */
+    color: var(--color-secondary); /* Green */
 }
 
 .transaction-history .type-sell {
-    color: #dc3545; /* Red */
+    color: var(--color-danger); /* Red */
 }
 
 .transaction-history .align-right {
@@ -67,7 +67,7 @@
 }
 
 .transaction-history .delete-btn {
-    background: #444;
+    background: var(--color-surface);
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -85,7 +85,7 @@
 }
 
 .transaction-history .empty-state p {
-    color: #8a8aa0;
+    color: var(--color-text-primary);
     text-align: center;
     padding: 2rem;
 }
@@ -101,7 +101,7 @@
     position: sticky;
     left: 0;
     z-index: 2;
-    background-color: #1e1e2f; 
+    background-color: var(--color-surface); 
     min-width: 110px;          
 }
 
