@@ -1,9 +1,9 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, memo } from "react";
 import './AddTransactionForm.css';
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 
-export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
+export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) => {
     const { addTransaction, editTransaction, coinList } = useContext(PortfolioContext);
 
     const [coinId, setCoinId] = useState('');
@@ -148,4 +148,4 @@ export function AddTransactionForm({ isOpen, onClose, transactionToEdit }) {
             </div>
         </div>
     );
-}
+})

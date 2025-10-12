@@ -1,7 +1,7 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, memo } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext";
 
-export function HoldingItem({ coin }) {
+export const HoldingItem = memo(({ coin }) => {
     const { transactions } = useContext(PortfolioContext);
 
     // --- Core Values ---
@@ -77,4 +77,4 @@ export function HoldingItem({ coin }) {
             <td className={`align-right ${pnlClass}`}>{formattedProfitLoss}</td>
         </tr>
     );
-}
+})

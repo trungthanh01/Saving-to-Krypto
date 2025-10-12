@@ -10,7 +10,8 @@ export function PortfolioSummary(){
         totalProfitLoss,
         total24hChangeValue,
         totalChangePercentage} = useContext(PortfolioContext)
-
+    ;
+    console.log("giá trị totalcostbasis", totalCostBasis);
     const formattedTotalValue = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -54,6 +55,7 @@ export function PortfolioSummary(){
     if(isLoading) {
         return <p className="summary-loading">Đang tính toán tổng giá trị...</p>
     }
+
     return(
         <section className="portfolio-summary">
             <h2 className="summary-title">Tổng Quan</h2>
