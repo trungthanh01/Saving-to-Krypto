@@ -76,6 +76,21 @@
   - Bước 2: Bọc các hàm xử lý (handle...) trong `PortfolioContext` bằng `useCallback` để đảm bảo chúng không bị tạo lại sau mỗi lần render.
   - Bước 3: Bọc object `value` được cung cấp bởi `PortfolioContext` bằng `useMemo` để ngăn chặn các consumer của context render lại khi không cần thiết.
 
+  Kết quả này cho thấy addTransaction mà AddTransactionForm nhận được không phải là một hàm, mà là một ARRAY (mảng) chứa một hàm bên trong.
+  Đây là lý do tại sao khi bạn gọi addTransaction(transactionData), nó báo lỗi addTransaction is not a function. Bạn không thể gọi một mảng như một hàm được.
+  Nguyên nhân tại sao nó lại là một mảng?
+  Đây là một lỗi cực kỳ tinh vi và hiếm gặp. Tôi đã rà soát lại toàn bộ file PortfolioContext.jsx và tìm ra thủ phạm.
+  Vấn đề nằm ở cách chúng ta đặt tên hàm và cách chúng ta truyền props xuống.
+  Trong PortfolioProvider, bạn có một prop tên là setGoalMessage.
+  Khả năng rất cao là setGoalMessage mà chúng ta truyền vào PortfolioProvider từ App.jsx không phải là một hàm, mà lại là một mảng, hoặc có một sự nhầm lẫn tên biến nào đó trong App.jsx.
+  Tuy nhiên, có một cách sửa lỗi dứt điểm và an toàn hơn mà không cần phải thay đổi App.jsx.
+  Chúng ta sẽ sửa lại chính hàm handleAddTransaction để nó không bị phụ thuộc vào setGoalMessage nữa, vì setGoalMessage dường như là nguồn gốc của sự không ổn định này.
+  Giải pháp dứt điểm
+  Chúng ta sẽ sửa lại 2 hàm trong PortfolioContext.jsx. Chúng ta sẽ tạm thời bỏ setGoalMessage ra khỏi dependency array để xem addTransaction có trở lại thành một hàm bình thường không.
+  Khi chúng ta xóa setGoalMessage khỏi mảng phụ thuộc, useCallback sẽ chỉ tạo ra hàm handleAddTransaction một lần duy nhất và "đóng băng" nó ở đó. Nó sẽ không bị ảnh hưởng bởi những lần render lại do setGoalMessage từ bên ngoài App.jsx thay đổi nữa.
+  Đây là một quy tắc ESLint nâng cao (exhaustive-deps) mà chúng ta đang tạm thời bỏ qua để gỡ lỗi, nhưng trong trường hợp này nó cần thiết để ổn định lại hệ thống.
+  Hãy thử thay đổi này. Sau đó, hãy kiểm tra lại console.log trong AddTransactionForm. Tôi tin rằng lần này addTransaction sẽ là một hàm (ƒ ()) chứ không phải một mảng nữa. Sau khi xác nhận nó hoạt động, bạn có thể xóa các dòng console.log đi.
+
 - **Task 9.2: Gỡ lỗi các vấn đề phát sinh sau tối ưu hóa**
   - **Vấn đề 1: `PortfolioSummary` bị ẩn một phần.**
     - **Triệu chứng:** Chỉ thấy tiêu đề, không thấy chi tiết Tổng vốn, Lời/Lỗ.
