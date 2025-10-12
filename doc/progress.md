@@ -68,3 +68,20 @@
   - Bước 2: Hạ cấp dự án về `React 18` và các `devDependencies` tương thích để đảm bảo sự ổn định.
   - Bước 3: Gỡ lỗi `ERESOLVE` bằng cách đồng bộ hóa toàn bộ hệ thống ESLint.
   - Bước 4: Sửa lỗi `Invalid prop 'action'` trên tất cả các form do khác biệt giữa React 19 và React 18, chuyển từ `action` sang `onSubmit`.
+
+## Giai đoạn 9: Tối ưu hóa & Gỡ lỗi Nâng cao (Hoàn thành)
+
+- **Task 9.1: Tối ưu hóa hiệu suất với `memo`, `useCallback`, `useMemo`**
+  - Bước 1: Bọc các component con thường xuyên render (`HoldingItem`, `AddTransactionForm`) bằng `React.memo` để ngăn việc render lại không cần thiết.
+  - Bước 2: Bọc các hàm xử lý (handle...) trong `PortfolioContext` bằng `useCallback` để đảm bảo chúng không bị tạo lại sau mỗi lần render.
+  - Bước 3: Bọc object `value` được cung cấp bởi `PortfolioContext` bằng `useMemo` để ngăn chặn các consumer của context render lại khi không cần thiết.
+
+- **Task 9.2: Gỡ lỗi các vấn đề phát sinh sau tối ưu hóa**
+  - **Vấn đề 1: `PortfolioSummary` bị ẩn một phần.**
+    - **Triệu chứng:** Chỉ thấy tiêu đề, không thấy chi tiết Tổng vốn, Lời/Lỗ.
+    - **Nguyên nhân:** Biến `totalCostBasis` được tính ra là `NaN` (Not a Number). Lỗi này xảy ra do dữ liệu giao dịch cũ trong `localStorage` thiếu thuộc tính `pricePerCoin`, dẫn đến phép toán `amount * undefined`.
+    - **Giải pháp:** Cập nhật lại hàm tính `totalCostBasis` để "phòng thủ" hơn, coi `pricePerCoin` là `0` nếu nó không tồn tại, đảm bảo phép tính luôn hợp lệ.
+  - **Vấn đề 2: Lỗi `addTransaction is not a function` trên Form.**
+    - **Triệu chứng:** Không thể thêm giao dịch mới, console báo lỗi `TypeError`.
+    - **Nguyên nhân:** Một lỗi rất tinh vi. Mảng phụ thuộc (dependency array) của `useMemo` (bọc object `value` trong Context) đã bị thiếu các hàm xử lý (ví dụ: `handleAddTransaction`). Điều này làm `useMemo` trả về một object `value` cũ (stale) trong các lần render sau, khiến cho `addTransaction` trong đó không còn là một hàm hợp lệ.
+    - **Giải pháp:** Cập nhật lại mảng phụ thuộc của `useMemo` để nó bao gồm **tất cả** các giá trị và hàm mà object `value` cung cấp, đảm bảo context value luôn mới và chính xác.

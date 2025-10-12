@@ -65,18 +65,18 @@ export function PortfolioProvider({ children, setGoalMessage }) {
         localStorage.setItem('portfolio-transactions', JSON.stringify(transactions));
     }, [transactions]);
 
-    // --- TRANSACTION HANDLERS (Đã được đơn giản hóa) ---
-    const handleAddTransaction = ((newTransaction) => {
+    // --- TRANSACTION HANDLERS (Đã được tối ưu với useCallback) ---
+    const handleAddTransaction = useCallback((newTransaction) => {
         setTransactions(prev => [newTransaction, ...prev]);
         setGoalMessage(`Đã thêm ${newTransaction.coinId.toUpperCase()}!`);
-    }, [setGoalMessage]);
+    }, []); // <-- XÓA `setGoalMessage` KHỎI ĐÂY
 
     const handleEditTransaction = useCallback((updatedTransaction) => {
         setTransactions(prev => prev.map(t =>
             t.id === updatedTransaction.id ? updatedTransaction : t
         ));
         setGoalMessage(`Đã cập nhật giao dịch cho ${updatedTransaction.coinId.toUpperCase()}!`);
-    }, [setGoalMessage]);
+    }, []); // <-- XÓA `setGoalMessage` KHỎI ĐÂY
 
     const handleOpenConfirmationModal = useCallback((message, onConfirm) => {
         setConfirmationModal({
@@ -176,6 +176,7 @@ export function PortfolioProvider({ children, setGoalMessage }) {
     }, [portfolioValueYesterday, total24hChangeValue])
     
     
+    // Tối ưu object value bằng useMemo
     const value = useMemo(() => ({
         holdings, 
         transactions, 
@@ -199,30 +200,16 @@ export function PortfolioProvider({ children, setGoalMessage }) {
         confirmationModal,
         handleOpenConfirmationModal,
         handleCloseConfirmationModal,
-
     }), [
-        holdings, 
-        transactions, 
-        portfolioData, 
-        isLoading, 
-        error, 
-        coinList, 
-        isAddHoldingModalOpen, 
-        editingTransaction, 
-        handleAddTransaction, 
-        handleEditTransaction, 
-        handleDeleteTransaction, 
-        handleOpenAddHoldingModal, 
-        handleOpenEditModal, 
-        handleCloseModal, 
-        portfolioTotalValue, 
-        totalCostBasis, 
-        totalProfitLoss, 
-        total24hChangeValue, 
-        totalChangePercentage, 
-        confirmationModal, 
-        handleOpenConfirmationModal, 
-        handleCloseConfirmationModal]);
+        holdings, transactions, portfolioData, isLoading, error, coinList,
+        isAddHoldingModalOpen, editingTransaction, portfolioTotalValue, 
+        totalCostBasis, totalProfitLoss, total24hChangeValue, 
+        totalChangePercentage, confirmationModal, handleAddTransaction,
+        handleEditTransaction, handleDeleteTransaction, handleOpenAddHoldingModal,
+        handleOpenEditModal, handleCloseModal, handleOpenConfirmationModal,
+        handleCloseConfirmationModal
+    ]);
+    console.log("context value", value);
 
     return (
         <PortfolioContext.Provider value={value}>

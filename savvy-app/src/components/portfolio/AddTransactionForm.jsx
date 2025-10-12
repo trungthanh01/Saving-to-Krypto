@@ -4,7 +4,10 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 
 export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) => {
-    const { addTransaction, editTransaction, coinList } = useContext(PortfolioContext);
+    // TẠM THỜI THAY ĐỔI CÁCH LẤY CONTEXT ĐỂ DEBUG
+    const portfolioCtx = useContext(PortfolioContext);
+    console.log("Context value RECEIVED in Form:", portfolioCtx);
+    const { addTransaction, editTransaction, coinList } = portfolioCtx;
 
     const [coinId, setCoinId] = useState('');
     const [amount, setAmount] = useState('');

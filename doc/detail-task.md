@@ -217,7 +217,7 @@
 ### **Giai đoạn 9: Kiểm thử & Tối ưu hóa (Testing & Optimization)** (Ref: task-invest 8.1, 8.2, 8.3)
 *Mục tiêu: Đảm bảo chất lượng và hiệu suất của ứng dụng. Chúng ta sẽ học các kỹ thuật nâng cao để làm cho ứng dụng chạy nhanh, mượt và đáng tin cậy.*
 
-- [ ] **Task 9.1: Tối ưu hóa Hiệu suất Render**
+- [x] **Task 9.1: Tối ưu hóa Hiệu suất Render**
   - **Mục đích:** Ngăn chặn việc render lại không cần thiết, giúp ứng dụng phản hồi nhanh hơn.
   - **Hành động:**
     - Áp dụng `React.memo` cho các component ít thay đổi (ví dụ: `HoldingItem`).
