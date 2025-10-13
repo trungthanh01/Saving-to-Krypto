@@ -238,33 +238,62 @@
 
 ---
 
-### **Giai đoạn 10: Các Tính năng Mở rộng (Additional Features)** (Ref: task-invest 7.2, 7.3)
-*Mục tiêu: Bổ sung các tính năng hấp dẫn để tăng giá trị cho người dùng.*
+### **Giai đoạn 10: Kết nối Hệ sinh thái Savvy & Krypto - "Cầu nối Tài chính"**
+*Mục tiêu: Biến ứng dụng từ hai công cụ riêng lẻ thành một cố vấn tài chính cá nhân thông minh, giúp người dùng ra quyết định dựa trên mối liên hệ giữa các khoản đầu tư và mục tiêu tiết kiệm.*
 
-- [ ] **Task 10.1: Xây dựng Danh sách Theo dõi (Watchlist)**
-  - **Mục đích:** Cho phép người dùng theo dõi các đồng coin mà họ quan tâm nhưng chưa đầu tư.
+- [ ] **Task 10.1: Tái cấu trúc để "Giao tiếp" giữa các Context**
+  - **Mục đích:** Cho phép `PortfolioContext` có thể đọc được dữ liệu `goals` từ `SavvyContext`.
   - **Hành động:**
-    - Tạo một state mới cho `watchlist` trong Context.
-    - Xây dựng giao diện cho phép tìm kiếm, thêm và xóa coin khỏi Watchlist.
+    - Trong `App.jsx`, lấy `goals` từ `SavvyContext`.
+    - Truyền state `goals` như một prop mới vào component `<PortfolioProvider>`.
 
-- [ ] **Task 10.2: Cảnh báo Giá (Price Alerts)**
-  - **Mục đích:** Thông báo cho người dùng khi một đồng coin đạt đến một ngưỡng giá nhất định.
+- [ ] **Task 10.2: Xây dựng Logic "Gợi ý Thông minh"**
+  - **Mục đích:** Tạo ra một cơ chế tự động phát hiện khi lợi nhuận từ một khoản đầu tư có thể giúp hoàn thành một mục tiêu tiết kiệm.
   - **Hành động:**
-    - Cho phép người dùng đặt một mức giá mục tiêu cho một đồng coin.
-    - Xây dựng logic chạy nền (`setInterval` trong `useEffect`) để kiểm tra giá định kỳ.
-    - Hiển thị một thông báo nổi bật khi giá đạt mục tiêu.
+    - Trong `PortfolioContext`, tạo state mới `smartSuggestions` để lưu các gợi ý.
+    - Tạo một `useEffect` để theo dõi sự thay đổi của `portfolioData` và prop `goals` mới.
+    - Bên trong `useEffect`, viết logic so sánh `profitLoss` của từng coin với số tiền còn thiếu của từng mục tiêu để tạo ra các gợi ý.
+
+- [ ] **Task 10.3: Xây dựng Giao diện Hiển thị Gợi ý**
+  - **Mục đích:** Hiển thị các gợi ý một cách trực quan và hữu ích.
+  - **Hành động:**
+    - Tạo component mới `SmartSuggestions.jsx`.
+    - Lấy dữ liệu `smartSuggestions` từ `PortfolioContext` và render ra dưới dạng các thẻ thông báo.
+    - Thêm nút hành động (call-to-action) trên mỗi thẻ để mở modal bán coin tương ứng.
 
 ---
 
-### **Giai đoạn 11: Hoàn thiện & Triển khai (Polish & Deployment)** (Ref: task-invest 9.1, 9.3)
+### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực**
+*Mục tiêu: Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA).*
+
+- [ ] **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
+  - **Mục đích:** Lấy được dữ liệu giá của một đồng coin trong quá khứ.
+  - **Hành động:**
+    - Trong `services/crypto-api.js`, tạo hàm mới `fetchCoinHistory(coinId, days)` để gọi API `/coins/{id}/market_chart`.
+
+- [ ] **Task 11.2: Xây dựng Logic Tính toán DCA**
+  - **Mục đích:** Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA.
+  - **Hành động:**
+    - Tạo file tiện ích `src/utils/dca-calculator.js`.
+    - Viết hàm `calculateDcaResult({ historicalData, monthlyInvestment, startDate })` để giả lập quá trình đầu tư hàng tháng và trả về kết quả.
+
+- [ ] **Task 11.3: Tích hợp vào Giao diện Người dùng**
+  - **Mục đích:** Hiển thị kết quả tính toán cho người dùng một cách dễ hiểu.
+  - **Hành động:**
+    - Trong `AddTransactionForm.jsx`, tạo `useEffect` theo dõi `coinId`.
+    - Khi `coinId` thay đổi, gọi API lịch sử, chạy hàm tính toán DCA, và hiển thị kết quả ra giao diện.
+
+---
+
+### **Giai đoạn 12: Hoàn thiện & Triển khai (Polish & Deployment)**
 *Mục tiêu: Đóng gói sản phẩm và đưa nó ra mắt công chúng.*
 
-- [ ] **Task 11.1: Viết Tài liệu Hướng dẫn & Hoàn thiện README**
+- [ ] **Task 12.1: Viết Tài liệu Hướng dẫn & Hoàn thiện README**
   - **Mục đích:** Giúp người dùng khác (hoặc chính bạn trong tương lai) có thể dễ dàng cài đặt và hiểu được project.
   - **Hành động:**
     - Cập nhật file `README.md` với hướng dẫn cài đặt, mô tả các tính năng, và giải thích cấu trúc project.
 
-- [ ] **Task 11.2: Triển khai Ứng dụng**
+- [ ] **Task 12.2: Triển khai Ứng dụng**
   - **Mục đích:** Đưa ứng dụng của bạn lên Internet để mọi người có thể truy cập.
   - **Hành động:**
     - Tìm hiểu về các nền tảng triển khai miễn phí như Vercel hoặc Netlify.
