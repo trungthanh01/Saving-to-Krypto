@@ -49,7 +49,11 @@ export function TransactionHistory() {
                         </tr>
                     </thead>
                     <tbody>
-                        {transactions.map(transaction => (
+                        {transactions.length === 0 
+                        ? <tr>
+                            <td colSpan="7">Chưa có dữ liệu trong lịch sử giao dịch</td>
+                          </tr>
+                        : transactions.map(transaction => (
                             <tr key={transaction.id}>
                                 <td>{transaction.date}</td>
                                 <td className="coin-name">{transaction.coinId.toUpperCase()}</td>
@@ -69,7 +73,7 @@ export function TransactionHistory() {
                                     </button>
                                 </td>
                             </tr>
-                        ))}
+                        ))}                        
                     </tbody>
                 </table>
             </div>

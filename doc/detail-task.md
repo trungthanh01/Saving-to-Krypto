@@ -224,7 +224,7 @@
     - Sử dụng `useMemo` để "ghi nhớ" các kết quả tính toán phức tạp (ví dụ: `portfolioTotalValue`, `chartData`).
     - Sử dụng `useCallback` để "ghi nhớ" các hàm được truyền xuống component con.
 
-- [ ] **Task 9.2: Xử lý Lỗi Nâng cao & Trạng thái Trống**
+- [x] **Task 9.2: Xử lý Lỗi Nâng cao & Trạng thái Trống**
   - **Mục đích:** Cải thiện trải nghiệm người dùng khi có lỗi hoặc không có dữ liệu.
   - **Hành động:**
     - Xây dựng các component hiển thị trạng thái "trống" (ví dụ: "Bạn chưa có giao dịch nào", "Không tìm thấy kết quả").

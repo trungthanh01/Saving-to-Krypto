@@ -44,7 +44,7 @@ export function Portfolio() {
                 <div className="table-container">
                     <table className="portfolio-table">
                         <thead>
-                            <tr>
+                            <tr>                                
                                 <th>Tên Coin</th>
                                 <th>Giá</th>
                                 <th>24h %</th>
@@ -56,9 +56,21 @@ export function Portfolio() {
                             </tr>
                         </thead>
                         <tbody>
-                            {portfolioData.map(coin => (
-                                <HoldingItem key={coin.id} coin={coin}/>
-                            ))}
+                            {isLoading && (
+                                <tr>
+                                    <td colSpan="8">Đang tải dữ liệu...</td>
+                                </tr>
+                            )}
+                            {!isLoading && portfolioData.length === 0 && (
+                                <tr>
+                                    <td colSpan="8">Chưa có dữ liệu trong danh mục</td>
+                                </tr>
+                            )}
+                            {!isLoading && portfolioData.length > 0 && (
+                                portfolioData.map(coin => (
+                                    <HoldingItem key={coin.id} coin={coin}/>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
