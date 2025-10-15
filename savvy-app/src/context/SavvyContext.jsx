@@ -1,13 +1,12 @@
 import { createContext, useState, useEffect } from "react";
 export const SavvyContext = createContext();
 
-export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
+export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
     
     const [savings, setSavings] = useState(() => {
         const savedSavings = localStorage.getItem('savvy-savings');
         return savedSavings ? JSON.parse(savedSavings) : [];
     });
-  
     const [goals, setGoals] = useState(() => {
         const savedGoals = localStorage.getItem('savvy-goals');
         return savedGoals ? JSON.parse(savedGoals) : [];
@@ -15,7 +14,7 @@ export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoal
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
-      
+
     useEffect(() => {
         localStorage.setItem('savvy-savings', JSON.stringify(savings));
         localStorage.setItem('savvy-goals', JSON.stringify(goals));
@@ -84,8 +83,8 @@ export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoal
 
 
     const value = {
-        savings,
         goals,
+        savings,
         isAddSavingModalOpen,
         isAddGoalModalOpen,
         totalSavings,
@@ -97,6 +96,8 @@ export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoal
         handleAddGoal,
         handleDeleteSaving,
         handleDeleteGoal,
+        goalMessage, // <-- Đảm bảo dòng này tồn tại
+        setGoalMessage,
     }
      return(
         <SavvyContext.Provider value={value}>

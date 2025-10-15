@@ -10,12 +10,12 @@ import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx'
 import { Savvy } from './components/savvy/Savvy.jsx';
 import { SavvyProvider } from './context/SavvyContext.jsx';
 import { SavvyContext } from './context/SavvyContext.jsx';
+import { SmartSuggestions } from './components/portfolio/SmartSuggestions.jsx';
 
 
 export function AppContent() {
-  const [goalMessage, setGoalMessage] = useState('');
-  const {goals} = useContext(SavvyContext);
-  
+  const {goals, setGoalMessage} = useContext(SavvyContext);
+  const {goalMessage} = useContext(SavvyContext);
   useEffect(() => {
     if (!goalMessage) {
       return;
@@ -27,7 +27,7 @@ export function AppContent() {
       clearTimeout(timerId);
     };
   }, [goalMessage]);
-
+  
   useEffect(() => {
     console.log(goals);
   }, [goals]);
@@ -45,6 +45,7 @@ export function AppContent() {
             <PortfolioSummary />
             <HoldingsChart />
           </div>
+          <SmartSuggestions />
           <Portfolio />
           <TransactionHistory />
           <ConfirmationModal />
@@ -58,7 +59,7 @@ export function AppContent() {
 
 export function App() {
   return (
-    <SavvyProvider setGoalMessage={setGoalMessage}>
+    <SavvyProvider>
       <AppContent />
     </SavvyProvider>
   );

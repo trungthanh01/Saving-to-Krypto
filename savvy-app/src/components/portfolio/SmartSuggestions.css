@@ -1,0 +1,48 @@
+.smart-suggestions {
+    padding: var(--spacing-4);
+    margin-top: var(--spacing-8);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+}
+
+.suggestions-title {
+    margin: 0;
+    margin-bottom: var(--spacing-4);
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+}
+
+.suggestion-card {
+    background-color: #001f54; /* Một màu xanh đậm hơn */
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    border-left: 4px solid var(--color-secondary); /* Đường kẻ highlight */
+}
+
+.suggestion-card p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.suggestion-card strong {
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+.suggestion-action {
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-secondary);
+    color: var(--color-surface);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.suggestion-action:hover {
+    opacity: 0.8;
+}
