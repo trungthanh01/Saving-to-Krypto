@@ -4,6 +4,7 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 
 export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) => {
+    console.log("2. AddTransactionForm rendered. isOpen is:", isOpen);
     const portfolioCtx = useContext(PortfolioContext);
     console.log("Context value RECEIVED in Form:", portfolioCtx);
     const { addTransaction, editTransaction, coinList } = portfolioCtx;
@@ -50,6 +51,7 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
     }, [coinId, coinList, isEditMode]);
 
     if (!isOpen) {
+        console.log("2a. isOpen is false, returning null.");
         return null;
     }
 

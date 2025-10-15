@@ -34,21 +34,27 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
     const [error, setError] = useState(null);
 
     // --- 2. HANDLER FUNCTIONS (useCallback) ---
-    const handleAddTransaction = useCallback(async (coinId, amount, pricePerCoin, type) => {
-        const newTransaction = {
-            id: Date.now(),
-            coinId,
-            amount,
-            pricePerCoin,
-            type,
-            timestamp: new Date().toISOString(),
-        };
-        setTransactions(prev => [...prev, newTransaction]);
-        setIsAddHoldingModalOpen(false);
+    const handleAddTransaction = useCallback((newTransaction) => {
+        setTransactions(prev => [newTransaction, ...prev]);
+        // Tạm thời comment dòng này lại để tránh ảnh hưởng đến các hàm khác
+        // setGoalMessage(`Đã thêm ${newTransaction.coinId.toUpperCase()}!`);
     }, []);
 
-    const handleEditTransaction = useCallback(async (id, updates) => {
-        setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    const handleEditTransaction = useCallback((updatedTransaction) => {
+        console.log("Attempting to edit. Updated data:", updatedTransaction);
+
+        setTransactions(prev => {
+            console.log("Old transactions array:", prev);
+            const newTransactions = prev.map(t => {
+                if (t.id === updatedTransaction.id) {
+                    console.log("MATCH FOUND! Replacing old transaction:", t, "with new:", updatedTransaction);
+                    return updatedTransaction;
+                }
+                return t;
+            });
+            console.log("New transactions array:", newTransactions);
+            return newTransactions;
+        });
     }, []);
 
     const handleOpenConfirmationModal = useCallback(() => {
@@ -73,11 +79,14 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
 
     const handleCloseModal = useCallback(() => {
         setIsAddHoldingModalOpen(false);
+        setEditingTransaction(null); // Reset cả state edit khi đóng
     }, []);
 
     const handleOpenEditModal = useCallback((transaction) => {
+        console.log("0. openEditModal called with:", transaction);
         setEditingTransaction(transaction);
-    }, []);
+        handleOpenAddHoldingModal();
+    }, [handleOpenAddHoldingModal]);
 
     // --- 3. SIDE EFFECTS & LOGIC (useEffect) ---
     useEffect(() => { // Load Coin List

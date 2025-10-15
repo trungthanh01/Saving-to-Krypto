@@ -8,6 +8,7 @@ export function TransactionHistory() {
         deleteTransaction, 
         openEditModal, 
     } = useContext(PortfolioContext);
+    console.log("Transactions being rendered:", transactions);
 
     if (transactions.length === 0) {
         return (
