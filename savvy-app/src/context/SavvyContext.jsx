@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 export const SavvyContext = createContext();
 
-// 1. Sửa lại tên Provider cho đúng
 export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
     
     const [savings, setSavings] = useState(() => {
@@ -89,7 +88,6 @@ export function SavvyProvider({children, setGoalMessage}) { // 2. Nhận setGoal
         goals,
         isAddSavingModalOpen,
         isAddGoalModalOpen,
-        // 5. Xóa goalMessage khỏi value
         totalSavings,
         handleOpenAddSavingModal,
         handleCloseAddSavingModal,

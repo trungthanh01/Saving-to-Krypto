@@ -3,17 +3,19 @@ import { useState, useEffect, useContext } from 'react';
 import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx';
 import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
-import { Savvy } from './components/savvy/Savvy.jsx';
-import { SavvyProvider } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
 import { TransactionHistory } from './components/portfolio/TransactionHistory.jsx';
 import { PortfolioSummary } from './components/portfolio/PortfolioSummary.jsx';
 import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
-export function App() {
-  // 1. App quản lý state thông báo chung
+import { Savvy } from './components/savvy/Savvy.jsx';
+import { SavvyProvider } from './context/SavvyContext.jsx';
+import { SavvyContext } from './context/SavvyContext.jsx';
+
+
+export function AppContent() {
   const [goalMessage, setGoalMessage] = useState('');
+  const {goals} = useContext(SavvyContext);
   
-  // 2. App quản lý useEffect cho thông báo
   useEffect(() => {
     if (!goalMessage) {
       return;
@@ -26,6 +28,10 @@ export function App() {
     };
   }, [goalMessage]);
 
+  useEffect(() => {
+    console.log(goals);
+  }, [goals]);
+
   return (
     <div className='app-container'>
       <header className='app-header'>
@@ -34,7 +40,7 @@ export function App() {
       </header>
       
       <main>
-        <PortfolioProvider setGoalMessage={setGoalMessage}>
+        <PortfolioProvider setGoalMessage={setGoalMessage} goals={goals}>
           <div className="portfolio-container">
             <PortfolioSummary />
             <HoldingsChart />
@@ -44,11 +50,16 @@ export function App() {
           <ConfirmationModal />
         </PortfolioProvider>
 
-        <SavvyProvider setGoalMessage={setGoalMessage}>
-          <Savvy />
-        </SavvyProvider>
+        <Savvy />
       </main>
     </div> 
   );
 }
 
+export function App() {
+  return (
+    <SavvyProvider setGoalMessage={setGoalMessage}>
+      <AppContent />
+    </SavvyProvider>
+  );
+}

@@ -241,7 +241,7 @@
 ### **Giai đoạn 10: Kết nối Hệ sinh thái Savvy & Krypto - "Cầu nối Tài chính"**
 *Mục tiêu: Biến ứng dụng từ hai công cụ riêng lẻ thành một cố vấn tài chính cá nhân thông minh, giúp người dùng ra quyết định dựa trên mối liên hệ giữa các khoản đầu tư và mục tiêu tiết kiệm.*
 
-- [ ] **Task 10.1: Tái cấu trúc để "Giao tiếp" giữa các Context**
+- [x] **Task 10.1: Tái cấu trúc để "Giao tiếp" giữa các Context**
   - **Mục đích:** Cho phép `PortfolioContext` có thể đọc được dữ liệu `goals` từ `SavvyContext`.
   - **Hành động:**
     - Trong `App.jsx`, lấy `goals` từ `SavvyContext`.
@@ -261,6 +261,78 @@
     - Lấy dữ liệu `smartSuggestions` từ `PortfolioContext` và render ra dưới dạng các thẻ thông báo.
     - Thêm nút hành động (call-to-action) trên mỗi thẻ để mở modal bán coin tương ứng.
 
+---
+
+
+---
+
+### **Giai đoạn 10 (Mới): Kết nối Hệ sinh thái Savvy & Krypto - "Cầu nối Tài chính"**
+
+*   **Tầm nhìn:** Biến ứng dụng từ hai công cụ riêng lẻ thành một cố vấn tài chính cá nhân thông minh, giúp người dùng ra quyết định dựa trên mối liên hệ giữa các khoản đầu tư và mục tiêu tiết kiệm.
+
+*   **Các Task chính:**
+
+    *   **Task 10.1: Tái cấu trúc Context để "Giao tiếp"**
+        *   **Mục đích:** Cho phép `PortfolioContext` có thể đọc được dữ liệu từ `SavvyContext` (cụ thể là danh sách các mục tiêu).
+        *   **Phương án A (Đơn giản):** Trong `App.jsx`, tạo một `useEffect` để theo dõi `goals` từ `SavvyContext`. Khi `goals` thay đổi, truyền nó xuống `PortfolioProvider` như một prop mới. Đây là cách ít rủi ro nhất.
+        *   **Phương án B (Phức tạp hơn):** Tạo một "Master Context" bao bọc cả hai Provider, nhưng cách này có thể không cần thiết cho nhu cầu hiện tại.
+        *   **Hành động:** Triển khai theo Phương án A.
+
+    *   **Task 10.2: Xây dựng Logic "Gợi ý Thông minh"**
+        *   **Mục đích:** Tạo ra một hàm tính toán để xác định xem liệu lợi nhuận từ một khoản đầu tư có đủ để hoàn thành một mục tiêu tiết kiệm hay không.
+        *   **Hành động:**
+            1.  Trong `PortfolioContext`, tạo một state mới, ví dụ `smartSuggestions`, để lưu trữ các gợi ý được tạo ra.
+            2.  Tạo một `useEffect` theo dõi sự thay đổi của `portfolioData` (danh mục đầu tư đã có giá) và `goals` (được truyền từ `App.jsx`).
+            3.  Bên trong `useEffect`, viết logic: Lặp qua từng `coin` trong `portfolioData`. Với mỗi `coin`, tính `profitLoss` của nó. Sau đó, lặp qua từng `goal` trong `goals`, tính `amountNeeded = goal.targetAmount - goal.currentAmount`.
+            4.  Nếu `profitLoss` của một coin >= `amountNeeded` của một mục tiêu, tạo một object gợi ý (ví dụ: `{ coinId: 'bitcoin', goalName: 'Mua Macbook', profitAvailable: 1500, amountNeeded: 1200 }`) và thêm vào state `smartSuggestions`.
+
+    *   **Task 10.3: Xây dựng Giao diện Hiển thị Gợi ý**
+        *   **Mục đích:** Hiển thị các gợi ý một cách trực quan và hữu ích cho người dùng.
+        *   **Hành động:**
+            1.  Tạo một component mới, ví dụ `SmartSuggestions.jsx`.
+            2.  Component này sẽ lấy `smartSuggestions` từ `PortfolioContext`.
+            3.  Hiển thị các gợi ý dưới dạng các thẻ thông báo (notification cards). Ví dụ: "🎉 Lợi nhuận từ **Bitcoin** của bạn đã đủ để hoàn thành mục tiêu **'Mua Macbook'**! Bạn có muốn hiện thực hóa lợi nhuận không?".
+            4.  Mỗi thẻ sẽ có một nút hành động, ví dụ "Bán ngay". Khi click vào, nó sẽ mở `AddTransactionForm` với `type` được chọn sẵn là "sell" và `coinId` là "bitcoin".
+
+---
+
+### **Giai đoạn 11 (Mới): "Cỗ máy thời gian" DCA - Công cụ tạo Động lực**
+
+*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA), từ đó tạo động lực để họ bắt đầu hoặc tiếp tục đầu tư.
+
+*   **Các Task chính:**
+
+    *   **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
+        *   **Mục đích:** Lấy được dữ liệu giá của một đồng coin trong quá khứ.
+        *   **Hành động:**
+            1.  Trong `services/crypto-api.js`, tạo một hàm mới, ví dụ `fetchCoinHistory(coinId, days)`, để gọi đến endpoint `/coins/{id}/market_chart` của CoinGecko.
+            2.  Hàm này sẽ nhận `coinId` và số ngày trong quá khứ làm tham số.
+            3.  Xử lý dữ liệu trả về (một mảng lớn các cặp `[timestamp, price]`) để nó dễ sử dụng hơn.
+
+    *   **Task 11.2: Xây dựng Logic Tính toán DCA**
+        *   **Mục đích:** Tạo ra một hàm "pure" có thể tính toán kết quả của chiến lược DCA.
+        *   **Hành động:**
+            1.  Tạo một file tiện ích mới, ví dụ `src/utils/dca-calculator.js`.
+            2.  Viết một hàm `calculateDcaResult({ historicalData, monthlyInvestment, startDate })`.
+            3.  Logic của hàm:
+                *   Lọc `historicalData` để chỉ lấy giá của ngày đầu tiên mỗi tháng kể từ `startDate`.
+                *   Với mỗi tháng, tính xem với `monthlyInvestment` thì mua được bao nhiêu coin dựa trên giá của ngày đó.
+                *   Cộng dồn số coin mua được qua từng tháng.
+                *   Cuối cùng, trả về tổng số coin tích lũy và tổng số vốn đã bỏ ra.
+
+    *   **Task 11.3: Tích hợp vào Giao diện Người dùng**
+        *   **Mục đích:** Hiển thị kết quả tính toán cho người dùng một cách dễ hiểu.
+        *   **Phương án A (Đơn giản):** Khi người dùng đang ở trong form `AddTransactionForm` và đã chọn một coin, hiển thị một dòng thông tin nhỏ bên dưới. Ví dụ: "💡 Bạn có biết? Nếu đầu tư $10 vào **Bitcoin** mỗi tháng từ 5 năm trước, bây giờ bạn sẽ có $XXX".
+        *   **Phương án B (Nâng cao):** Tạo một component Modal riêng cho "Cỗ máy thời gian", cho phép người dùng tùy chỉnh số tiền đầu tư hàng tháng và khoảng thời gian.
+        *   **Hành động:** Bắt đầu với Phương án A cho MVP. Trong `AddTransactionForm`, tạo một `useEffect` theo dõi `coinId`. Khi `coinId` thay đổi, gọi API lịch sử, tính toán DCA, và hiển thị kết quả vào một state mới.
+
+---
+
+**Đề xuất của Mentor:**
+
+Tôi đề xuất chúng ta thực hiện theo thứ tự **Giai đoạn 10 trước, Giai đoạn 11 sau**. Lý do là Giai đoạn 10 giúp kết nối các tính năng **hiện có** của ứng dụng, làm cho sản phẩm trở nên hoàn chỉnh và có giá trị ngay lập tức. Giai đoạn 11 là một tính năng "thêm vào" rất hay nhưng phức tạp hơn về mặt dữ liệu.
+
+Bạn thấy kế hoạch chi tiết này thế nào? Bạn muốn ưu tiên triển khai Giai đoạn nào trước?
 ---
 
 ### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực**

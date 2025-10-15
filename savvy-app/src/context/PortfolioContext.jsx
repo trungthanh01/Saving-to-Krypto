@@ -3,7 +3,7 @@ import { fetchCoinData, fetchCoinList } from "../services/crypto-api.js";
 
 export const PortfolioContext = createContext();
 
-export function PortfolioProvider({ children, setGoalMessage }) {
+export function PortfolioProvider({ children, setGoalMessage, goals }) {
     // --- STATE MANAGEMENT ---
     const [holdings, setHoldings] = useState(() => {
         const saved = localStorage.getItem('portfolio-holdings');
