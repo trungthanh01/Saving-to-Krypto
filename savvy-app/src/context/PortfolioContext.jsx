@@ -28,10 +28,11 @@ export function PortfolioProvider({ children, goals }) {
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const apiCallGuard = useRef(false);
-    const [smartSuggestions, setSmartSuggestions] = useState(null);
     const [portfolioData, setPortfolioData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [smartSuggestions, setSmartSuggestions] = useState(null);
+    const [goalCompletionData, setGoalCompletionData] = useState(null);
 
     // --- 2. HANDLER FUNCTIONS (useCallback) ---
     const handleAddTransaction = useCallback((newTransaction) => {
@@ -88,6 +89,20 @@ export function PortfolioProvider({ children, goals }) {
         handleOpenAddHoldingModal();
     }, [handleOpenAddHoldingModal]);
 
+    const handleInitiateGoalCompletion = useCallback((suggestion) => {
+        if(!suggestion) return;
+        setGoalCompletionData({
+            goalToComplete: suggestion.achievableGoals,
+            totalAmountNeeded: suggestion.totalAmountNeeded,
+        })
+        openEditModal({
+            type: 'sell',
+            coinId: '',
+            amount: '',
+            pricePerCoin: '',
+        })
+    }, [openEditModal]);
+
     const portfolioTotalValue = useMemo(() => {
         return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
       }, [portfolioData])
@@ -115,6 +130,7 @@ export function PortfolioProvider({ children, goals }) {
       const totalChangePercentage = useMemo(() => {
         return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
       }, [portfolioValueYesterday, total24hChangeValue])
+
 
     // --- 3. SIDE EFFECTS & LOGIC (useEffect) ---
     useEffect(() => { // Load Coin List
@@ -247,6 +263,7 @@ export function PortfolioProvider({ children, goals }) {
         handleOpenConfirmationModal,
         handleCloseConfirmationModal,
         smartSuggestions,
+        handleInitiateGoalCompletion,
     }), [
         holdings, transactions, portfolioData, isLoading, error, coinList,
         isAddHoldingModalOpen, editingTransaction, smartSuggestions, // <-- **VÀ THÊM VÀO ĐÂY**
@@ -256,6 +273,7 @@ export function PortfolioProvider({ children, goals }) {
         handleEditTransaction, handleDeleteTransaction, handleOpenAddHoldingModal,
         handleOpenEditModal, handleCloseModal, handleOpenConfirmationModal,
         handleCloseConfirmationModal, smartSuggestions,
+        handleInitiateGoalCompletion,
     ]);
     console.log("context value", value);
 

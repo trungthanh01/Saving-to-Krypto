@@ -4,7 +4,7 @@ import './SmartSuggestions.css';
 
 export function SmartSuggestions() {
     // Lấy `smartSuggestions` (giờ là object) và `openEditModal`
-    const { smartSuggestions, openEditModal } = useContext(PortfolioContext);
+    const { smartSuggestions, handleInitiateGoalCompletion } = useContext(PortfolioContext);
 
     // Hàm format tiền tệ tiện ích
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
@@ -53,11 +53,7 @@ export function SmartSuggestions() {
                         </p>
                         <button 
                             className="suggestion-action"
-                            onClick={() => {
-                                // Mở modal bán với số tiền gợi ý
-                                // Chúng ta sẽ cần chọn 1 coin để bán, tạm thời để trống logic này
-                                alert(`Mở modal bán với số tiền ${s.totalAmountNeeded}`);
-                            }}
+                            onClick={() => handleInitiateGoalCompletion(s)}
                         >
                             Chốt lời để hoàn thành mục tiêu
                         </button>
