@@ -28,7 +28,7 @@ export function PortfolioProvider({ children, goals }) {
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const apiCallGuard = useRef(false);
-    const [smartSuggestions, setSmartSuggestions] = useState([]);
+    const [smartSuggestions, setSmartSuggestions] = useState(null);
     const [portfolioData, setPortfolioData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -188,7 +188,7 @@ export function PortfolioProvider({ children, goals }) {
     // --- SMART SUGGESTIONS LOGIC ---
     useEffect(() => {
         if(totalProfitLoss <= 0 || !goals || goals.length === 0) {
-            setSmartSuggestions([]);
+            setSmartSuggestions(null);
             return;
         }
         const achievableGoals = goals.filter(goal => {
@@ -200,7 +200,7 @@ export function PortfolioProvider({ children, goals }) {
         }));
 
         if(achievableGoals.length === 0) {
-            setSmartSuggestions([]);
+            setSmartSuggestions(null);
             return;
         }
         const totalAmountNeeded = achievableGoals.reduce((total, g) =>

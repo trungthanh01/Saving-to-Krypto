@@ -3,43 +3,67 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './SmartSuggestions.css';
 
 export function SmartSuggestions() {
-    // THÊM `openEditModal` VÀO ĐÂY
+    // Lấy `smartSuggestions` (giờ là object) và `openEditModal`
     const { smartSuggestions, openEditModal } = useContext(PortfolioContext);
 
+    // Hàm format tiền tệ tiện ích
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
     }).format(value || 0);
 
-    if (!smartSuggestions || !smartSuggestions.length) return null;
+    // B1: Điều kiện kiểm tra mới. Nếu `smartSuggestions` là null (hoặc falsy), không render gì cả.
+    if (!smartSuggestions) {
+        return null;
+    }
+
+    // B2: Truy cập trực tiếp vào các thuộc tính của object.
+    // Đổi tên `suggestion` thành `s` để tránh nhầm lẫn.
+    const s = smartSuggestions;
+    
+    // Chỉ hiển thị gợi ý nếu tổng số tiền cần bán nhỏ hơn hoặc bằng lợi nhuận
+    const canCompleteGoals = s.totalProfitLoss >= s.totalAmountNeeded;
 
     return (
         <div className="smart-suggestions">
-            <h2 className="suggestions-title">✨ Các mục tiêu đã đạt được</h2>
-            {smartSuggestions.map((suggestion) => (
-                <div key={suggestion.id} className="suggestion-card">
-                    <p>
-                        🎉 Lợi nhuận từ 
-                        <strong><img className="coin-image" src={suggestion.coinImage} alt={suggestion.coinName} />
-                            {suggestion.coinName}
-                        </strong> 
-                        ({formatCurrency(suggestion.profitAvailable)}) 
-                        của bạn đã đủ để hoàn thành mục tiêu 
-                        <strong> {suggestion.goalName}</strong> (còn thiếu {formatCurrency(suggestion.amountNeeded)}).
-                    </p>
-                    <button 
-                        className="suggestion-action" 
-                        onClick={() => openEditModal({ 
-                            coinId: suggestion.coinId, 
-                            type: 'sell',
-                            amount: '',
-                            pricePerCoin: ''
-                        })}
-                    >
-                        Chốt lời ngay
-                    </button>
-                </div>
-            ))}
+            <h2 className="suggestions-title">✨ Gợi ý Tổng hợp</h2>
+            <div className="suggestion-card">
+                <p>
+                    Tổng lợi nhuận của bạn là <strong>{formatCurrency(s.totalProfitLoss)}</strong>.
+                    {canCompleteGoals 
+                        ? " Điều này đã đủ để hoàn thành các mục tiêu sau:"
+                        : " Bạn có thể bắt đầu hoàn thành các mục tiêu sau:"
+                    }
+                </p>
+
+                {/* B3: Lặp qua mảng `achievableGoals` bên trong object */}
+                <ul className="goal-list">
+                    {s.achievableGoals.map((goal) => (
+                        <li key={goal.name}>
+                            <strong>{goal.name}:</strong> còn thiếu {formatCurrency(goal.amountNeeded)}
+                        </li>
+                    ))}
+                </ul>
+
+                {canCompleteGoals && (
+                    <div className="action-summary">
+                        <p>
+                            Nếu bạn chốt lời <strong>{formatCurrency(s.totalAmountNeeded)}</strong> 
+                            ({s.percentageNeeded.toFixed(2)}% lợi nhuận), bạn sẽ hoàn thành {s.achievableGoals.length} mục tiêu và vẫn còn lại <strong>{formatCurrency(s.remainingProfit)}</strong> tiền lời.
+                        </p>
+                        <button 
+                            className="suggestion-action"
+                            onClick={() => {
+                                // Mở modal bán với số tiền gợi ý
+                                // Chúng ta sẽ cần chọn 1 coin để bán, tạm thời để trống logic này
+                                alert(`Mở modal bán với số tiền ${s.totalAmountNeeded}`);
+                            }}
+                        >
+                            Chốt lời để hoàn thành mục tiêu
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

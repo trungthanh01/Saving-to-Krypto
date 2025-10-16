@@ -238,38 +238,38 @@
 
 ---
 
-### **Giai đoạn 10: Hoàn thiện Tính năng Gợi ý & Luồng "Chốt lời"**
-*Mục tiêu: Nâng cấp hệ thống gợi ý để đưa ra lời khuyên dựa trên tổng lợi nhuận và hoàn thiện luồng hành động "chốt lời để đạt mục tiêu" một cách trọn vẹn.*
+### **Giai đoạn 10: Hoàn thiện Luồng "Chốt lời" - Từ Gợi ý đến Hành động**
+*Mục tiêu: Nâng cấp hệ thống gợi ý và xây dựng một luồng hành động hoàn chỉnh, cho phép người dùng sử dụng lợi nhuận từ portfolio để hoàn thành các mục tiêu tiết kiệm một cách trực quan và đầy ý nghĩa.*
 
-- [ ] **Task 10.1: Tái cấu trúc Logic Gợi ý thành "Gợi ý Tổng hợp"**
+- [x] **Task 10.1: Tái cấu trúc Logic Gợi ý thành "Gợi ý Tổng hợp"**
   - **Mục đích:** Thay đổi logic để so sánh **tổng lợi nhuận** của toàn bộ danh mục với danh sách các mục tiêu chưa hoàn thành.
   - **Hành động:**
-    - Trong `PortfolioContext`, sửa lại `useEffect` của `smartSuggestions`.
-    - Tính `totalProfitLoss` của toàn bộ portfolio trước.
-    - Nếu `totalProfitLoss > 0`, lọc ra danh sách các `goals` chưa hoàn thành (`amountNeeded > 0`).
-    - Nếu có cả hai, tạo ra một **object gợi ý duy nhất** chứa: `totalProfitLoss`, danh sách các mục tiêu có thể thực hiện, và tổng số tiền cần bán để hoàn thành chúng.
+    - Trong `PortfolioContext`, sửa lại `useEffect` của `smartSuggestions` để tạo ra một **object gợi ý duy nhất** dựa trên tổng lợi nhuận và các mục tiêu có thể đạt được.
 
-- [ ] **Task 10.2: Cập nhật Giao diện `SmartSuggestions`**
+- [x] **Task 10.2: Cập nhật Giao diện `SmartSuggestions`**
   - **Mục đích:** Thiết kế lại component để hiển thị thông tin gợi ý tổng hợp một cách rõ ràng.
   - **Hành động:**
-    - Sửa `SmartSuggestions.jsx` để không lặp qua một mảng nữa.
-    - Hiển thị thông tin từ object gợi ý duy nhất: Tổng lợi nhuận, danh sách các mục tiêu (tên, số tiền còn thiếu), tổng tiền cần bán, và phân tích % còn lại.
-    - Nút "Chốt lời" bây giờ sẽ có một mục tiêu rõ ràng: kích hoạt việc bán một lượng tài sản có giá trị bằng tổng số tiền cần thiết.
+    - Sửa `SmartSuggestions.jsx` để đọc dữ liệu từ object gợi ý duy nhất thay vì một mảng.
+    - Hiển thị tổng lợi nhuận, danh sách mục tiêu có thể hoàn thành, và tổng số tiền cần thiết.
 
-- [ ] **Task 10.3: Sửa lỗi Luồng "Chốt lời"**
-  - **Mục đích:** Đảm bảo khi người dùng thực hiện một giao dịch `sell` từ gợi ý, tất cả các state (`transactions`, `holdings`, `portfolioData`, `summary`) đều được cập nhật chính xác.
+- [ ] **Task 10.3: Xây dựng Luồng Hoàn thành Mục tiêu Tích hợp**
+  - **Mục đích:** Kết nối nút bấm trên gợi ý với hành động ghi nhận giao dịch bán một cách liền mạch.
   - **Hành động:**
-    - Truy vết luồng dữ liệu bắt đầu từ `onClick` của nút "Chốt lời".
-    - Kiểm tra `handleSubmit` trong `AddTransactionForm` khi `isEditMode` là `true` (vì chúng ta đang dùng lại `openEditModal`).
-    - Đảm bảo `editTransaction` được gọi với một object transaction hợp lệ, và `useEffect` tính toán lại `holdings` hoạt động đúng.
-    - **Quan trọng:** Cân nhắc việc tạo một hàm mới `openSellModal(coinId, amountToSell)` thay vì dùng `openEditModal` để luồng logic rõ ràng hơn.
+    - Tạo hàm `handleInitiateGoalCompletion` trong `PortfolioContext`. Hàm này sẽ được gọi từ nút "Thực hiện" trong `SmartSuggestions`.
+    - Khi được gọi, hàm này sẽ mở modal `AddTransactionForm`, có thể điền sẵn `type` là `'sell'` và gợi ý số tiền cần bán.
+    - Sửa đổi `AddTransactionForm` để sau khi lưu giao dịch thành công, nó sẽ kích hoạt bước tiếp theo (hoàn thành mục tiêu).
 
-- [ ] **Task 10.4: Xây dựng Lịch sử Mục tiêu (Goal History)**
+- [ ] **Task 10.4: Hoàn thiện Mục tiêu & Hiển thị Modal Chúc mừng**
+  - **Mục đích:** Cập nhật trạng thái của mục tiêu trong `SavvyContext` và mang lại phần thưởng tinh thần cho người dùng.
+  - **Hành động:**
+    - Tạo một `ConfirmationModal` hoặc `CelebrationModal` mới để chúc mừng người dùng.
+    - Trong `SavvyContext`, tạo hàm `markGoalAsComplete` để di chuyển một mục tiêu từ danh sách hiện tại sang danh sách đã hoàn thành.
+    - Sau khi giao dịch bán ở Task 10.3 được xác nhận, gọi hàm `markGoalAsComplete` và sau đó hiển thị modal chúc mừng.
+
+- [ ] **Task 10.5: Xây dựng Lịch sử Mục tiêu (Goal History)**
   - **Mục đích:** Cung cấp cho người dùng cảm giác thành tựu bằng cách lưu lại các mục tiêu đã hoàn thành.
   - **Hành động:**
     - Trong `SavvyContext`, tạo một state mới `completedGoals` và lưu vào `localStorage`.
-    - Tạo một hàm mới `handleCompleteGoal(goalId)`. Hàm này sẽ tìm mục tiêu trong mảng `goals`, di chuyển nó sang `completedGoals`, và xóa nó khỏi `goals`.
-    - Khi một giao dịch `sell` được thực hiện và làm cho `currentAmount` của một `goal` >= `targetAmount`, gọi hàm `handleCompleteGoal`.
     - Tạo component `GoalHistory.jsx` để hiển thị danh sách các mục tiêu đã hoàn thành.
 
 ---
