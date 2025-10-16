@@ -7,7 +7,7 @@ const message = {
   deleteTransaction: 'Bạn có chắc muốn xóa giao dịch này không?',
 };
 
-export function PortfolioProvider({ children, setGoalMessage, goals }) {
+export function PortfolioProvider({ children, goals }) {
     console.log("PortfolioProvider received goals:", goals);
     const [holdings, setHoldings] = useState(() => {
         const saved = localStorage.getItem('portfolio-holdings');
@@ -88,6 +88,34 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
         handleOpenAddHoldingModal();
     }, [handleOpenAddHoldingModal]);
 
+    const portfolioTotalValue = useMemo(() => {
+        return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
+      }, [portfolioData])
+      
+      const totalCostBasis = useMemo(() => {
+        return transactions.reduce((total, t) => {
+          const price = t.pricePerCoin || 0;
+          const value = t.amount * price;
+          if(t.type === 'sell') {
+              return total - value;
+          }
+          return total + value;
+        }, 0);
+      }, [transactions])
+  
+      const totalProfitLoss = useMemo(() => {
+        return totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
+      }, [portfolioTotalValue, totalCostBasis])
+  
+      const total24hChangeValue = useMemo(() => {
+        return portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
+      }, [portfolioData])
+      
+      const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
+      const totalChangePercentage = useMemo(() => {
+        return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
+      }, [portfolioValueYesterday, total24hChangeValue])
+
     // --- 3. SIDE EFFECTS & LOGIC (useEffect) ---
     useEffect(() => { // Load Coin List
         if (apiCallGuard.current) return;
@@ -159,90 +187,39 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
     
     // --- SMART SUGGESTIONS LOGIC ---
     useEffect(() => {
-        console.log("--- Running Smart Suggestions ---");
-        console.log("Goals:", goals);
-        console.log("Portfolio Data:", portfolioData);
-
-        if (!portfolioData.length || !goals || !goals.length) {
-            console.log("Not enough data, skipping.");
+        if(totalProfitLoss <= 0 || !goals || goals.length === 0) {
             setSmartSuggestions([]);
             return;
         }
+        const achievableGoals = goals.filter(goal => {
+            const amountNeeded = goal.targetAmount - goal.currentAmount;
+            return amountNeeded > 0;
+        }).map(g => ({
+            name: g.title,
+            amountNeeded: g.targetAmount - g.currentAmount,
+        }));
 
-        const newSuggestions = [];
+        if(achievableGoals.length === 0) {
+            setSmartSuggestions([]);
+            return;
+        }
+        const totalAmountNeeded = achievableGoals.reduce((total, g) =>
+            total + g.amountNeeded, 0)
+        ;
+        const suggestion = {
+            id: 'summary_suggestion',
+            totalProfitLoss: totalProfitLoss,
+            achievableGoals: achievableGoals,
+            totalAmountNeeded: totalAmountNeeded,
+            percentageNeeded: (totalAmountNeeded / totalProfitLoss) * 100,
+            remainingProfit: totalProfitLoss - totalAmountNeeded,
+        };
+        setSmartSuggestions(suggestion);
+        console.log('Generate Summary suggestions:', suggestion);
 
-        portfolioData.forEach(coin => {
-            const coinTransactions = transactions.filter(t => t.coinId === coin.id);
-            const costBasis = coinTransactions.reduce((total, t) => {
-                const value = t.amount * t.pricePerCoin;
-                return t.type === 'buy' ? total + value : total - value;
-            }, 0);
-
-            const totalValue = coin.amount * coin.current_price;
-            const profitLoss = costBasis > 0 ? totalValue - costBasis : 0;
-            
-            console.log(`Checking ${coin.name}: PnL = ${profitLoss}`);
-
-            if (profitLoss <= 0) {
-                return;
-            }
-
-            goals.forEach(goal => {
-                const amountNeeded = goal.targetAmount - goal.currentAmount; //lấy mục tiêu trừ số lượng đang có => số lượng cần để hoàn thành mục tiêu
-
-                if(goal && typeof goal.targetAmount === 'number' && typeof goal.currentAmount === 'number') {
-                    const amountNeeded = goal.targetAmount - goal.currentAmount;
-                    console.log(`   Comparing with goal '${goal.name}': Needs ${amountNeeded}`);
-                }
-
-                if (amountNeeded > 0 && profitLoss >= amountNeeded) { //nếu số lượng cần lớn hơn 0 và lợi nhuận lớn hơn số lượng cần
-                    console.log(`   --> MATCH FOUND!`);
-                    newSuggestions.push({ 
-                        id: `${coin.id} - ${goal.id}`, 
-                        coinName: coin.name, 
-                        coinId: coin.id, 
-                        coinImage: coin.image,
-                        goalName: goal.title, 
-                        profitAvailable: profitLoss, 
-                        amountNeeded: amountNeeded 
-                    });
-                }
-            })
-        })
-        setSmartSuggestions(newSuggestions);
-        console.log("--- Finished. Suggestions found:", newSuggestions);
-
-    }, [portfolioData, goals, transactions]);
+    }, [goals, totalProfitLoss]);
     
     // --- 4. DERIVED DATA (useMemo for calculations) ---
-    const portfolioTotalValue = useMemo(() => {
-      return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
-    }, [portfolioData])
-    
-    const totalCostBasis = useMemo(() => {
-      return transactions.reduce((total, t) => {
-        const price = t.pricePerCoin || 0;
-        const value = t.amount * price;
-        if(t.type === 'sell') {
-            return total - value;
-        }
-        return total + value;
-      }, 0);
-    }, [transactions])
-
-    const totalProfitLoss = useMemo(() => {
-      return totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
-    }, [portfolioTotalValue, totalCostBasis])
-
-    const total24hChangeValue = useMemo(() => {
-      return portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
-    }, [portfolioData])
-    
-    const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
-    const totalChangePercentage = useMemo(() => {
-      return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
-    }, [portfolioValueYesterday, total24hChangeValue])
-    
     
     // Tối ưu object value bằng useMemo
     const value = useMemo(() => ({
@@ -282,9 +259,9 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
     ]);
     console.log("context value", value);
 
-    return (
-        <PortfolioContext.Provider value={value}>
+ return (
+    <PortfolioContext.Provider value={value}>
             {children}
-        </PortfolioContext.Provider>
+    </PortfolioContext.Provider>
     );
 }
