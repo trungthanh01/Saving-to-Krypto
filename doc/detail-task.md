@@ -252,7 +252,7 @@
     - Sửa `SmartSuggestions.jsx` để đọc dữ liệu từ object gợi ý duy nhất thay vì một mảng.
     - Hiển thị tổng lợi nhuận, danh sách mục tiêu có thể hoàn thành, và tổng số tiền cần thiết.
 
-- [ ] **Task 10.3: Xây dựng Luồng Hoàn thành Mục tiêu Tích hợp**
+- [x] **Task 10.3: Xây dựng Luồng Hoàn thành Mục tiêu Tích hợp**
   - **Mục đích:** Kết nối nút bấm trên gợi ý với hành động ghi nhận giao dịch bán một cách liền mạch.
   - **Hành động:**
     - Tạo hàm `handleInitiateGoalCompletion` trong `PortfolioContext`. Hàm này sẽ được gọi từ nút "Thực hiện" trong `SmartSuggestions`.
