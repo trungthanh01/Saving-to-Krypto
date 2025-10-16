@@ -20,7 +20,12 @@ export function SmartSuggestions() {
                 <div key={suggestion.id} className="suggestion-card">
                     <p>
                         🎉 Lợi nhuận từ 
-                        <strong>{suggestion.coinName}</strong> ({formatCurrency(suggestion.profitAvailable)}) của bạn đã đủ để hoàn thành mục tiêu <strong>'{suggestion.goalName}'</strong> (còn thiếu {formatCurrency(suggestion.amountNeeded)}).
+                        <strong><img className="coin-image" src={suggestion.coinImage} alt={suggestion.coinName} />
+                            {suggestion.coinName}
+                        </strong> 
+                        ({formatCurrency(suggestion.profitAvailable)}) 
+                        của bạn đã đủ để hoàn thành mục tiêu 
+                        <strong> {suggestion.goalName}</strong> (còn thiếu {formatCurrency(suggestion.amountNeeded)}).
                     </p>
                     <button 
                         className="suggestion-action" 

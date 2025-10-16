@@ -46,3 +46,12 @@
 .suggestion-action:hover {
     opacity: 0.8;
 }
+.coin-image {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-left: 5px;
+    display: inline-block;
+    vertical-align: middle;
+    
+}

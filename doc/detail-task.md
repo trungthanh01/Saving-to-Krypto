@@ -247,14 +247,14 @@
     - Trong `App.jsx`, lấy `goals` từ `SavvyContext`.
     - Truyền state `goals` như một prop mới vào component `<PortfolioProvider>`.
 
-- [ ] **Task 10.2: Xây dựng Logic "Gợi ý Thông minh"**
+- [x] **Task 10.2: Xây dựng Logic "Gợi ý Thông minh"**
   - **Mục đích:** Tạo ra một cơ chế tự động phát hiện khi lợi nhuận từ một khoản đầu tư có thể giúp hoàn thành một mục tiêu tiết kiệm.
   - **Hành động:**
     - Trong `PortfolioContext`, tạo state mới `smartSuggestions` để lưu các gợi ý.
     - Tạo một `useEffect` để theo dõi sự thay đổi của `portfolioData` và prop `goals` mới.
     - Bên trong `useEffect`, viết logic so sánh `profitLoss` của từng coin với số tiền còn thiếu của từng mục tiêu để tạo ra các gợi ý.
 
-- [ ] **Task 10.3: Xây dựng Giao diện Hiển thị Gợi ý**
+- [x] **Task 10.3: Xây dựng Giao diện Hiển thị Gợi ý**
   - **Mục đích:** Hiển thị các gợi ý một cách trực quan và hữu ích.
   - **Hành động:**
     - Tạo component mới `SmartSuggestions.jsx`.

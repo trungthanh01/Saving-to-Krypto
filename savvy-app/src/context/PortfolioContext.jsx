@@ -201,7 +201,8 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
                         id: `${coin.id} - ${goal.id}`, 
                         coinName: coin.name, 
                         coinId: coin.id, 
-                        goalName: goal.name, 
+                        coinImage: coin.image,
+                        goalName: goal.title, 
                         profitAvailable: profitLoss, 
                         amountNeeded: amountNeeded 
                     });
