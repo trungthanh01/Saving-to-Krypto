@@ -8,7 +8,7 @@ const message = {
 };
 
 export function PortfolioProvider({ children, setGoalMessage, goals }) {
-    // --- 1. STATE MANAGEMENT ---
+    console.log("PortfolioProvider received goals:", goals);
     const [holdings, setHoldings] = useState(() => {
         const saved = localStorage.getItem('portfolio-holdings');
         return saved ? JSON.parse(saved) : [];
@@ -157,8 +157,14 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
         loadPortfolioData();
     }, [holdings]);
     
-    useEffect(() => { // Smart Suggestions Logic
+    // --- SMART SUGGESTIONS LOGIC ---
+    useEffect(() => {
+        console.log("--- Running Smart Suggestions ---");
+        console.log("Goals:", goals);
+        console.log("Portfolio Data:", portfolioData);
+
         if (!portfolioData.length || !goals || !goals.length) {
+            console.log("Not enough data, skipping.");
             setSmartSuggestions([]);
             return;
         }
@@ -174,14 +180,23 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
 
             const totalValue = coin.amount * coin.current_price;
             const profitLoss = costBasis > 0 ? totalValue - costBasis : 0;
+            
+            console.log(`Checking ${coin.name}: PnL = ${profitLoss}`);
 
-            if(profitLoss <= 0){
+            if (profitLoss <= 0) {
                 return;
-            };
+            }
 
             goals.forEach(goal => {
-                const amountNeeded = goal.targetAmount - goal.amount;
-                if(amountNeeded > 0 && profitLoss >= amountNeeded){
+                const amountNeeded = goal.targetAmount - goal.currentAmount; //lấy mục tiêu trừ số lượng đang có => số lượng cần để hoàn thành mục tiêu
+
+                if(goal && typeof goal.targetAmount === 'number' && typeof goal.currentAmount === 'number') {
+                    const amountNeeded = goal.targetAmount - goal.currentAmount;
+                    console.log(`   Comparing with goal '${goal.name}': Needs ${amountNeeded}`);
+                }
+
+                if (amountNeeded > 0 && profitLoss >= amountNeeded) { //nếu số lượng cần lớn hơn 0 và lợi nhuận lớn hơn số lượng cần
+                    console.log(`   --> MATCH FOUND!`);
                     newSuggestions.push({ 
                         id: `${coin.id} - ${goal.id}`, 
                         coinName: coin.name, 
@@ -194,7 +209,7 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
             })
         })
         setSmartSuggestions(newSuggestions);
-        console.log("Smart Suggestions Found:", newSuggestions);
+        console.log("--- Finished. Suggestions found:", newSuggestions);
 
     }, [portfolioData, goals, transactions]);
     
@@ -238,6 +253,7 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
         coinList,
         isAddHoldingModalOpen, 
         editingTransaction, 
+        smartSuggestions, // <-- **QUAN TRỌNG: THÊM DÒNG NÀY** 
         addTransaction: handleAddTransaction,
         editTransaction: handleEditTransaction, 
         deleteTransaction: handleDeleteTransaction,
@@ -255,7 +271,8 @@ export function PortfolioProvider({ children, setGoalMessage, goals }) {
         smartSuggestions,
     }), [
         holdings, transactions, portfolioData, isLoading, error, coinList,
-        isAddHoldingModalOpen, editingTransaction, portfolioTotalValue, 
+        isAddHoldingModalOpen, editingTransaction, smartSuggestions, // <-- **VÀ THÊM VÀO ĐÂY**
+        portfolioTotalValue, 
         totalCostBasis, totalProfitLoss, total24hChangeValue, 
         totalChangePercentage, confirmationModal, handleAddTransaction,
         handleEditTransaction, handleDeleteTransaction, handleOpenAddHoldingModal,

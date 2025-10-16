@@ -3,35 +3,36 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import './SmartSuggestions.css';
 
 export function SmartSuggestions() {
-    const { smartSuggestions, handleOpenEditModal } = useContext(PortfolioContext);
+    // THÊM `openEditModal` VÀO ĐÂY
+    const { smartSuggestions, openEditModal } = useContext(PortfolioContext);
 
-    if(!smartSuggestions.length)  return null;
-
-    const formatProfitAvailable = (value) => new Intl.NumberFormat('en-US', {
+    const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
     }).format(value || 0);
 
-    const formatAmountNeeded = (value) => new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(value || 0);
-
+    if (!smartSuggestions || !smartSuggestions.length) return null;
 
     return (
         <div className="smart-suggestions">
-            <h1>Smart Suggestions</h1>
+            <h2 className="suggestions-title">✨ Các mục tiêu đã đạt được</h2>
             {smartSuggestions.map((suggestion) => (
-                <div key={suggestion.id} className="smart-suggestion">
-                    <h2>{suggestion.coinName}</h2>
-                    <p>{suggestion.goalName}</p>
-                    <p>{formatProfitAvailable(suggestion.profitAvailable)}</p> 
-                    <p>{formatAmountNeeded(suggestion.amountNeeded)}</p>
-                    <button onClick={() => handleOpenEditModal(suggestion)}>Sell</button>
+                <div key={suggestion.id} className="suggestion-card">
+                    <p>
+                        🎉 Lợi nhuận từ 
+                        <strong>{suggestion.coinName}</strong> ({formatCurrency(suggestion.profitAvailable)}) của bạn đã đủ để hoàn thành mục tiêu <strong>'{suggestion.goalName}'</strong> (còn thiếu {formatCurrency(suggestion.amountNeeded)}).
+                    </p>
+                    <button 
+                        className="suggestion-action" 
+                        onClick={() => openEditModal({ 
+                            coinId: suggestion.coinId, 
+                            type: 'sell',
+                            amount: '',
+                            pricePerCoin: ''
+                        })}
+                    >
+                        Chốt lời ngay
+                    </button>
                 </div>
             ))}
         </div>

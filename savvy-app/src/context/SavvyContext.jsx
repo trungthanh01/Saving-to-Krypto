@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useMemo} from "react";
 export const SavvyContext = createContext();
 
 export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
@@ -81,9 +81,23 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         setSavings(newSavings)
     }
 
+    // TẠO RA MỘT PHIÊN BẢN GOALS ĐẦY ĐỦ HƠN
+    const goalsWithCurrentAmount = useMemo(() => {
+        return goals.map(goal => {
+            const relevantSavings = savings.filter(s => 
+                s.goalId === goal.id);
+            const currentAmount = relevantSavings.reduce((total, s) => 
+                total + s.amount, 0);
+            return {
+                ...goal,
+                currentAmount: currentAmount,
+            };
+        });
+    }, [goals, savings]); // Tính lại khi goals hoặc savings thay đổi
+
 
     const value = {
-        goals,
+        goals: goalsWithCurrentAmount, // <-- GỬI ĐI PHIÊN BẢN ĐẦY ĐỦ
         savings,
         isAddSavingModalOpen,
         isAddGoalModalOpen,
