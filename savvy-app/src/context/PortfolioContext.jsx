@@ -1,6 +1,6 @@
-import { useMemo, useCallback, createContext, useState, useEffect, useRef } from "react";
+import { useMemo, useCallback, createContext, useState, useEffect, useRef, useContext } from "react";
 import { fetchCoinData, fetchCoinList } from "../services/crypto-api.js";
-
+import { SavvyContext } from "./SavvyContext.jsx";
 export const PortfolioContext = createContext();
 
 const message = {
@@ -33,13 +33,18 @@ export function PortfolioProvider({ children, goals }) {
     const [error, setError] = useState(null);
     const [smartSuggestions, setSmartSuggestions] = useState(null);
     const [goalCompletionData, setGoalCompletionData] = useState(null);
-
+    const { markGoalAsComplete } = useContext(SavvyContext);
     // --- 2. HANDLER FUNCTIONS (useCallback) ---
     const handleAddTransaction = useCallback((newTransaction) => {
         setTransactions(prev => [newTransaction, ...prev]);
-        // Tạm thời comment dòng này lại để tránh ảnh hưởng đến các hàm khác
-        // setGoalMessage(`Đã thêm ${newTransaction.coinId.toUpperCase()}!`);
-    }, []);
+        if(goalCompletionData){
+            console.log('Comleting goals after adding transaction:', goalCompletionData.goalToComplete);
+            goalCompletionData.goalToComplete.forEach(goal => {
+                markGoalAsComplete(goal.id);
+            });
+        }
+        setGoalCompletionData(null);
+    }, [goalCompletionData, markGoalAsComplete]);
 
     const handleEditTransaction = useCallback((updatedTransaction) => {
         console.log("Attempting to edit. Updated data:", updatedTransaction);
@@ -56,7 +61,14 @@ export function PortfolioProvider({ children, goals }) {
             console.log("New transactions array:", newTransactions);
             return newTransactions;
         });
-    }, []);
+        if(goalCompletionData){
+            console.log('Comleting goals after editing transaction:', goalCompletionData.goalToComplete);
+            goalCompletionData.goalToComplete.forEach(goal => {
+                markGoalAsComplete(goal.id);
+            });
+        }
+        setGoalCompletionData(null);
+    }, [goalCompletionData, markGoalAsComplete]);
 
     const handleOpenConfirmationModal = useCallback(() => {
         setConfirmationModal({
@@ -213,6 +225,7 @@ export function PortfolioProvider({ children, goals }) {
         }).map(g => ({
             name: g.title,
             amountNeeded: g.targetAmount - g.currentAmount,
+            id: g.id,
         }));
 
         if(achievableGoals.length === 0) {

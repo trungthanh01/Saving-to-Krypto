@@ -11,6 +11,10 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         const savedGoals = localStorage.getItem('savvy-goals');
         return savedGoals ? JSON.parse(savedGoals) : [];
     });
+    const [completedGoals, setCompletedGoals] = useState(() => {
+        const savedCompletedGoals = localStorage.getItem('completeGoals_data');
+        return savedCompletedGoals ? JSON.parse(savedCompletedGoals) : [];
+    })
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
@@ -18,8 +22,9 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
     useEffect(() => {
         localStorage.setItem('savvy-savings', JSON.stringify(savings));
         localStorage.setItem('savvy-goals', JSON.stringify(goals));
+        localStorage.setItem('completeGoals_data', JSON.stringify(completedGoals));
         console.log('Dữ liệu đã được lưu vào Local Storage')
-    }, [savings, goals])
+    }, [savings, goals, completedGoals])
 
     function handleOpenAddSavingModal(goalId){
         setIsAddSavingModalOpen(true)
@@ -80,6 +85,16 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
             saving.goalId !== goalIdToDelete);
         setSavings(newSavings)
     }
+    const markGoalAsComplete = useCallback((goalId) => {
+        const goalToComplete = goals.find(goal => goal.id === goalId);
+            if(!goalToComplete) {
+                console.error('Goal not found');
+                return;
+            }
+            console.log(`Completing goal: ${goalToComplete.name}`)
+            setCompletedGoals(prevCompleted => [...prevCompleted, goalToComplete]);
+            setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
+        }, [goals]);
 
     // TẠO RA MỘT PHIÊN BẢN GOALS ĐẦY ĐỦ HƠN
     const goalsWithCurrentAmount = useMemo(() => {
@@ -97,7 +112,7 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
 
 
     const value = {
-        goals: goalsWithCurrentAmount, // <-- GỬI ĐI PHIÊN BẢN ĐẦY ĐỦ
+        goals: goalsWithCurrentAmount, 
         savings,
         isAddSavingModalOpen,
         isAddGoalModalOpen,
@@ -112,6 +127,7 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         handleDeleteGoal,
         goalMessage, // <-- Đảm bảo dòng này tồn tại
         setGoalMessage,
+        markGoalAsComplete,
     }
      return(
         <SavvyContext.Provider value={value}>
