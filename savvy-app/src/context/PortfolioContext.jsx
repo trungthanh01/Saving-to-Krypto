@@ -101,19 +101,22 @@ export function PortfolioProvider({ children, goals }) {
         handleOpenAddHoldingModal();
     }, [handleOpenAddHoldingModal]);
 
+
     const handleInitiateGoalCompletion = useCallback((suggestion) => {
         if(!suggestion) return;
         setGoalCompletionData({
             goalToComplete: suggestion.achievableGoals,
             totalAmountNeeded: suggestion.totalAmountNeeded,
         })
-        openEditModal({
+        handleOpenEditModal({
+            id: null,
             type: 'sell',
             coinId: '',
             amount: '',
             pricePerCoin: '',
+            date: new Date().toISOString().split('T')[0],
         })
-    }, [openEditModal]);
+    }, [handleOpenAddHoldingModal, handleOpenEditModal]);
 
     const portfolioTotalValue = useMemo(() => {
         return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);

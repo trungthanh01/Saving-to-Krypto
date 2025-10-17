@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo} from "react";
+import { createContext, useState, useEffect, useMemo, useCallback} from "react";
 export const SavvyContext = createContext();
 
 export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
@@ -18,6 +18,10 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
     const [isAddSavingModalOpen, setIsAddSavingModalOpen] = useState(false)
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false)
     const [currentTargetGoalId, setCurrentTargetGoalId] = useState(null)
+    const [celebrationModal, setCelebrationModal] = useState({
+        isOpen: false,
+        goalName: '',
+    })
 
     useEffect(() => {
         localStorage.setItem('savvy-savings', JSON.stringify(savings));
@@ -85,17 +89,28 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
             saving.goalId !== goalIdToDelete);
         setSavings(newSavings)
     }
+    
     const markGoalAsComplete = useCallback((goalId) => {
         const goalToComplete = goals.find(goal => goal.id === goalId);
-            if(!goalToComplete) {
-                console.error('Goal not found');
+        if(!goalToComplete) {
+            console.error('Goal not found');
                 return;
             }
             console.log(`Completing goal: ${goalToComplete.name}`)
             setCompletedGoals(prevCompleted => [...prevCompleted, goalToComplete]);
             setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
+            setCelebrationModal({
+                isOpen: true,
+                goalName: goalToComplete.title,
+            })
         }, [goals]);
-
+        
+    const handleCloseCelebrationModal = useCallback(() => {
+        setCelebrationModal({
+            isOpen: false,
+            goalName: '',
+        })
+    }, [])
     // TẠO RA MỘT PHIÊN BẢN GOALS ĐẦY ĐỦ HƠN
     const goalsWithCurrentAmount = useMemo(() => {
         return goals.map(goal => {
@@ -128,6 +143,8 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         goalMessage, // <-- Đảm bảo dòng này tồn tại
         setGoalMessage,
         markGoalAsComplete,
+        celebrationModal,
+        handleCloseCelebrationModal,
     }
      return(
         <SavvyContext.Provider value={value}>

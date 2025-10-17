@@ -11,6 +11,7 @@ import { Savvy } from './components/savvy/Savvy.jsx';
 import { SavvyProvider } from './context/SavvyContext.jsx';
 import { SavvyContext } from './context/SavvyContext.jsx';
 import { SmartSuggestions } from './components/portfolio/SmartSuggestions.jsx';
+import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
 
 
 export function AppContent() {
@@ -49,6 +50,7 @@ export function AppContent() {
           <Portfolio />
           <TransactionHistory />
           <ConfirmationModal />
+          <CelebrationModal />
         </PortfolioProvider>
 
         <Savvy />

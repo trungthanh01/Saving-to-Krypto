@@ -259,7 +259,7 @@
     - Khi được gọi, hàm này sẽ mở modal `AddTransactionForm`, có thể điền sẵn `type` là `'sell'` và gợi ý số tiền cần bán.
     - Sửa đổi `AddTransactionForm` để sau khi lưu giao dịch thành công, nó sẽ kích hoạt bước tiếp theo (hoàn thành mục tiêu).
 
-- [ ] **Task 10.4: Hoàn thiện Mục tiêu & Hiển thị Modal Chúc mừng**
+- [x] **Task 10.4: Hoàn thiện Mục tiêu & Hiển thị Modal Chúc mừng**
   - **Mục đích:** Cập nhật trạng thái của mục tiêu trong `SavvyContext` và mang lại phần thưởng tinh thần cho người dùng.
   - **Hành động:**
     - Tạo một `ConfirmationModal` hoặc `CelebrationModal` mới để chúc mừng người dùng.

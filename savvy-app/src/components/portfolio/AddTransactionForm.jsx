@@ -13,34 +13,34 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('buy');
     const [pricePerCoin, setPricePerCoin] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
+    const [suggestions, setSuggestions] = useState(null);
     const [date, setDate] = useState('');   
 
-    const isEditMode = Boolean(transactionToEdit);
+    const isEditMode = Boolean(transactionToEdit && transactionToEdit.id);
 
     useEffect(() => {
         if (isOpen) {
-            if (isEditMode) {
+            if (transactionToEdit) {
                 setCoinId(transactionToEdit.coinId);
                 setAmount(transactionToEdit.amount || '');
                 setType(transactionToEdit.type);
                 setPricePerCoin(transactionToEdit.pricePerCoin || '');
-                setSuggestions([]);
+                setSuggestions(null);
                 setDate(transactionToEdit.date || '');
             } else {
                 setCoinId('');
                 setAmount('');
                 setType('buy');
                 setPricePerCoin('');
-                setSuggestions([]);
+                setSuggestions(null);
                 setDate(new Date().toISOString().split('T')[0]);
             }
         }
-    }, [isOpen, isEditMode, transactionToEdit]);
+    }, [isOpen, transactionToEdit]);
 
     useEffect(() => {
         if (isEditMode || !coinId.trim()) {
-            setSuggestions([]);
+            setSuggestions(null);
             return;
         }
         const filtered = coinList.filter(coin =>
@@ -100,12 +100,12 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
                             autoComplete="off"
                             disabled={isEditMode}
                         />
-                        {suggestions.length > 0 && (
+                        {suggestions && (
                             <ul className="suggestion-list">
                                 {suggestions.map(suggestion => (
                                     <li key={suggestion.id} onClick={() => {
                                         setCoinId(suggestion.id);
-                                        setSuggestions([]);
+                                        setSuggestions(null);
                                     }}>
                                         <img className="suggestion-logo" src={suggestion.image} alt={suggestion.name} />
                                         <div className="suggestion-text">
