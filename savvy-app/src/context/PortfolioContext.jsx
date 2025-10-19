@@ -28,7 +28,7 @@ export function PortfolioProvider({ children, goals }) {
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const apiCallGuard = useRef(false);
-    const [portfolioData, setPortfolioData] = useState([]);
+    const [apiData, setApiData] = useState({})
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [smartSuggestions, setSmartSuggestions] = useState(null);
@@ -118,28 +118,50 @@ export function PortfolioProvider({ children, goals }) {
         })
     }, [handleOpenAddHoldingModal, handleOpenEditModal]);
 
-    const portfolioTotalValue = useMemo(() => {
-        return portfolioData.reduce((total, coin) => total + (coin.amount * coin.current_price), 0);
-      }, [portfolioData])
-      
-      const totalCostBasis = useMemo(() => {
-        return transactions.reduce((total, t) => {
-          const price = t.pricePerCoin || 0;
-          const value = t.amount * price;
-          if(t.type === 'sell') {
-              return total - value;
-          }
-          return total + value;
-        }, 0);
-      }, [transactions])
-  
-      const totalProfitLoss = useMemo(() => {
-        return totalCostBasis > 0 ? portfolioTotalValue - totalCostBasis : 0;
-      }, [portfolioTotalValue, totalCostBasis])
-  
-      const total24hChangeValue = useMemo(() => {
-        return portfolioData.reduce((total, coin) => total + (coin.amount * coin.price_change_24h), 0);
-      }, [portfolioData])
+    // --- 4. DERIVED DATA (useMemo for calculations) ---
+
+    const portfolioData = useMemo(() => {
+        if (holdings.length === 0 || Object.keys(apiData).length === 0) {
+          return [];
+        }
+        return holdings.map(holding => {
+          const coinData = apiData[holding.id];
+          if (!coinData) return null;
+    
+          const currentValue = holding.amount * coinData.current_price;
+          const profitLoss = currentValue - holding.costBasis;
+    
+          return {
+            ...holding,
+            ...coinData,
+            currentValue: currentValue,
+            profitLoss: profitLoss,
+          };
+        }).filter(Boolean);
+    }, [holdings, apiData]);
+
+    const totalCostBasis = useMemo(
+        () => portfolioData.reduce((total, coin) => total + (coin.costBasis || 0), 0),
+        [portfolioData]
+    );
+
+    const portfolioTotalValue = useMemo(
+        () => portfolioData.reduce((total, coin) => total + coin.currentValue, 0),
+        [portfolioData]
+    );
+
+    const totalProfitLoss = useMemo(
+        () => portfolioTotalValue - totalCostBasis,
+        [portfolioTotalValue, totalCostBasis]
+    );
+
+    const total24hChangeValue = useMemo(
+        () => portfolioData.reduce((total, coin) => {
+          const priceChange = coin.price_change_24h || 0;
+          return total + (priceChange * coin.amount);
+        }, 0),
+        [portfolioData]
+    );
       
       const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
       const totalChangePercentage = useMemo(() => {
@@ -164,35 +186,53 @@ export function PortfolioProvider({ children, goals }) {
     }, []);
 
     useEffect(() => { // Update Holdings from Transactions
-        const holdingsSummary = transactions.reduce((acc, t) => {
-            const { coinId, amount, type } = t;
+        // Bước 1.1: Nhóm tất cả giao dịch theo coinId
+        const transactionsByCoin = transactions.reduce((acc, transaction) => {
+            const { coinId } = transaction;
             if (!acc[coinId]) {
-                acc[coinId] = 0;
+                acc[coinId] = [];
             }
-            if (type === 'buy') {
-                acc[coinId] += amount;
-            } else if (type === 'sell') {
-                acc[coinId] -= amount;
-            }
+            acc[coinId].push(transaction); // Sửa điểm 1 & 2: Chỉ push giao dịch hiện tại (t)
             return acc;
         }, {});
 
-        const newHoldingsArray = Object.keys(holdingsSummary)
-            .map(id => ({ id, amount: holdingsSummary[id] }))
-            .filter(h => h.amount > 0.000001); // Lọc coin đã bán hết
+        // Bước 1.2 & 1.3: Lặp qua từng nhóm, tính toán và tạo mảng holding mới
+        const calculatedHoldings = Object.keys(transactionsByCoin).map(coinId => {
+            const coinTransactions = transactionsByCoin[coinId];
+            
+            const buys = coinTransactions.filter(t => t.type === 'buy');
+            const sells = coinTransactions.filter(t => t.type === 'sell');
 
-        setHoldings(newHoldingsArray);
-        localStorage.setItem('portfolio-transactions', JSON.stringify(transactions));
+            const totalAmountBought = buys.reduce((sum, t) => sum + t.amount, 0);
+            const totalCostOfBuys = buys.reduce((sum, t) => sum + (t.amount * (t.pricePerCoin || 0)), 0);
+            
+            const totalAmountSold = sells.reduce((sum, t) => sum + t.amount, 0);
+
+            const remainingAmount = totalAmountBought - totalAmountSold;
+            
+            const averageBuyPrice = totalAmountBought > 0 ? totalCostOfBuys / totalAmountBought : 0;
+            
+            const costBasis = remainingAmount * averageBuyPrice;
+
+            return {
+                id: coinId,
+                amount: remainingAmount,
+                costBasis: costBasis,
+                averageBuyPrice: averageBuyPrice,
+            };
+        });
+
+        // Bước 1.4: Lọc và cập nhật state chính xác
+        const newHoldingsArray = calculatedHoldings.filter(holding => holding.amount > 0.000001);
+
+        setHoldings(newHoldingsArray); // Sửa điểm 3: Cập nhật vào holdings, không phải transactions
+
     }, [transactions]);
     
-    useEffect(() => { // Persist Holdings
-        localStorage.setItem('portfolio-holdings', JSON.stringify(holdings));
-    }, [holdings]);
-    
     useEffect(() => { // Load Portfolio Data
-        const loadPortfolioData = async () => {
+        const getApiData = async () => {
             if (holdings.length === 0) {
-                setPortfolioData([]);
+                setApiData({});
                 setIsLoading(false);
                 return;
             }
@@ -201,11 +241,13 @@ export function PortfolioProvider({ children, goals }) {
                 setError(null);
                 const ids = holdings.map(coin => coin.id);
                 const marketData = await fetchCoinData(ids);
-                const combinedData = marketData.map(marketCoin => {
-                    const holding = holdings.find(h => h.id === marketCoin.id);
-                    return { ...marketCoin, amount: holding ? holding.amount : 0 };
-                });
-                setPortfolioData(combinedData);
+                
+                const apiDataAsObject = marketData.reduce((acc, coin) => {
+                    acc[coin.id] = coin;
+                    return acc;
+                }, {});
+                setApiData(apiDataAsObject);
+
             } catch (err) {
                 setError("Có lỗi xảy ra, không thể tải dữ liệu danh mục.");
                 console.error(err);
@@ -213,7 +255,9 @@ export function PortfolioProvider({ children, goals }) {
                 setIsLoading(false);
             }
         };
-        loadPortfolioData();
+        getApiData();
+        const interval = setInterval(getApiData, 60000); // Tải lại sau mỗi 60s
+        return () => clearInterval(interval); // Dọn dẹp interval
     }, [holdings]);
     
     // --- SMART SUGGESTIONS LOGIC ---
