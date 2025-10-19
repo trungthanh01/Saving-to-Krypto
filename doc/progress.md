@@ -100,3 +100,25 @@
     - **Triệu chứng:** Không thể thêm giao dịch mới, console báo lỗi `TypeError`.
     - **Nguyên nhân:** Một lỗi rất tinh vi. Mảng phụ thuộc (dependency array) của `useMemo` (bọc object `value` trong Context) đã bị thiếu các hàm xử lý (ví dụ: `handleAddTransaction`). Điều này làm `useMemo` trả về một object `value` cũ (stale) trong các lần render sau, khiến cho `addTransaction` trong đó không còn là một hàm hợp lệ.
     - **Giải pháp:** Cập nhật lại mảng phụ thuộc của `useMemo` để nó bao gồm **tất cả** các giá trị và hàm mà object `value` cung cấp, đảm bảo context value luôn mới và chính xác.
+
+---
+
+## Giai đoạn 10: Sửa lỗi Logic Tính toán & Luồng Dữ liệu Nâng cao (Hoàn thành)
+
+- **Task 10.1: Gỡ lỗi `PortfolioSummary` và tính toán Lời/Lỗ**
+  - **Vấn đề 1: `PortfolioSummary` biến mất.**
+    - **Triệu chứng:** Component `PortfolioSummary` không hiển thị sau khi hoàn thành một mục tiêu hoặc thực hiện giao dịch bán.
+    - **Nguyên nhân:** Các giá trị tính toán tổng hợp (như `totalCostBasis`) trả về `NaN` do logic tính toán vốn bị sai, dẫn đến việc React không render component.
+  - **Vấn đề 2: Tính toán Lời/Lỗ sai sau khi bán.**
+    - **Triệu chứng:** Sau khi bán một phần tài sản, cột "Vốn" và "Lời/Lỗ" hiển thị sai (ví dụ: vốn âm).
+    - **Nguyên nhân:** Logic tính "Vốn" (`costBasis`) đã bị nhầm lẫn với "Dòng tiền thuần". Công thức đúng phải dựa trên **giá mua trung bình của số tài sản còn lại**.
+  - **Vấn đề 3 (Lỗi logic sâu): Phụ thuộc vòng tròn (Circular Dependency) và nhầm lẫn State.**
+    - **Triệu chứng:** Lỗi `ReferenceError: Cannot access '...' before initialization` (Temporal Dead Zone) trong context.
+    - **Nguyên nhân:** `portfolioData` được định nghĩa là `useMemo` phụ thuộc vào `apiData`, nhưng `apiData` lại được tính toán (sai lầm) từ chính `portfolioData`. Đồng thời, có sự nhầm lẫn giữa **state nguồn** (`useState`) và **dữ liệu dẫn xuất** (`useMemo`).
+  - **Giải pháp Toàn diện:**
+    1.  **Tập trung Logic vào Context:** Toàn bộ logic tính toán phức tạp (`averageBuyPrice`, `costBasis` cho mỗi coin) được dồn về một `useEffect` duy nhất trong `PortfolioContext`, biến nó thành "nguồn chân lý" (Single Source of Truth).
+    2.  **Phân biệt State Nguồn & Dữ liệu Dẫn xuất:**
+        - Xóa `useState` cho `portfolioData`.
+        - Tạo `useState` mới cho `apiData` để lưu trữ dữ liệu giá từ API.
+        - `portfolioData` được định nghĩa lại bằng `useMemo`, có nhiệm vụ **kết hợp** hai state nguồn là `holdings` và `apiData`. Luồng dữ liệu trở nên rõ ràng: `transactions` -> `holdings` + `apiData` -> `portfolioData`.
+    3.  **Đơn giản hóa Component Con:** `HoldingItem.jsx` được dọn dẹp, loại bỏ toàn bộ `useMemo` và phép tính, trở thành một component "nguơ" (dumb/presentational) chỉ có nhiệm vụ hiển thị dữ liệu đã được tính toán sẵn từ props.

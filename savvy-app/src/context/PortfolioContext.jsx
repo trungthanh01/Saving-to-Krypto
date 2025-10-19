@@ -164,7 +164,7 @@ export function PortfolioProvider({ children, goals }) {
     );
       
       const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
-      
+
       const totalChangePercentage = useMemo(() => {
         return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
       }, [portfolioValueYesterday, total24hChangeValue])
@@ -196,6 +196,7 @@ export function PortfolioProvider({ children, goals }) {
             acc[coinId].push(transaction); // Sửa điểm 1 & 2: Chỉ push giao dịch hiện tại (t)
             return acc;
         }, {});
+        console.log(transactionsByCoin,'transactionsBycoin')
 
         // Bước 1.2 & 1.3: Lặp qua từng nhóm, tính toán và tạo mảng holding mới
         const calculatedHoldings = Object.keys(transactionsByCoin).map(coinId => {

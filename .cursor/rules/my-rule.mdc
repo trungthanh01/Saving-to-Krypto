@@ -63,6 +63,7 @@ Khi tôi yêu cầu **"giải thích kỹ thuật chi tiết"** hoặc cảm th�
     > - **`(item) => ...`**: Đây là một arrow function. Nó nói rằng: "Với mỗi phần tử trong mảng, hãy tạm gọi nó là `item` và thực hiện phép so sánh sau".
     > - **`item.id !== idToDelete`**: Đây là **điều kiện giữ lại**. Nó sẽ trả về `true` (giữ lại) hoặc `false` (loại bỏ).
     > - **Kết quả:** `newArray` là một **mảng hoàn toàn mới**, chỉ chứa những `item` từ `oldArray` mà có `id` không trùng với `idToDelete`.
+### **7. Luôn Console.log() để xuất kết quả ra tab console**
 
 ═══════════════════════════════════════════════════════════
 
