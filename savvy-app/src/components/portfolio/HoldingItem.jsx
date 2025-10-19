@@ -2,39 +2,22 @@ import { useContext, useMemo, memo } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext";
 
 export const HoldingItem = memo(({ coin }) => {
-    const { transactions } = useContext(PortfolioContext);
+    const {
+        name,
+        symbol,
+        image,
+        current_price,
+        price_change_percentage_24h,
+        amount,
+        currentValue,
+        costBasis,
+        averageBuyPrice,
+        profitLoss
+    } = coin;
 
-    // --- Core Values ---
-    const totalValue = coin.amount * coin.current_price;
+ 
 
     // --- Derived Data Calculation (Optimized with useMemo) ---
-
-    // 1. Lọc ra các giao dịch chỉ cho coin này.
-    const coinTransactions = useMemo(() => 
-        transactions.filter(t => t.coinId === coin.id), 
-        [transactions, coin.id]
-    );
-
-    // 2. Tính tổng vốn (Cost Basis) từ các giao dịch đã lọc.
-    const costBasis = useMemo(() => 
-        coinTransactions.reduce((total, t) => {
-            const value = t.amount * t.pricePerCoin;
-            return t.type === 'buy' ? total + value : total - value;
-        }, 0), 
-        [coinTransactions]
-    );
-
-    // 3. Tính giá mua trung bình.
-    const averageBuyPrice = useMemo(() => 
-        (costBasis > 0 && coin.amount > 0) ? costBasis / coin.amount : 0, 
-        [costBasis, coin.amount]
-    );
-
-    // 4. Tính Lời/Lỗ.
-    const profitLoss = useMemo(() => 
-        costBasis > 0 ? totalValue - costBasis : 0, 
-        [totalValue, costBasis]
-    );
 
     // --- Formatting for Display ---
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
@@ -48,7 +31,7 @@ export const HoldingItem = memo(({ coin }) => {
     }).format(value || 0);
 
     const formattedPrice = formatCurrency(coin.current_price);
-    const formattedTotalValue = formatCurrency(totalValue);
+    const formattedTotalValue = formatCurrency(currentValue);
     const formattedCostBasis = formatCurrency(costBasis);
     const formattedAverageBuyPrice = formatCurrency(averageBuyPrice);
     const formattedProfitLoss = formatCurrency(profitLoss);

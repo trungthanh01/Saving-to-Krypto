@@ -164,6 +164,7 @@ export function PortfolioProvider({ children, goals }) {
     );
       
       const portfolioValueYesterday = portfolioTotalValue - total24hChangeValue;
+      
       const totalChangePercentage = useMemo(() => {
         return portfolioValueYesterday !== 0 ? (total24hChangeValue / portfolioValueYesterday) * 100 : 0;
       }, [portfolioValueYesterday, total24hChangeValue])
