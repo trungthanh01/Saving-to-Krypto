@@ -18,6 +18,7 @@ export function PortfolioProvider({ children, goals }) {
         const saved = localStorage.getItem('portfolio-transactions');
         return saved ? JSON.parse(saved) : [];
     });
+    console.log(transactions, 'transactionsConsole')
 
     const [confirmationModal, setConfirmationModal] = useState({
         isOpen: false,
@@ -154,7 +155,7 @@ export function PortfolioProvider({ children, goals }) {
         () => portfolioTotalValue - totalCostBasis,
         [portfolioTotalValue, totalCostBasis]
     );
-
+    console.log('totalProfitLoss', totalProfitLoss)
     const total24hChangeValue = useMemo(
         () => portfolioData.reduce((total, coin) => {
           const priceChange = coin.price_change_24h || 0;
@@ -258,42 +259,29 @@ export function PortfolioProvider({ children, goals }) {
             }
         };
         getApiData();
-        const interval = setInterval(getApiData, 60000); // Tải lại sau mỗi 60s
+        const interval = setInterval(getApiData, 120000); // Tải lại sau mỗi 60s
         return () => clearInterval(interval); // Dọn dẹp interval
     }, [holdings]);
     
     // --- SMART SUGGESTIONS LOGIC ---
     useEffect(() => {
-        if(totalProfitLoss <= 0 || !goals || goals.length === 0) {
-            setSmartSuggestions(null);
-            return;
-        }
-        const achievableGoals = goals.filter(goal => {
-            const amountNeeded = goal.targetAmount - goal.currentAmount;
-            return amountNeeded > 0;
-        }).map(g => ({
-            name: g.title,
-            amountNeeded: g.targetAmount - g.currentAmount,
-            id: g.id,
-        }));
+        const completableGoals = goals.filter(goal => {
+            const amountNeeded =  goal.targetAmount - goal.currentAmount
+            return totalProfitLoss >= ( goal.targetAmount - goal.currentAmount )
+        });
+        console.log(completableGoals, 'completable')
 
-        if(achievableGoals.length === 0) {
-            setSmartSuggestions(null);
-            return;
-        }
-        const totalAmountNeeded = achievableGoals.reduce((total, g) =>
-            total + g.amountNeeded, 0)
-        ;
-        const suggestion = {
-            id: 'summary_suggestion',
-            totalProfitLoss: totalProfitLoss,
-            achievableGoals: achievableGoals,
-            totalAmountNeeded: totalAmountNeeded,
-            percentageNeeded: (totalAmountNeeded / totalProfitLoss) * 100,
-            remainingProfit: totalProfitLoss - totalAmountNeeded,
-        };
-        setSmartSuggestions(suggestion);
-        console.log('Generate Summary suggestions:', suggestion);
+        const incompletableGoals = goals.filter(goal => {
+            const amountNeeded = goal.targetAmount - goal.currentAmount
+            return totalProfitLoss < (goal.targetAmount - goal.currentAmount)
+        });
+        console.log(incompletableGoals, 'incompletable')
+        
+        setSmartSuggestions({
+            completable: completableGoals,
+            incompletable: incompletableGoals
+        });
+        console.log('Generate Summary suggestions:', completableGoals, incompletableGoals);
 
     }, [goals, totalProfitLoss]);
     
