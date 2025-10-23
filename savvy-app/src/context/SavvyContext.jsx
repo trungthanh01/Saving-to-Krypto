@@ -1,7 +1,10 @@
-import { createContext, useState, useEffect, useMemo, useCallback} from "react";
+import { createContext, useState, useEffect, useMemo, useCallback, useContext } from "react";
+import { AppContext } from "./AppContext.jsx";
 export const SavvyContext = createContext();
 
 export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. Nhận setGoalMessage qua props
+    
+    const { handleOpenConfirmationModal } = useContext(AppContext);
     
     const [savings, setSavings] = useState(() => {
         const savedSavings = localStorage.getItem('savvy-savings');
@@ -22,6 +25,9 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         isOpen: false,
         goalName: '',
     })
+    const message = {
+        deleteTransaction: 'Bạn có chắc muốn xóa giao dịch này không?',
+      };
 
     useEffect(() => {
         localStorage.setItem('savvy-savings', JSON.stringify(savings));
@@ -76,27 +82,33 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         setSavings(newSavings);
     }  
     function handleDeleteGoal(goalIdToDelete) {
-        const userConfirmed = window.confirm(
-            'Bạn có chắc chắn muốn xóa mục tiêu này không? Tất cả các khoản tiết kiệm liên quan cũng sẽ bị xóa vĩnh viễn.'
-        )
-        if (!userConfirmed) {
-            return;
-        }
-        const newGoals = goals.filter(goal => 
-            goal.id !== goalIdToDelete);
-        setGoals(newGoals);
-        const newSavings = savings.filter(saving =>
-            saving.goalId !== goalIdToDelete);
-        setSavings(newSavings)
+        const onConfirmDelete = () => {
+            const newGoals = goals.filter(goal => 
+                goal.id !== goalIdToDelete);
+            setGoals(newGoals);
+            const newSavings = savings.filter(saving =>
+                saving.goalId !== goalIdToDelete);
+            setSavings(newSavings);
+        };
+
+        handleOpenConfirmationModal(
+            'Bạn có chắc chắn muốn xóa mục tiêu này không? Tất cả các khoản tiết kiệm liên quan cũng sẽ bị xóa vĩnh viễn.',
+            onConfirmDelete
+        );
     }
 
     // SỬA LẠI HÀM NÀY
     function handleDeleteCompletedGoal(goalIdToDelete) {
-        // Lọc trên mảng `completedGoals`
-        const newCompletedGoals = completedGoals.filter(goal =>
-            goal.id !== goalIdToDelete);
-        // Cập nhật state `completedGoals`
-        setCompletedGoals(newCompletedGoals);
+        const onConfirmDelete = () => {
+            const newCompletedGoals = completedGoals.filter(goal =>
+                goal.id !== goalIdToDelete);
+            setCompletedGoals(newCompletedGoals);
+        };
+
+        handleOpenConfirmationModal(
+            'Bạn có chắc muốn xóa mục tiêu này khỏi lịch sử không?',
+            onConfirmDelete
+        );
     }
     
     const markGoalAsComplete = useCallback((goalId) => {
@@ -120,6 +132,7 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
             goalName: '',
         })
     }, [])
+
     // TẠO RA MỘT PHIÊN BẢN GOALS ĐẦY ĐỦ HƠN
     const goalsWithCurrentAmount = useMemo(() => {
         return goals.map(goal => {
@@ -155,7 +168,7 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         markGoalAsComplete,
         celebrationModal,
         handleCloseCelebrationModal,
-        completedGoals
+        completedGoals,
     }
      return(
         <SavvyContext.Provider value={value}>

@@ -44,12 +44,11 @@ function AppContent() {
           <SmartSuggestions />
           <Portfolio />
           <TransactionHistory />
-          <ConfirmationModal />
         </PortfolioProvider>
         
         <Savvy />
         <CelebrationModal />
-        
+        <ConfirmationModal />
       </main>
     </div>
   );

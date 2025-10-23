@@ -1,9 +1,9 @@
 import './ConfirmationModal.css';
 import { useContext } from 'react';
-import { PortfolioContext } from '../../context/PortfolioContext';
+import { AppContext } from '../../context/AppContext';
 
 export function ConfirmationModal() {
-    const { confirmationModal, handleCloseConfirmationModal } = useContext(PortfolioContext);
+    const { confirmationModal, handleCloseConfirmationModal } = useContext(AppContext);
     const { onConfirm, isOpen, message } = confirmationModal;
     if (!isOpen) return null;
     const handleConfirm = () => {

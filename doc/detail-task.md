@@ -241,16 +241,18 @@
 ### **Giai đoạn 10: Hoàn thiện Luồng "Chốt lời" - Từ Gợi ý đến Hành động**
 *Mục tiêu: Nâng cấp hệ thống gợi ý và xây dựng một luồng hành động hoàn chỉnh, cho phép người dùng sử dụng lợi nhuận từ portfolio để hoàn thành các mục tiêu tiết kiệm một cách trực quan và đầy ý nghĩa.*
 
-- [x] **Task 10.1: Tái cấu trúc Logic Gợi ý thành "Gợi ý Tổng hợp"**
-  - **Mục đích:** Thay đổi logic để so sánh **tổng lợi nhuận** của toàn bộ danh mục với danh sách các mục tiêu chưa hoàn thành.
+- [x] **Task 10.1: Nâng cấp Logic Gợi ý để Phân loại Mục tiêu Độc lập**
+  - **Mục đích:** Thay đổi logic để so sánh tổng lợi nhuận với **từng** mục tiêu riêng lẻ, thay vì gộp chung. Điều này giúp đưa ra gợi ý chính xác và khả thi hơn.
   - **Hành động:**
-    - Trong `PortfolioContext`, sửa lại `useEffect` của `smartSuggestions` để tạo ra một **object gợi ý duy nhất** dựa trên tổng lợi nhuận và các mục tiêu có thể đạt được.
+    - Trong `PortfolioContext.jsx`, sửa lại `useEffect` của `smartSuggestions`.
+    - Lặp qua mảng `goals` và so sánh `totalProfitLoss` với `amountNeeded` (`targetAmount` - `currentAmount`) của từng mục tiêu.
+    - Cấu trúc lại state `smartSuggestions` thành một object chứa 2 mảng: `{ completable: [], incomplete: [] }`.
 
-- [x] **Task 10.2: Cập nhật Giao diện `SmartSuggestions`**
-  - **Mục đích:** Thiết kế lại component để hiển thị thông tin gợi ý tổng hợp một cách rõ ràng.
+- [x] **Task 10.2: Cập nhật Giao diện `SmartSuggestions` để Hiển thị Phân loại**
+  - **Mục đích:** Thiết kế lại component để hiển thị rõ ràng 2 nhóm: mục tiêu có thể hoàn thành và mục tiêu chưa thể.
   - **Hành động:**
-    - Sửa `SmartSuggestions.jsx` để đọc dữ liệu từ object gợi ý duy nhất thay vì một mảng.
-    - Hiển thị tổng lợi nhuận, danh sách mục tiêu có thể hoàn thành, và tổng số tiền cần thiết.
+    - Sửa `SmartSuggestions.jsx` để đọc cấu trúc dữ liệu mới từ `smartSuggestions`.
+    - Render ra 2 khu vực: một cho các mục tiêu `completable` (với gợi ý chi tiết) và một cho các mục tiêu `incomplete`.
 
 - [x] **Task 10.3: Xây dựng Luồng Hoàn thành Mục tiêu Tích hợp**
   - **Mục đích:** Kết nối nút bấm trên gợi ý với hành động ghi nhận giao dịch bán một cách liền mạch.

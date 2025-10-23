@@ -1,11 +1,10 @@
 import { useMemo, useCallback, createContext, useState, useEffect, useRef, useContext } from "react";
 import { fetchCoinData, fetchCoinList } from "../services/crypto-api.js";
 import { SavvyContext } from "./SavvyContext.jsx";
+import { AppContext } from "./AppContext.jsx";
 export const PortfolioContext = createContext();
 
-const message = {
-  deleteTransaction: 'Bạn có chắc muốn xóa giao dịch này không?',
-};
+
 
 // SỬA Ở ĐÂY: Thêm `markGoalAsComplete` vào danh sách props
 export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
@@ -21,11 +20,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
     });
     console.log(transactions, 'transactionsConsole')
 
-    const [confirmationModal, setConfirmationModal] = useState({
-        isOpen: false,
-        message: '',
-        onConfirm: () => {},
-    });
+    
     const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
@@ -69,21 +64,21 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         setGoalCompletionData(null);
     }, [goalCompletionData, markGoalAsComplete]);
 
-    const handleOpenConfirmationModal = useCallback(() => {
-        setConfirmationModal({
-            isOpen: true,
-            message: message.deleteTransaction,
-            onConfirm: () => {},
-        });
-    }, []);
 
-    const handleDeleteTransaction = useCallback(async (id) => {
-        setTransactions(prev => prev.filter(t => t.id !== id));
-    }, []);
+    const { handleOpenConfirmationModal } = useContext(AppContext);
 
-    const handleCloseConfirmationModal = useCallback(() => {
-        setConfirmationModal(prev => ({ ...prev, isOpen: false }));
-    }, []);
+    const handleDeleteTransaction = useCallback((id) => {
+        const onConfirmDelete = () => {
+            setTransactions(prev => prev.filter(t => t.id !== id));
+        };
+
+        handleOpenConfirmationModal(
+            'Bạn có chắc muốn xóa giao dịch này không?',
+            onConfirmDelete
+        );
+    }, [handleOpenConfirmationModal]);
+
+    
 
     const handleOpenAddHoldingModal = useCallback(() => {
         setIsAddHoldingModalOpen(true);
@@ -307,22 +302,19 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         totalProfitLoss, 
         total24hChangeValue, 
         totalChangePercentage,
-        confirmationModal,
-        handleOpenConfirmationModal,
-        handleCloseConfirmationModal,
         handleInitiateGoalCompletion,
-        markGoalAsComplete, // THÊM DÒNG NÀY
+        markGoalAsComplete,
     }), [
         holdings, transactions, portfolioData, isLoading, error, coinList,
         isAddHoldingModalOpen, editingTransaction, smartSuggestions,
         portfolioTotalValue, 
         totalCostBasis, totalProfitLoss, total24hChangeValue, 
-        totalChangePercentage, confirmationModal, handleAddTransaction,
+        totalChangePercentage,  handleAddTransaction,
         handleEditTransaction, handleDeleteTransaction, handleOpenAddHoldingModal,
-        handleOpenEditModal, handleCloseModal, handleOpenConfirmationModal,
-        handleCloseConfirmationModal,
+        handleOpenEditModal, handleCloseModal, 
+        
         handleInitiateGoalCompletion,
-        markGoalAsComplete, // VÀ THÊM DÒNG NÀY
+        markGoalAsComplete,
     ]);
     console.log("context value", value);
 
