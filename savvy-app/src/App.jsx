@@ -49,6 +49,7 @@ function AppContent() {
         
         <Savvy />
         <CelebrationModal />
+        
       </main>
     </div>
   );

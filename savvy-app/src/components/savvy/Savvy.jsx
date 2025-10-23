@@ -6,6 +6,7 @@ import { AddButton } from './AddButton.jsx';
 import {AddSavingForm} from './AddSavingForm.jsx'
 import { AddGoalForm } from './AddGoalForm.jsx';
 import { SavvyContext } from '../../context/SavvyContext.jsx';
+import { GoalHistory } from './GoalHistory.jsx';
 
 export function Savvy() {
     const {
@@ -75,6 +76,7 @@ export function Savvy() {
             onClose={handleCloseAddGoalModal}
             onAddGoal={handleAddGoal}
           />
+          <GoalHistory />
         </>
     )
 }

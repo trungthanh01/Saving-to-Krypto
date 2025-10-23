@@ -89,6 +89,15 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
             saving.goalId !== goalIdToDelete);
         setSavings(newSavings)
     }
+
+    // SỬA LẠI HÀM NÀY
+    function handleDeleteCompletedGoal(goalIdToDelete) {
+        // Lọc trên mảng `completedGoals`
+        const newCompletedGoals = completedGoals.filter(goal =>
+            goal.id !== goalIdToDelete);
+        // Cập nhật state `completedGoals`
+        setCompletedGoals(newCompletedGoals);
+    }
     
     const markGoalAsComplete = useCallback((goalId) => {
         const goalToComplete = goals.find(goal => goal.id === goalId);
@@ -140,11 +149,13 @@ export function SavvyProvider({children, goalMessage, setGoalMessage}) { // 2. N
         handleAddGoal,
         handleDeleteSaving,
         handleDeleteGoal,
+        handleDeleteCompletedGoal,
         goalMessage, // <-- Đảm bảo dòng này tồn tại
         setGoalMessage,
         markGoalAsComplete,
         celebrationModal,
         handleCloseCelebrationModal,
+        completedGoals
     }
      return(
         <SavvyContext.Provider value={value}>
