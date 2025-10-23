@@ -1,37 +1,29 @@
+import { useContext, useEffect } from 'react';
 import './App.css';
-import { useState, useEffect, useContext } from 'react';
-import { Portfolio } from './components/portfolio/Portfolio.jsx';
-import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx';
-import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
+import { SavvyProvider, SavvyContext } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
+import { Savvy } from './components/savvy/Savvy.jsx';
+import { Portfolio } from './components/portfolio/Portfolio.jsx';
 import { TransactionHistory } from './components/portfolio/TransactionHistory.jsx';
 import { PortfolioSummary } from './components/portfolio/PortfolioSummary.jsx';
-import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
-import { Savvy } from './components/savvy/Savvy.jsx';
-import { SavvyProvider } from './context/SavvyContext.jsx';
-import { SavvyContext } from './context/SavvyContext.jsx';
+import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
 import { SmartSuggestions } from './components/portfolio/SmartSuggestions.jsx';
+import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
 import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
 
+// Component con, nằm BÊN TRONG SavvyProvider
+function AppContent() {
+  // Bây giờ gọi useContext ở đây là hợp lệ
+  const { goals, markGoalAsComplete, setGoalMessage, goalMessage } = useContext(SavvyContext);
 
-export function AppContent() {
-  const {goals, setGoalMessage} = useContext(SavvyContext);
-  const {goalMessage} = useContext(SavvyContext);
   useEffect(() => {
-    if (!goalMessage) {
-      return;
+    if (goalMessage) {
+      const timer = setTimeout(() => {
+        setGoalMessage('');
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-    const timerId = setTimeout(() => {
-      setGoalMessage('');
-    }, 3000);
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [goalMessage]);
-  
-  useEffect(() => {
-    console.log(goals);
-  }, [goals]);
+  }, [goalMessage, setGoalMessage]);
 
   return (
     <div className='app-container'>
@@ -39,9 +31,12 @@ export function AppContent() {
         <h1>Savvy</h1>
         {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
       </header>
-      
       <main>
-        <PortfolioProvider setGoalMessage={setGoalMessage} goals={goals}>
+        {/* Truyền các giá trị cần thiết từ SavvyContext xuống PortfolioProvider */}
+        <PortfolioProvider 
+          goals={goals} 
+          markGoalAsComplete={markGoalAsComplete}
+        >
           <div className="portfolio-container">
             <PortfolioSummary />
             <HoldingsChart />
@@ -50,15 +45,16 @@ export function AppContent() {
           <Portfolio />
           <TransactionHistory />
           <ConfirmationModal />
-          <CelebrationModal />
         </PortfolioProvider>
-
+        
         <Savvy />
+        <CelebrationModal />
       </main>
-    </div> 
+    </div>
   );
 }
 
+// Component App chính, chỉ làm nhiệm vụ bao bọc
 export function App() {
   return (
     <SavvyProvider>

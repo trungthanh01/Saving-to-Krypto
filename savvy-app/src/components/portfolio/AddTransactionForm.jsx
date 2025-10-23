@@ -7,7 +7,13 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
     console.log("2. AddTransactionForm rendered. isOpen is:", isOpen);
     const portfolioCtx = useContext(PortfolioContext);
     console.log("Context value RECEIVED in Form:", portfolioCtx);
-    const { addTransaction, editTransaction, coinList } = portfolioCtx;
+    const { 
+        addTransaction, 
+        editTransaction, 
+        coinList,
+        goalCompletionData,
+        markGoalAsComplete
+    } = useContext(PortfolioContext);
 
     const [coinId, setCoinId] = useState('');
     const [amount, setAmount] = useState('');
@@ -76,6 +82,11 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
             editTransaction(transactionData);
         } else {
             addTransaction(transactionData);
+        }
+
+        // BÂY GIỜ LOGIC NÀY SẼ HOẠT ĐỘNG
+        if (goalCompletionData) {
+            markGoalAsComplete(goalCompletionData.id);
         }
 
         onClose();

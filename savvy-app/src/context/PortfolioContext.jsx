@@ -7,7 +7,8 @@ const message = {
   deleteTransaction: 'Bạn có chắc muốn xóa giao dịch này không?',
 };
 
-export function PortfolioProvider({ children, goals }) {
+// SỬA Ở ĐÂY: Thêm `markGoalAsComplete` vào danh sách props
+export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
     console.log("PortfolioProvider received goals:", goals);
     const [holdings, setHoldings] = useState(() => {
         const saved = localStorage.getItem('portfolio-holdings');
@@ -34,15 +35,14 @@ export function PortfolioProvider({ children, goals }) {
     const [error, setError] = useState(null);
     const [smartSuggestions, setSmartSuggestions] = useState(null);
     const [goalCompletionData, setGoalCompletionData] = useState(null);
-    const { markGoalAsComplete } = useContext(SavvyContext);
+    // XÓA DÒNG NÀY: Dòng này gây ra lỗi crash
+    // const { markGoalAsComplete } = useContext(SavvyContext);
     // --- 2. HANDLER FUNCTIONS (useCallback) ---
     const handleAddTransaction = useCallback((newTransaction) => {
         setTransactions(prev => [newTransaction, ...prev]);
         if(goalCompletionData){
-            console.log('Comleting goals after adding transaction:', goalCompletionData.goalToComplete);
-            goalCompletionData.goalToComplete.forEach(goal => {
-                markGoalAsComplete(goal.id);
-            });
+            console.log('Completing goal after adding transaction:', goalCompletionData);
+            markGoalAsComplete(goalCompletionData.id);
         }
         setGoalCompletionData(null);
     }, [goalCompletionData, markGoalAsComplete]);
@@ -63,10 +63,8 @@ export function PortfolioProvider({ children, goals }) {
             return newTransactions;
         });
         if(goalCompletionData){
-            console.log('Comleting goals after editing transaction:', goalCompletionData.goalToComplete);
-            goalCompletionData.goalToComplete.forEach(goal => {
-                markGoalAsComplete(goal.id);
-            });
+            console.log('Completing goal after editing transaction:', goalCompletionData);
+            markGoalAsComplete(goalCompletionData.id);
         }
         setGoalCompletionData(null);
     }, [goalCompletionData, markGoalAsComplete]);
@@ -103,12 +101,12 @@ export function PortfolioProvider({ children, goals }) {
     }, [handleOpenAddHoldingModal]);
 
 
-    const handleInitiateGoalCompletion = useCallback((suggestion) => {
-        if(!suggestion) return;
-        setGoalCompletionData({
-            goalToComplete: suggestion.achievableGoals,
-            totalAmountNeeded: suggestion.totalAmountNeeded,
-        })
+    const handleInitiateGoalCompletion = useCallback((goal) => {
+        if(!goal) return;
+
+        console.log("Initiating completion for goal:", goal);
+        setGoalCompletionData(goal);
+
         handleOpenEditModal({
             id: null,
             type: 'sell',
@@ -117,7 +115,7 @@ export function PortfolioProvider({ children, goals }) {
             pricePerCoin: '',
             date: new Date().toISOString().split('T')[0],
         })
-    }, [handleOpenAddHoldingModal, handleOpenEditModal]);
+    }, [handleOpenEditModal]);
 
     // --- 4. DERIVED DATA (useMemo for calculations) ---
 
@@ -297,7 +295,7 @@ export function PortfolioProvider({ children, goals }) {
         coinList,
         isAddHoldingModalOpen, 
         editingTransaction, 
-        smartSuggestions, // <-- **QUAN TRỌNG: THÊM DÒNG NÀY** 
+        smartSuggestions,
         addTransaction: handleAddTransaction,
         editTransaction: handleEditTransaction, 
         deleteTransaction: handleDeleteTransaction,
@@ -312,18 +310,19 @@ export function PortfolioProvider({ children, goals }) {
         confirmationModal,
         handleOpenConfirmationModal,
         handleCloseConfirmationModal,
-        smartSuggestions,
         handleInitiateGoalCompletion,
+        markGoalAsComplete, // THÊM DÒNG NÀY
     }), [
         holdings, transactions, portfolioData, isLoading, error, coinList,
-        isAddHoldingModalOpen, editingTransaction, smartSuggestions, // <-- **VÀ THÊM VÀO ĐÂY**
+        isAddHoldingModalOpen, editingTransaction, smartSuggestions,
         portfolioTotalValue, 
         totalCostBasis, totalProfitLoss, total24hChangeValue, 
         totalChangePercentage, confirmationModal, handleAddTransaction,
         handleEditTransaction, handleDeleteTransaction, handleOpenAddHoldingModal,
         handleOpenEditModal, handleCloseModal, handleOpenConfirmationModal,
-        handleCloseConfirmationModal, smartSuggestions,
+        handleCloseConfirmationModal,
         handleInitiateGoalCompletion,
+        markGoalAsComplete, // VÀ THÊM DÒNG NÀY
     ]);
     console.log("context value", value);
 
