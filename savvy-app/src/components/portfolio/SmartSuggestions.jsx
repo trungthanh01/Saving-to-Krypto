@@ -15,6 +15,22 @@ export function SmartSuggestions() {
     }
 
     const {completable, incompletable} = smartSuggestions;
+    let totalAmountNeeded = 0;
+    let percentageOfProfit = 0;
+    let remainingProfit = 0;
+    
+    if (completable.length > 0) {
+        //total amount of goal
+        totalAmountNeeded = completable.reduce( (sum, goal) => {
+            return sum + (goal.targetAmount - goal.currentAmount);
+        }, 0)
+        //calculate percentage
+        percentageOfProfit = totalProfitLoss > 0 
+            ? (totalAmountNeeded / totalProfitLoss) * 100 : 0
+        ;
+    
+        remainingProfit = totalProfitLoss - totalAmountNeeded;
+    }
 
 
     return (
@@ -42,6 +58,13 @@ export function SmartSuggestions() {
                             );
                         })}
                     </ul>
+                    <div className="completable-summary">
+                        <p>
+                        Để hoàn thành các mục tiêu trên, bạn cần chốt lời <strong>{formatCurrency(totalAmountNeeded)}</strong>, tương đương <strong>{percentageOfProfit.toFixed(1)}%</strong> tổng lợi nhuận.
+                            <br />
+                            Số lợi nhuận còn lại của bạn sẽ là: <strong>{formatCurrency(remainingProfit)}</strong>.
+                        </p>
+                    </div>
                 </div>
             )}
     
