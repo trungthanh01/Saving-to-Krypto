@@ -62,11 +62,11 @@
 
 /* --- Profit/Loss Colors (Reusing from summary) --- */
 .profit {
-  color: var(--color-success) !important;
+  color: var(--color-secondary) !important;
 }
 
 .loss {
-  color: var(--color-danger) !important;
+  color: red !important;
 }
 
 /* --- Responsive Table --- */

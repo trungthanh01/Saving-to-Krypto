@@ -1,5 +1,5 @@
 .smart-suggestions-container {
-    background-color: #0c1a3e; /* Nền xanh đậm */
+    background-color: var(--color-surface); /* Nền xanh đậm */
     border: 1px solid #2a3a6b;
     border-radius: 12px;
     padding: 24px;
@@ -26,7 +26,7 @@
 /* --- Khu vực có thể hoàn thành --- */
 .completable-section {
     background-color: rgba(16, 185, 129, 0.1); /* Nền xanh lá cây nhạt */
-    border-left: 5px solid #10B981; /* Viền xanh lá cây */
+    border-left: 5px solid var(--color-secondary); /* Viền xanh lá cây */
 }
 
 .completable-section p {
@@ -36,7 +36,7 @@
 }
 
 .completable-section strong {
-    color: #10B981; /* Chữ màu xanh lá */
+    color: var(--color-secondary); /* Chữ màu xanh lá */
     font-weight: 600;
 }
 

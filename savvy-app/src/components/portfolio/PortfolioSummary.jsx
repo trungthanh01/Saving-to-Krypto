@@ -45,11 +45,13 @@ export function PortfolioSummary(){
 
     // Xác định màu sắc cho Lời/Lỗ
     const pnlClass = 
-        totalProfitLoss > 0 ? 'profit' : totalProfitLoss < 0 ? 'loss' : ''
+        totalProfitLoss > 0 ? 'profit' : 
+        totalProfitLoss < 0 ? 'loss' : ''
     ;
 
     const change24hClass = 
-        total24hChangeValue > 0 ? 'profit' : total24hChangeValue < 0 ? 'loss' : ''
+        total24hChangeValue > 0 ? 'profit' : 
+        total24hChangeValue < 0 ? 'loss' : ''
     ;
 
     if(isLoading) {

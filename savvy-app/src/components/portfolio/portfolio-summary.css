@@ -59,10 +59,12 @@
 }
 
 /* --- Màu sắc cho Lời/Lỗ --- */
-.summary-details .profit {
-  color: var(--color-success) !important;
+/* Bộ chọn này có độ ưu tiên cao hơn, sẽ ghi đè lên style mặc định */
+.profit {
+  color: var(--color-secondary) !important;
 }
 
-.summary-details .loss {
-  color: var(--color-danger) !important;
+.loss {
+  color: red !important;
 }
+
