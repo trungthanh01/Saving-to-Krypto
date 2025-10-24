@@ -252,7 +252,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
             }
         };
         getApiData();
-        const interval = setInterval(getApiData, 120000); // Tải lại sau mỗi 60s
+        const interval = setInterval(getApiData, 1200000); 
         return () => clearInterval(interval); // Dọn dẹp interval
     }, [holdings]);
     
