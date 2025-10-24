@@ -305,7 +305,7 @@
 
 *   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA). Xây dựng nó như một component độc lập và tích hợp vào luồng thêm giao dịch để tối đa hóa động lực.
 
-- [ ] **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
+- [x] **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
   - **Mục đích:** Lấy được dữ liệu giá của một đồng coin trong quá khứ.
   - **Hành động:**
     - Trong `services/crypto-api.js`, tạo hàm mới `fetchCoinHistory(coinId, days)` để gọi API `/coins/{id}/market_chart`.
