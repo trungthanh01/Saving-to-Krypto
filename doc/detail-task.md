@@ -268,7 +268,7 @@
     - Trong `SavvyContext`, tạo hàm `markGoalAsComplete` để di chuyển một mục tiêu từ danh sách hiện tại sang danh sách đã hoàn thành.
     - Sau khi giao dịch bán ở Task 10.3 được xác nhận, gọi hàm `markGoalAsComplete` và sau đó hiển thị modal chúc mừng.
 
-- [ ] **Task 10.5: Xây dựng Lịch sử Mục tiêu (Goal History)**
+- [x] **Task 10.5: Xây dựng Lịch sử Mục tiêu (Goal History)**
   - **Mục đích:** Cung cấp cho người dùng cảm giác thành tựu bằng cách lưu lại các mục tiêu đã hoàn thành.
   - **Hành động:**
     - Trong `SavvyContext`, tạo một state mới `completedGoals` và lưu vào `localStorage`.
@@ -277,8 +277,33 @@
 ---
 
 ### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực**
++------------------------------------------------------+
+|                                                      |
+|           **Cỗ Máy Thời Gian DCA** 🚀                |
+|                                                      |
+|  Đồng coin: [ Bitcoin (BTC)      ▼ ]                 |
+|                                                      |
+|  Số tiền đầu tư: [ $50 ]                             |
+|                                                      |
+|  Tần suất:   [ Mỗi tháng          ▼ ]                |
+|                                                      |
+|  Kể từ:      [ 3 năm trước       ▼ ]                 |
+|                                                      |
+|                 +-----------------+                  |
+|                 |   Xem kết quả   |                  |
+|                 +-----------------+                  |
+|                                                      |
+|  +------------------------------------------------+  |
+|  |                                                |  |
+|  |   "Nếu bạn đầu tư $50 mỗi tháng vào Bitcoin    |  |
+|  |   kể từ 3 năm trước, bây giờ bạn sẽ có         |  |
+|  |   $XX,XXX."                                    |  |
+|  |                                                |  |
+|  +------------------------------------------------+  |
+|                                                      |
++------------------------------------------------------+
 
-*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA).*
+*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA). Xây dựng nó như một component độc lập và tích hợp vào luồng thêm giao dịch để tối đa hóa động lực.
 
 - [ ] **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
   - **Mục đích:** Lấy được dữ liệu giá của một đồng coin trong quá khứ.
@@ -289,13 +314,32 @@
   - **Mục đích:** Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA.
   - **Hành động:**
     - Tạo file tiện ích `src/utils/dca-calculator.js`.
-    - Viết hàm `calculateDcaResult({ historicalData, monthlyInvestment, startDate })` để giả lập quá trình đầu tư hàng tháng và trả về kết quả.
+    - Viết hàm `calculateDcaResult({ historicalData, investment, frequency, period })` để giả lập quá trình đầu tư và trả về kết quả.
 
-- [ ] **Task 11.3: Tích hợp vào Giao diện Người dùng**
-  - **Mục đích:** Hiển thị kết quả tính toán cho người dùng một cách dễ hiểu.
+- [ ] **Task 11.3: Xây dựng Component `DcaCalculator`**
+  - **Mục đích:** Tạo một công cụ tương tác độc lập để người dùng có thể khám phá các kịch bản DCA.
   - **Hành động:**
-    - Trong `AddTransactionForm.jsx`, tạo `useEffect` theo dõi `coinId`.
-    - Khi `coinId` thay đổi, gọi API lịch sử, chạy hàm tính toán DCA, và hiển thị kết quả ra giao diện.
+    - Tạo file `src/components/dca/DcaCalculator.jsx`.
+    - Xây dựng giao diện với các input: chọn coin, số tiền, tần suất, khoảng thời gian.
+    - Quản lý state nội bộ cho các input và kết quả, xử lý trạng thái loading.
+
+- [ ] **Task 11.4: Tích hợp `DcaCalculator` vào Giao diện Chính**
+  - **Mục đích:** Đặt công cụ DCA vào một vị trí dễ thấy trên trang chính để khuyến khích người dùng sử dụng.
+  - **Hành động:**
+    - Import và render component `<DcaCalculator />` trong `App.jsx`, ngay phía trên component `SmartSuggestions`.
+
+- [ ] **Task 11.5: Tạo `DcaResultModal`**
+  - **Mục đích:** Tạo một modal tái sử dụng để hiển thị kết quả tính toán DCA một cách nổi bật sau khi người dùng thêm một giao dịch.
+  - **Hành động:**
+    - Tạo file `src/components/dca/DcaResultModal.jsx`.
+    - Thiết kế modal để hiển thị thông điệp truyền cảm hứng dựa trên kết quả DCA.
+
+- [ ] **Task 11.6: Kích hoạt Modal sau khi Thêm Giao dịch**
+  - **Mục đích:** Cung cấp phản hồi tích cực và củng cố hành vi đầu tư của người dùng.
+  - **Hành động:**
+    - Trong `PortfolioContext`, sau khi `handleAddTransaction` thành công, kích hoạt flow tính toán DCA.
+    - Sử dụng `AppContext` để quản lý state mở/đóng và dữ liệu cho `DcaResultModal`.
+    - Hiển thị modal với kết quả tính toán dựa trên giao dịch vừa thực hiện.
 
 ---
 
