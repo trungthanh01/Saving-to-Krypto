@@ -342,6 +342,89 @@
     - Hiển thị modal với kết quả tính toán dựa trên giao dịch vừa thực hiện.
 
 ---
+Tuyệt vời! Đây chính xác là cách tiếp cận của một Senior Developer. Trước khi viết một dòng code nào, chúng ta phải hiểu rõ logic bằng ngôn ngữ tự nhiên.
+
+Hãy cùng nhau đóng vai một "nhà du hành thời gian" và tính toán thử một kịch bản đơn giản nhé.
+
+---
+
+### **Kịch bản ví dụ**
+
+*   **Đầu tư vào:** Bitcoin
+*   **Số tiền mỗi tháng:** $100
+*   **Bắt đầu từ:** 3 tháng trước (Giả sử là ngày 25/07/2025)
+*   **Dữ liệu giá chúng ta có:**
+    *   Giá ngày 25/07/2025: **$50,000**
+    *   Giá ngày 25/08/2025: **$52,000**
+    *   Giá ngày 25/09/2025: **$55,000**
+    *   Giá hôm nay (25/10/2025): **$60,000**
+
+---
+
+### **"Chạy tay" từng bước**
+
+**Bước 1: Chuẩn bị sổ sách**
+
+*   `Tổng Tiền Đã Đầu Tư` = $0
+*   `Tổng Số Bitcoin Sở Hữu` = 0 BTC
+
+**Bước 2: Chuyến du hành đầu tiên - Quay về ngày 25/07/2025**
+
+*   "Hôm nay là ngày đầu tư đầu tiên. Tôi sẽ bỏ ra **$100**."
+*   "Tôi nhìn vào bảng giá, giá Bitcoin hôm nay là **$50,000**."
+*   **Công thức:** `Số Bitcoin mua được = Số tiền bỏ ra / Giá tại thời điểm đó`
+*   **Tính toán:** `$100 / $50,000 = 0.002` BTC.
+*   **Cập nhật sổ sách:**
+    *   `Tổng Tiền Đã Đầu Tư` = $0 + $100 = **$100**
+    *   `Tổng Số Bitcoin Sở Hữu` = 0 + 0.002 = **0.002 BTC**
+
+**Bước 3: Chuyến du hành thứ hai - Tiến tới ngày 25/08/2025**
+
+*   "Đã một tháng trôi qua. Hôm nay tôi lại bỏ ra **$100** nữa."
+*   "Giá Bitcoin hôm nay đã tăng lên **$52,000**."
+*   **Công thức:** (Vẫn là công thức cũ)
+*   **Tính toán:** `$100 / $52,000 = 0.00192` BTC (làm tròn).
+*   **Cập nhật sổ sách:**
+    *   `Tổng Tiền Đã Đầu Tư` = $100 + $100 = **$200**
+    *   `Tổng Số Bitcoin Sở Hữu` = 0.002 + 0.00192 = **0.00392 BTC**
+
+**Bước 4: Chuyến du hành cuối cùng - Tiến tới ngày 25/09/2025**
+
+*   "Lần đầu tư cuối cùng trong quá khứ. Bỏ ra **$100**."
+*   "Giá hôm nay là **$55,000**."
+*   **Công thức:** (Vẫn là công thức cũ)
+*   **Tính toán:** `$100 / $55,000 = 0.00181` BTC (làm tròn).
+*   **Cập nhật sổ sách:**
+    *   `Tổng Tiền Đã Đầu Tư` = $200 + $100 = **$300**
+    *   `Tổng Số Bitcoin Sở Hữu` = 0.00392 + 0.00181 = **0.00573 BTC**
+
+**Bước 5: Quay về hiện tại - Ngày 25/10/2025**
+
+*   "Chuyến du hành kết thúc. Giờ hãy xem thành quả."
+*   "Giá Bitcoin hiện tại là **$60,000**."
+*   **Công thức:** `Giá Trị Hiện Tại = Tổng Số Bitcoin Sở Hữu * Giá Hiện Tại`
+*   **Tính toán:** `0.00573 * $60,000 = $343.8`
+
+---
+
+### **Kết quả cuối cùng**
+
+Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết quả:
+
+```
+{
+  totalInvested: 300,        // Tổng số tiền đã bỏ ra
+  totalCoins: 0.00573,       // Tổng số coin tích lũy được
+  currentValue: 343.8,       // Giá trị của số coin đó ở hiện tại
+  // (Chúng ta có thể tính thêm cả PnL)
+  profitLoss: 43.8           // Lời/lỗ = 343.8 - 300
+}
+```
+chúng ta cần có:
+- tổng số tiền đầu tư: vốn kỳ trước + vốn kỳ này (tuần hoặc tháng)
+- tổng số bitcoin sở hữu: tổng số kỳ trước + tổng số kỳ này 
+- giá trị hiện tại: tổng số bitcoin sỡ hữu * giá hiện tại
+
 
 ### **Giai đoạn 12: Hoàn thiện & Triển khai (Polish & Deployment)**
 *Mục tiêu: Đóng gói sản phẩm và đưa nó ra mắt công chúng.*
