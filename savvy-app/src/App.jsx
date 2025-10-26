@@ -10,6 +10,7 @@ import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
 import { SmartSuggestions } from './components/portfolio/SmartSuggestions.jsx';
 import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
 import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
+import { DcaCalculator } from './components/dca/DcaCalculator.jsx';
 
 // Component con, nằm BÊN TRONG SavvyProvider
 function AppContent() {
@@ -41,6 +42,7 @@ function AppContent() {
             <PortfolioSummary />
             <HoldingsChart />
           </div>
+          <DcaCalculator />
           <SmartSuggestions />
           <Portfolio />
           <TransactionHistory />

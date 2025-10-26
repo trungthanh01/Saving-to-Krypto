@@ -22,6 +22,27 @@ const findClosestPrice = (historicalData, targetDate) => {
 };
 
 /**
+ * Tính số ngày chênh lệch giữa một ngày trong quá khứ và hiện tại.
+ * @param {string | Date} startDateInput - Ngày bắt đầu (dưới dạng chuỗi hoặc đối tượng Date).
+ * @returns {number} Tổng số ngày chênh lệch.
+ */
+export const calculateDaysBetween = (startDateInput) => {
+  if (!startDateInput) return 0;
+  
+  const now = new Date();
+  const startDate = new Date(startDateInput);
+  
+  // Đảm bảo startDate không phải là một ngày trong tương lai
+  if (startDate > now) return 0;
+  
+  const diffTime = now - startDate; // Không cần Math.abs vì now luôn lớn hơn
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+};
+
+
+/**
  * Tính toán kết quả của chiến lược đầu tư trung bình giá (DCA).
  * @param {object} params
  * @param {Array<[number, number]>} params.historicalData - Mảng dữ liệu giá lịch sử.
