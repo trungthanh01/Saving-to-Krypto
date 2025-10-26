@@ -1,56 +1,62 @@
 import axios from 'axios';
-const API_BASE_URL =`https://api.coingecko.com/api/v3`;
-export const fetchCoinData = async (coinIds) => {
-  if (!coinIds || coinIds.length === 0) {
-    return [];
-  }
-  const coinListString = coinIds.join(',');
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${coinListString}`;
 
+// ✅ BƯỚC 1: Thay đổi Base URL
+const PAPRIKA_API_BASE_URL = 'https://api.coinpaprika.com/v1';
+
+/**
+ * Lấy danh sách coin từ CoinPaprika và chuyển đổi về định dạng chuẩn của ứng dụng.
+ * @returns {Promise<Array<{id: string, symbol: string, name: string, image: string}>>}
+ */
+export const fetchCoinList = async () => {
+  const url = `${PAPRIKA_API_BASE_URL}/coins`;
   try {
     const response = await axios.get(url);
-    return response.data;
+    // ✅ BƯỚC 2: "Biên dịch" dữ liệu
+    // Lấy 250 coin đầu tiên và chuyển đổi key cho phù hợp với app của chúng ta
+    const transformedList = response.data.slice(0, 250).map(coin => ({
+      id: coin.id,
+      symbol: coin.symbol,
+      name: coin.name,
+      // CoinPaprika không có sẵn 'image', chúng ta sẽ dùng logo từ một nguồn khác sau
+      // Tạm thời để trống hoặc dùng một placeholder
+      image: `https://static.coinpaprika.com/coin/${coin.id}/logo.png` 
+    }));
+    return transformedList;
   } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu từ CoinGecko API:", error);
+    console.error("Lỗi khi lấy coin list từ CoinPaprika API:", error);
     throw error;
   }
 };
 
-export const fetchCoinList = async () => {
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Error HTTP! Status: ${response.status}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error("Lỗi khi lấy coin list từ CoinGecko API:", error);
-    throw error;
-  }
-}
-
-export const fetchCoinHistory = async (coinId, days = 365) => {
-  if (!coinId) {
-    console.warn("fetchCoinHistory: coinId không được cung cấp.");
+/**
+ * Lấy dữ liệu lịch sử giá cho một đồng coin cụ thể từ CoinPaprika.
+ * @param {string} coinId - ID của coin (ví dụ: 'btc-bitcoin').
+ * @param {string} startDate - Ngày bắt đầu theo định dạng 'YYYY-MM-DD'.
+ * @returns {Promise<Array<{time_close: string, close: number}>>}
+ */
+export const fetchCoinHistory = async (coinId, startDate) => {
+  if (!coinId || !startDate) {
+    console.warn("fetchCoinHistory: cần coinId và startDate.");
     return [];
   }
-
-  const url = `${API_BASE_URL}/coins/${coinId}/market_chart`;
-
+  const url = `${PAPRIKA_API_BASE_URL}/coins/${coinId}/ohlcv/historical`;
   try {
     const response = await axios.get(url, {
       params: {
-        vs_currency: "usd",
-        days: days,
+        start: startDate,
       },
     });
-    return response.data.prices;
+    return response.data;
   } catch (error) {
-    console.error(`Không lấy được dữ liệu giá lịch sử cho ${coinId}`, error);
+    console.error(`Không lấy được dữ liệu giá lịch sử cho ${coinId} từ Paprika`, error);
     throw error;
   }
 };
+
+// Chúng ta có thể xóa các hàm cũ của CoinGecko hoặc comment chúng lại
+/*
+export const fetchCoinData = ...
+*/
 
 
 
