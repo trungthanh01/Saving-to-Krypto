@@ -95,3 +95,16 @@ export const calculateDcaResult = ({
     profitLoss,
   };
 };       
+
+/**
+ * Chuyển đổi dữ liệu lịch sử từ CryptoCompare sang định dạng chuẩn [[timestamp, price]].
+ * @param {Array<object>} cryptoCompareData - Mảng dữ liệu từ API CryptoCompare.
+ * @returns {Array<[number, number]>}
+ */
+export const transformCryptoCompareData = (cryptoCompareData) => {
+  if (!cryptoCompareData) return [];
+  return cryptoCompareData.map(dayData => [
+    dayData.time * 1000, // CryptoCompare trả về timestamp theo giây, cần đổi sang mili giây
+    dayData.close, // 'close' là giá đóng cửa của ngày hôm đó
+  ]);
+};

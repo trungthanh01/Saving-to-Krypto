@@ -420,10 +420,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
   profitLoss: 43.8           // Lời/lỗ = 343.8 - 300
 }
 ```
-chúng ta cần có:
-- tổng số tiền đầu tư: vốn kỳ trước + vốn kỳ này (tuần hoặc tháng)
-- tổng số bitcoin sở hữu: tổng số kỳ trước + tổng số kỳ này 
-- giá trị hiện tại: tổng số bitcoin sỡ hữu * giá hiện tại
+
 
 
 ### **Giai đoạn 12: Hoàn thiện & Triển khai (Polish & Deployment)**

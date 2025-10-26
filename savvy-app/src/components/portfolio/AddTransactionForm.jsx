@@ -2,15 +2,17 @@ import { useState, useContext, useEffect, memo } from "react";
 import './AddTransactionForm.css';
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
+import { AppContext } from "../../context/AppContext.jsx";
 
 export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) => {
+    const {coinList} = useContext(AppContext)
+
     console.log("2. AddTransactionForm rendered. isOpen is:", isOpen);
     const portfolioCtx = useContext(PortfolioContext);
     console.log("Context value RECEIVED in Form:", portfolioCtx);
     const { 
         addTransaction, 
         editTransaction, 
-        coinList,
         goalCompletionData,
         markGoalAsComplete
     } = useContext(PortfolioContext);

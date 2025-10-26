@@ -1,62 +1,93 @@
 import axios from 'axios';
 
-// ✅ BƯỚC 1: Thay đổi Base URL
-const PAPRIKA_API_BASE_URL = 'https://api.coinpaprika.com/v1';
+const CRYPTOCOMPARE_API_BASE_URL = 'https://min-api.cryptocompare.com';
+const CRYPTOCOMPARE_IMAGE_BASE_URL = 'https://www.cryptocompare.com';
 
 /**
- * Lấy danh sách coin từ CoinPaprika và chuyển đổi về định dạng chuẩn của ứng dụng.
- * @returns {Promise<Array<{id: string, symbol: string, name: string, image: string}>>}
+ * Lấy danh sách các coin phổ biến nhất từ CryptoCompare.
  */
 export const fetchCoinList = async () => {
-  const url = `${PAPRIKA_API_BASE_URL}/coins`;
+  // Lấy top 100 coin theo Market Cap
+  const url = `${CRYPTOCOMPARE_API_BASE_URL}/data/top/mktcapfull?limit=100&tsym=USD`;
   try {
     const response = await axios.get(url);
-    // ✅ BƯỚC 2: "Biên dịch" dữ liệu
-    // Lấy 250 coin đầu tiên và chuyển đổi key cho phù hợp với app của chúng ta
-    const transformedList = response.data.slice(0, 250).map(coin => ({
-      id: coin.id,
-      symbol: coin.symbol,
-      name: coin.name,
-      // CoinPaprika không có sẵn 'image', chúng ta sẽ dùng logo từ một nguồn khác sau
-      // Tạm thời để trống hoặc dùng một placeholder
-      image: `https://static.coinpaprika.com/coin/${coin.id}/logo.png` 
+    const coinData = response.data.Data;
+
+    const transformedList = coinData.map(data => ({
+      // Định danh chính giờ là Symbol
+      id: data.CoinInfo.Name, 
+      symbol: data.CoinInfo.Name, // vd: "BTC"
+      name: data.CoinInfo.FullName,
+      image: `${CRYPTOCOMPARE_IMAGE_BASE_URL}${data.CoinInfo.ImageUrl}`,
     }));
     return transformedList;
   } catch (error) {
-    console.error("Lỗi khi lấy coin list từ CoinPaprika API:", error);
+    console.error("Lỗi khi lấy coin list từ CryptoCompare API:", error);
     throw error;
   }
 };
+
 
 /**
- * Lấy dữ liệu lịch sử giá cho một đồng coin cụ thể từ CoinPaprika.
- * @param {string} coinId - ID của coin (ví dụ: 'btc-bitcoin').
- * @param {string} startDate - Ngày bắt đầu theo định dạng 'YYYY-MM-DD'.
- * @returns {Promise<Array<{time_close: string, close: number}>>}
+ * Lấy dữ liệu thị trường hiện tại cho một danh sách coin.
  */
-export const fetchCoinHistory = async (coinId, startDate) => {
-  if (!coinId || !startDate) {
-    console.warn("fetchCoinHistory: cần coinId và startDate.");
+export const fetchCoinData = async (coinSymbols) => {
+  if (!coinSymbols || coinSymbols.length === 0) {
     return [];
   }
-  const url = `${PAPRIKA_API_BASE_URL}/coins/${coinId}/ohlcv/historical`;
+  const symbolsString = coinSymbols.join(',');
+  const url = `${CRYPTOCOMPARE_API_BASE_URL}/data/pricemultifull?fsyms=${symbolsString}&tsyms=USD`;
+
   try {
-    const response = await axios.get(url, {
-      params: {
-        start: startDate,
-      },
+    const response = await axios.get(url);
+    const rawData = response.data.RAW;
+    
+    // ✅ BƯỚC BẢO VỆ
+    if (!rawData) {
+      console.warn("API không trả về dữ liệu 'RAW'. Có thể do các symbol không hợp lệ:", coinSymbols);
+      return []; // Trả về mảng rỗng để tránh lỗi
+    }
+    
+    // CryptoCompare trả về một object, chúng ta cần chuyển nó thành mảng
+    const transformedData = Object.keys(rawData).map(symbol => {
+      const coin = rawData[symbol].USD;
+      return {
+        id: symbol, // Sử dụng Symbol làm id
+        symbol: symbol.toLowerCase(),
+        name: '', // API này không trả về tên đầy đủ, nhưng chúng ta có nó từ coinList
+        image: `${CRYPTOCOMPARE_IMAGE_BASE_URL}${coin.IMAGEURL}`,
+        current_price: coin.PRICE,
+        market_cap: coin.MKTCAP,
+        price_change_percentage_24h: coin.CHANGEPCT24HOUR,
+      };
     });
-    return response.data;
+    return transformedData;
   } catch (error) {
-    console.error(`Không lấy được dữ liệu giá lịch sử cho ${coinId} từ Paprika`, error);
+    console.error("Lỗi khi lấy dữ liệu tickers từ CryptoCompare:", error);
     throw error;
   }
 };
 
-// Chúng ta có thể xóa các hàm cũ của CoinGecko hoặc comment chúng lại
-/*
-export const fetchCoinData = ...
-*/
+
+/**
+ * Lấy dữ liệu lịch sử giá cho một đồng coin.
+ */
+export const fetchCoinHistory = async (coinSymbol, days) => {
+  if (!coinSymbol || !days) {
+    return [];
+  }
+  // Giới hạn miễn phí là 2000 ngày
+  const limit = Math.min(days, 2000); 
+  const url = `${CRYPTOCOMPARE_API_BASE_URL}/data/v2/histoday?fsym=${coinSymbol}&tsym=USD&limit=${limit}`;
+
+  try {
+    const response = await axios.get(url);
+    return response.data.Data.Data; // Dữ liệu nằm khá sâu trong object trả về
+  } catch (error) {
+    console.error(`Lỗi khi lấy dữ liệu lịch sử cho ${coinSymbol}:`, error);
+    throw error;
+  }
+};
 
 
 

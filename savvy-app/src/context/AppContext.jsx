@@ -1,35 +1,70 @@
-import { createContext, useState, useCallback } from "react";
+import React, { createContext, useState, useEffect } from 'react';
+import { fetchCoinList } from '../services/crypto-api';
 
 export const AppContext = createContext();
 
-export function AppProvider({ children }) {
-    const [confirmationModal, setConfirmationModal] = useState({
-        isOpen: false,
-        message: '',
-        onConfirm: () => {},
-    });
+export const AppProvider = ({ children }) => {
+  // --- State cho Confirmation Modal ---
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
-    const handleOpenConfirmationModal = useCallback((message, onConfirm) => {
-        setConfirmationModal({
-            isOpen: true,
-            message: message,
-            onConfirm: onConfirm,
-        });
-    }, []);
+  // ✅ --- State mới cho Danh sách Coin Toàn cục ---
+  const [coinList, setCoinList] = useState([]);
+  const [isCoinListLoading, setIsCoinListLoading] = useState(true);
+  const [coinListError, setCoinListError] = useState(null);
 
-    const handleCloseConfirmationModal = useCallback(() => {
-        setConfirmationModal(prev => ({ ...prev, isOpen: false }));
-    }, []);
-
-    const value = {
-        confirmationModal,
-        handleOpenConfirmationModal,
-        handleCloseConfirmationModal,
+  // ✅ useEffect để tải coinList một lần duy nhất
+  useEffect(() => {
+    const loadCoinList = async () => {
+      try {
+        setIsCoinListLoading(true);
+        const list = await fetchCoinList();
+        setCoinList(list);
+        setCoinListError(null);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách coin toàn cục:", error);
+        setCoinListError('Không thể tải danh sách coin.');
+      } finally {
+        setIsCoinListLoading(false);
+      }
     };
 
-    return (
-        <AppContext.Provider value={value}>
-            {children}
-        </AppContext.Provider>
-    );
-}
+    loadCoinList();
+  }, []); // Mảng rỗng đảm bảo nó chỉ chạy 1 lần
+
+  const handleOpenConfirmationModal = ({ message, onConfirm }) => {
+    setConfirmationModal({
+      isOpen: true,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        handleCloseConfirmationModal();
+      },
+    });
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+      message: '',
+      onConfirm: () => {},
+    });
+  };
+
+  const value = {
+    // Confirmation Modal
+    confirmationModal,
+    handleOpenConfirmationModal,
+    handleCloseConfirmationModal,
+
+    // ✅ Cung cấp state mới cho các component con
+    coinList,
+    isCoinListLoading,
+    coinListError,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};

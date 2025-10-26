@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Thêm useCallback
-import { calculateDcaResult, calculateDaysBetween } from '../../utils/dca-calculator'; // Cập nhật import
-import { fetchCoinList } from '../../services/crypto-api';
+import React, { useState, useEffect, useContext } from 'react'; // Thêm useContext
+import { AppContext } from '../../context/AppContext'; // Thêm AppContext
+import { calculateDcaResult, calculateDaysBetween, transformCryptoCompareData } from '../../utils/dca-calculator'; // 1. Thêm import
 import { fetchCoinHistory } from '../../services/crypto-api';
 import styles from './DcaCalculator.module.css';
 
 export const DcaCalculator = () => {
-  const [coinList, setCoinList] = useState([]);
+  // 3. Lấy coinList từ context
+  const { coinList, isCoinListLoading, coinListError } = useContext(AppContext);
+
+  // 4. Xóa useState và useEffect cho coinList
   const [inputs, setInputs] = useState({
     coinId: '', // coinId được chọn cuối cùng
     investment: 50,
@@ -22,20 +25,7 @@ export const DcaCalculator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(''); // Khởi tạo là chuỗi rỗng
 
-  useEffect(() => {
-    const loadCoinList = async () => {
-      try {
-        const fullCoinList = await fetchCoinList();
-        console.log(fullCoinList, 'fullCoinList');
-        setCoinList(fullCoinList);
-      } catch (error) {
-        setError(error);
-      }
-    };
-    loadCoinList();
-  }, []);
-
-  // useEffect mới cho logic autocomplete
+  // useEffect cho logic autocomplete không đổi
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setSuggestions([]);
@@ -85,7 +75,6 @@ export const DcaCalculator = () => {
     setResult(null);
 
     try {
-      // ✅ SỬ DỤNG HÀM MỚI
       const diffDays = calculateDaysBetween(inputs.startDate);
       
       if (diffDays <= 0) {
@@ -94,14 +83,17 @@ export const DcaCalculator = () => {
         return;
       }
 
-      const historicalData = await fetchCoinHistory(inputs.coinId, diffDays);
-      
+      // 2. Gọi API (coinId giờ là symbol, vd: "BTC")
+      const rawHistoricalData = await fetchCoinHistory(inputs.coinId, diffDays);
+
+      // 3. "Biên dịch" dữ liệu trước khi tính toán
+      const historicalData = transformCryptoCompareData(rawHistoricalData);
+
       const dcaResult = calculateDcaResult({
-        historicalData,
+        historicalData, // Dữ liệu đã được chuẩn hóa
         investment: inputs.investment,
         frequency: inputs.frequency,
-        // periodDays giờ chỉ là một tham số để truyền đi
-        periodDays: diffDays, 
+        periodDays: diffDays,
       });
 
       setResult(dcaResult);
@@ -116,66 +108,74 @@ export const DcaCalculator = () => {
   return (
     <div className={styles.calculatorSection}>
       <h2>Cỗ Máy Thời Gian DCA 🚀</h2>
-      <form className={styles.calculatorForm} onSubmit={handleSubmit} autoComplete="off">
-        <div className={styles.formControls}>
-          <div className={styles.formControl} onBlur={() => setTimeout(() => setIsSuggestionsVisible(false), 100)}>
-            <label htmlFor="coinSearch">Chọn Coin</label>
-            <input
-              type="text"
-              name="coinSearch"
-              id="coinSearch"
-              placeholder="Tìm kiếm (vd: Bitcoin, ETH...)"
-              value={searchTerm}
-              onChange={handleInputChange}
-            />
-            {isSuggestionsVisible && suggestions.length > 0 && (
-              <ul className={styles.suggestionList}>
-                {suggestions.map(coin => (
-                  <li key={coin.id} onMouseDown={() => handleSuggestionClick(coin)}>
-                    <img src={coin.image} alt={coin.name} />
-                    <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+      
+      {/* 5. Xử lý trạng thái loading/error từ context */}
+      {isCoinListLoading && <p>Đang tải danh sách coin...</p>}
+      {coinListError && <p className={styles.errorText}>{coinListError}</p>}
+
+      {/* Form chỉ hiển thị khi đã có coinList */}
+      {coinList.length > 0 && (
+        <form className={styles.calculatorForm} onSubmit={handleSubmit} autoComplete="off">
+          <div className={styles.formControls}>
+            <div className={styles.formControl} onBlur={() => setTimeout(() => setIsSuggestionsVisible(false), 100)}>
+              <label htmlFor="coinSearch">Chọn Coin</label>
+              <input
+                type="text"
+                name="coinSearch"
+                id="coinSearch"
+                placeholder="Tìm kiếm (vd: Bitcoin, ETH...)"
+                value={searchTerm}
+                onChange={handleInputChange}
+              />
+              {isSuggestionsVisible && suggestions.length > 0 && (
+                <ul className={styles.suggestionList}>
+                  {suggestions.map(coin => (
+                    <li key={coin.id} onMouseDown={() => handleSuggestionClick(coin)}>
+                      <img src={coin.image} alt={coin.name} />
+                      <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className={styles.formControl}>
+              <label htmlFor="investment">Số tiền đầu tư ($)</label>
+              <input
+                type="number"
+                name="investment"
+                value={inputs.investment}
+                onChange={handleInputChange}
+                min="1"
+              />
+            </div>
+
+            <div className={styles.formControl}>
+              <label htmlFor="frequency">Tần suất</label>
+              <select name="frequency" value={inputs.frequency} onChange={handleInputChange}>
+                <option value="monthly">Hàng tháng</option>
+                <option value="weekly">Hàng tuần</option>
+              </select>
+            </div>
+
+            <div className={styles.formControl}>
+              <label htmlFor="startDate">Ngày bắt đầu</label>
+              <input
+                type="date"
+                name="startDate"
+                id="startDate"
+                value={inputs.startDate}
+                onChange={handleInputChange}
+                max={new Date().toISOString().split("T")[0]} // Không cho chọn ngày tương lai
+              />
+            </div>
           </div>
 
-          <div className={styles.formControl}>
-            <label htmlFor="investment">Số tiền đầu tư ($)</label>
-            <input
-              type="number"
-              name="investment"
-              value={inputs.investment}
-              onChange={handleInputChange}
-              min="1"
-            />
-          </div>
-
-          <div className={styles.formControl}>
-            <label htmlFor="frequency">Tần suất</label>
-            <select name="frequency" value={inputs.frequency} onChange={handleInputChange}>
-              <option value="monthly">Hàng tháng</option>
-              <option value="weekly">Hàng tuần</option>
-            </select>
-          </div>
-
-          <div className={styles.formControl}>
-            <label htmlFor="startDate">Ngày bắt đầu</label>
-            <input
-              type="date"
-              name="startDate"
-              id="startDate"
-              value={inputs.startDate}
-              onChange={handleInputChange}
-              max={new Date().toISOString().split("T")[0]} // Không cho chọn ngày tương lai
-            />
-          </div>
-        </div>
-
-        <button type="submit" className={styles.submitButton} disabled={isLoading || !inputs.coinId}>
-          {isLoading ? 'Đang tính toán...' : 'Xem kết quả'}
-        </button>
-      </form>
+          <button type="submit" className={styles.submitButton} disabled={isLoading || !inputs.coinId}>
+            {isLoading ? 'Đang tính toán...' : 'Xem kết quả'}
+          </button>
+        </form>
+      )}
       
       {/* ✅ KHU VỰC MỚI: HIỂN THỊ KẾT QUẢ */}
       <div className={styles.resultSection}>

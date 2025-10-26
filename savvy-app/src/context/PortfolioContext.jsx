@@ -287,7 +287,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         portfolioData, 
         isLoading, 
         error, 
-        coinList,
+        
         isAddHoldingModalOpen, 
         editingTransaction, 
         smartSuggestions,
@@ -305,7 +305,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         handleInitiateGoalCompletion,
         markGoalAsComplete,
     }), [
-        holdings, transactions, portfolioData, isLoading, error, coinList,
+        holdings, transactions, portfolioData, isLoading, error,
         isAddHoldingModalOpen, editingTransaction, smartSuggestions,
         portfolioTotalValue, 
         totalCostBasis, totalProfitLoss, total24hChangeValue, 
