@@ -20,7 +20,7 @@ import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
 
 import './App.css';
 
-// Component trung gian để lấy context từ Savvy và truyền vào Portfolio
+// Component trung gian để lấy context từ Savvy và truyền vào Portfoligo
 function AppRoutes() {
   const { goals, markGoalAsComplete } = useContext(SavvyContext);
 
