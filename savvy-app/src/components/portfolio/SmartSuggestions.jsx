@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import {useNavigate} from 'react-router-dom';
 import './SmartSuggestions.css';
+import { AppContext } from "../../context/AppContext.jsx";
 
 export function SmartSuggestions() {
     const { smartSuggestions, handleInitiateGoalCompletion, totalProfitLoss } = useContext(PortfolioContext);
+    const {openAddTransactionModal}= useContext(AppContext)
     const navigate = useNavigate();
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -16,6 +18,7 @@ export function SmartSuggestions() {
     }
     const handleCompleteGoalClick = (goal) => {
         handleInitiateGoalCompletion(goal);
+        openAddTransactionModal() 
         navigate('/');
     }
 

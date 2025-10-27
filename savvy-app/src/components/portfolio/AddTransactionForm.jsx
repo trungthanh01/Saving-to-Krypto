@@ -49,16 +49,20 @@ export const AddTransactionForm = memo(() => {
     }, [isAddTransactionModalOpen, editingTransaction]);
 
     useEffect(() => {
-        if (isEditMode || !coinId.trim()) {
+        // KIỂM TRA QUAN TRỌNG: Chỉ chạy logic filter khi coinList có dữ liệu
+        if (isEditMode || !coinId.trim() || coinList.length === 0) {
             setSuggestions(null);
             return;
         }
+
         const filtered = coinList.filter(coin =>
             coin.name.toLowerCase().includes(coinId.toLowerCase()) ||
             coin.symbol.toLowerCase().includes(coinId.toLowerCase())
         ).slice(0, 10);
+
         setSuggestions(filtered);
     }, [coinId, coinList, isEditMode]);
+
 
     if (!isAddTransactionModalOpen) {
         return null;

@@ -27,8 +27,8 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         if(goalCompletionData){
             console.log('Completing goal after adding transaction:', goalCompletionData);
             markGoalAsComplete(goalCompletionData.id);
+            setGoalCompletionData(null);
         }
-        setGoalCompletionData(null);
     }, [goalCompletionData, markGoalAsComplete]);
 
     const handleEditTransaction = useCallback((updatedTransaction) => {
@@ -282,7 +282,6 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         portfolioData, 
         isLoading, 
         error, 
-        
         isAddHoldingModalOpen, 
         editingTransaction, 
         smartSuggestions,
