@@ -9,7 +9,7 @@ export function GoalsPage() {
             <MainHeader title="Mục tiêu" />
             <div className={styles.goalsLayout}>
                 <div className={styles.mainContent}>
-                    <Savvy />
+                        <Savvy />
                 </div>
                 <div className={styles.sideContent}>
                     <SmartSuggestions />

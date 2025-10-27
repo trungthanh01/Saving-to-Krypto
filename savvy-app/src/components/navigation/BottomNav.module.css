@@ -1,0 +1,42 @@
+.bottomNav {
+    display: none; /* Ẩn trên màn hình lớn theo mặc định */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: rgba(26, 29, 46, 0.8); /* Màu nền bán trong suốt */
+    backdrop-filter: blur(10px); /* Hiệu ứng blur */
+    -webkit-backdrop-filter: blur(10px); /* Hỗ trợ Safari */
+    border-top: 1px solid #2c2f48;
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.link, .active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #a0a0d0;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: #ffffff;
+}
+
+.active {
+    color: #7b61ff;
+    font-weight: bold;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .bottomNav {
+        display: flex; /* Chỉ hiển thị trên màn hình nhỏ */
+    }
+}

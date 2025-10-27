@@ -16,6 +16,7 @@
 
 .table {
     grid-area: table;
+    min-width: 0; /* DÒNG CODE QUAN TRỌNG NHẤT */
 }
 
 .chart {
@@ -24,7 +25,9 @@
 
 .history {
     grid-area: history;
+    min-width: 0; /* THÊM VÀO ĐÂY NỮA */
 }
+
 
 /* Responsive for tablets and smaller laptops */
 @media (max-width: 1200px) {
@@ -37,3 +40,4 @@
             "history";
     }
 }
+

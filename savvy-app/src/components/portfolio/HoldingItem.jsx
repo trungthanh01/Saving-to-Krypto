@@ -1,63 +1,42 @@
-import { useContext, useMemo, memo } from "react";
-import { PortfolioContext } from "../../context/PortfolioContext";
+import { useContext } from 'react';
+import { PortfolioContext } from '../../context/PortfolioContext';
+import { formatCurrency, formatPercentage } from '../../utils/formatters.js';
+import styles from './HoldingItem.module.css';
 
-export const HoldingItem = memo(({ coin }) => {
-    const {
-        name,
-        symbol,
-        image,
-        current_price,
-        price_change_percentage_24h,
-        amount,
-        currentValue,
-        costBasis,
-        averageBuyPrice,
-        profitLoss
-    } = coin;
+export function HoldingItem({ coin }) {
+    const { deleteTransaction, handleOpenEditModal } = useContext(PortfolioContext);
 
- 
+    const handleDelete = () => {
+        console.warn("Chức năng xóa cần được định nghĩa lại trong Context");
+    }
 
-    // --- Derived Data Calculation (Optimized with useMemo) ---
+    const handleEdit = () => {
+     
+        console.warn("Chức năng sửa cần được định nghĩa lại trong Context");
+    }
 
-    // --- Formatting for Display ---
-    const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(value || 0);
-    
-    const formatNumber = (value) => new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 6
-    }).format(value || 0);
-
-    const formattedPrice = formatCurrency(coin.current_price);
-    const formattedTotalValue = formatCurrency(currentValue);
-    const formattedCostBasis = formatCurrency(costBasis);
-    const formattedAverageBuyPrice = formatCurrency(averageBuyPrice);
-    const formattedProfitLoss = formatCurrency(profitLoss);
-    const formattedAmount = formatNumber(coin.amount);
-    const formatted24hChange = `${(coin.price_change_percentage_24h || 0).toFixed(2)}%`;
-
-    // --- Dynamic CSS Classes ---
-    const change24hClass = coin.price_change_percentage_24h > 0 ? 'profit' : coin.price_change_percentage_24h < 0 ? 'loss' : '';
-    const pnlClass = profitLoss > 0 ? 'profit' : profitLoss < 0 ? 'loss' : '';
+    const profitLossClass = coin.profitLoss >= 0 ? styles.profit : styles.loss;
+    const change24hClass = coin.price_change_percentage_24h >= 0 ? styles.profit : styles.loss;
 
     return (
-        <tr>
-            <td className="coin-name-cell">
-                <img className="coin-logo" src={coin.image} alt={`${coin.name} logo`} />
-                <div>
-                    <span>{coin.name}</span>
-                    <span className="coin-symbol">{coin.symbol.toUpperCase()}</span>
+        <tr className={styles.holdingItem}>
+            <td>
+                <div className={styles.coinInfo}>
+                    <img src={coin.image} alt={coin.name} className={styles.coinLogo} />
+                    <div>
+                        <div className={styles.coinName}>{coin.name}</div>
+                        <div className={styles.coinSymbol}>{coin.symbol}</div>
+                    </div>
                 </div>
             </td>
-            <td>{formattedPrice}</td>
-            <td className={change24hClass}>{formatted24hChange}</td>
-            <td className="align-right">{formattedAmount}</td>
-            <td className="align-right">{formattedTotalValue}</td>
-            <td className="align-right">{formattedCostBasis}</td>
-            <td className="align-right">{formattedAverageBuyPrice}</td>
-            <td className={`align-right ${pnlClass}`}>{formattedProfitLoss}</td>
+            <td className={styles.textRight}>{formatCurrency(coin.current_price)}</td>
+            <td className={`${change24hClass} ${styles.textRight}`}>{formatPercentage(coin.price_change_percentage_24h)}</td>
+            <td className={styles.textRight}>{coin.amount.toLocaleString()}</td>
+            <td className={styles.textRight}>{formatCurrency(coin.currentValue)}</td>
+            <td className={styles.textRight}>{formatCurrency(coin.costBasis)}</td>
+            <td className={styles.textRight}>{formatCurrency(coin.averageBuyPrice)}</td>
+            <td className={`${profitLossClass} ${styles.textRight}`}>{formatCurrency(coin.profitLoss)}</td>
+            
         </tr>
     );
-})
+}

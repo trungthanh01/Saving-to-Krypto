@@ -56,3 +56,10 @@
   color: #ffffff !important; /* Dùng !important để ghi đè màu khi hover */
   font-weight: bold;
 }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
