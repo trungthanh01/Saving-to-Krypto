@@ -423,17 +423,200 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 
 
-### **Giai đoạn 12: Hoàn thiện & Triển khai (Polish & Deployment)**
-*Mục tiêu: Đóng gói sản phẩm và đưa nó ra mắt công chúng.*
+### **Giai đoạn 12: Tái cấu trúc Layout và Điều hướng Trang**
+*Mục tiêu: Chuyển đổi từ ứng dụng một trang (Single-Page Application) lộn xộn thành một ứng dụng đa trang có cấu trúc rõ ràng, chuyên nghiệp bằng cách sử dụng thư viện `react-router-dom`. Cải thiện trải nghiệm người dùng bằng cách tổ chức các tính năng vào một layout với thanh điều hướng bên (Sidebar).*
 
-- [ ] **Task 12.1: Viết Tài liệu Hướng dẫn & Hoàn thiện README**
-  - **Mục đích:** Giúp người dùng khác (hoặc chính bạn trong tương lai) có thể dễ dàng cài đặt và hiểu được project.
+- [ ] **Task 12.1: Cài đặt và Cấu hình React Router**
+  - **Mục đích:** Thêm công cụ điều hướng vào dự án.
   - **Hành động:**
-    - Cập nhật file `README.md` với hướng dẫn cài đặt, mô tả các tính năng, và giải thích cấu trúc project.
+    - Chạy lệnh `npm install react-router-dom` trong terminal.
+    - Trong `main.jsx`, import `BrowserRouter` và bao bọc component `<App />` bên trong nó để kích hoạt tính năng routing cho toàn bộ ứng dụng.
 
-- [ ] **Task 12.2: Triển khai Ứng dụng**
-  - **Mục đích:** Đưa ứng dụng của bạn lên Internet để mọi người có thể truy cập.
+- [ ] **Task 12.2: Xây dựng Component Layout Chính**
+  - **Mục đích:** Tạo ra một "khung sườn" chung cho toàn bộ ứng dụng, bao gồm Sidebar và khu vực hiển thị nội dung chính.
   - **Hành động:**
-    - Tìm hiểu về các nền tảng triển khai miễn phí như Vercel hoặc Netlify.
-    - Thực hiện build ứng dụng cho môi trường production.
-    - Triển khai và nhận về một đường link công khai cho ứng dụng của bạn.
+    - Tạo thư mục mới `src/layouts/`.
+    - Tạo file `src/layouts/MainLayout.jsx`. Component này sẽ render ra `Sidebar` và một component `<Outlet />` đặc biệt từ React Router - đây là nơi nội dung của các trang con sẽ được hiển thị.
+
+- [ ] **Task 12.3: Xây dựng Component Sidebar**
+  - **Mục đích:** Tạo thanh điều hướng cho phép người dùng chuyển đổi giữa các trang.
+  - **Hành động:**
+    - Tạo file `src/components/navigation/Sidebar.jsx`.
+    - Bên trong component này, sử dụng component `<NavLink>` từ `react-router-dom` để tạo các link tới các trang: Dashboard, Máy tính DCA, Mục tiêu. `<NavLink>` sẽ tự động thêm class "active" khi người dùng đang ở trên trang đó, giúp chúng ta dễ dàng CSS.
+
+- [ ] **Task 12.4: Tổ chức các "Trang" (Pages)**
+  - **Mục đích:** Tái cấu trúc lại các component hiện có thành các trang logic, mỗi trang đảm nhiệm một chức năng chính.
+  - **Hành động:**
+    - Tạo thư mục mới `src/pages/`.
+    - Tạo `DashboardPage.jsx`: Di chuyển các component `PortfolioSummary`, `PortfolioTable`, `HoldingsChart`, `TransactionHistory` vào đây.
+    - Tạo `DcaCalculatorPage.jsx`: Di chuyển `DcaCalculator` vào đây.
+    - Tạo `GoalsPage.jsx`: Di chuyển các component `Savvy`, `AddGoalForm`, `SmartSuggestions` vào đây.
+
+- [ ] **Task 12.5: Cấu hình các Routes trong `App.jsx`**
+  - **Mục đích:** Dọn dẹp `App.jsx` và biến nó thành trung tâm điều phối, quyết định URL nào sẽ hiển thị trang nào.
+  - **Hành động:**
+    - Xóa toàn bộ các component hiển thị trực tiếp trong `App.jsx`.
+    - Sử dụng các component `<Routes>` và `<Route>` từ `react-router-dom` để định nghĩa các đường dẫn:
+      - Route `/` sẽ render `DashboardPage`.
+      - Route `/dca` sẽ render `DcaCalculatorPage`.
+      - Route `/goals` sẽ render `GoalsPage`.
+    - Tất cả các route này sẽ được lồng bên trong `MainLayout`.
+
+- [ ] **Task 12.6: Viết CSS cho Layout và Sidebar**
+  - **Mục đích:** Hoàn thiện giao diện cho khung sườn ứng dụng.
+  - **Hành động:**
+    - Tạo các file CSS module tương ứng (`MainLayout.module.css`, `Sidebar.module.css`).
+    - Sử dụng Flexbox để dàn trang, chia cột cho Sidebar và nội dung chính.
+    - Style cho các link trong Sidebar, bao gồm cả trạng thái "active".
+
+### **Giai đoạn 13: Hoàn thiện Giao diện & Trải nghiệm Người dùng**
+*Mục tiêu: Tinh chỉnh lại bố cục của các trang chính, bổ sung các thành phần UI còn thiếu và sử dụng CSS Grid/Flexbox để tạo ra một giao diện chuyên nghiệp, responsive và dễ sử dụng.*
+
+- [x] **Task 13.1: Xây dựng Header cho Nội dung chính**
+  - **Mục đích:** Tạo một thanh header chung cho khu vực nội dung chính, hiển thị tiêu đề trang và nút hành động chính.
+  - **Hành động:**
+    - Tạo component `src/components/common/MainHeader.jsx`.
+    - Component này sẽ nhận `title` làm prop.
+    - Thêm một nút "Thêm Giao dịch" và kết nối nó với `openAddHoldingModal` từ `PortfolioContext`.
+    - Tích hợp `<MainHeader />` vào đầu mỗi file trang (`DashboardPage`, `DcaCalculatorPage`, `GoalsPage`).
+
+- [x] **Task 13.2: Tái cấu trúc Bố cục trang Dashboard**
+  - **Mục đích:** Sắp xếp các component trên trang Dashboard một cách khoa học và đẹp mắt hơn bằng CSS Grid.
+  - **Hành động:**
+    - Tạo file CSS module `DashboardPage.module.css`.
+    - Sử dụng `display: grid` để định nghĩa các vùng cho `PortfolioSummary`, `PortfolioTable`, và `HoldingsChart`.
+    - Áp dụng các class CSS vào `DashboardPage.jsx`.
+
+- [x] **Task 13.3: Tái cấu trúc Bố cục trang Goals**
+  - **Mục đích:** Sắp xếp lại các component trên trang Mục tiêu để tạo ra một luồng người dùng hợp lý hơn.
+  - **Hành động:**
+    - Tạo file CSS module `GoalsPage.module.css`.
+    - Sử dụng Flexbox hoặc Grid để bố trí component `Savvy` (danh sách mục tiêu) và `SmartSuggestions` (gợi ý) một cách hợp lý, ví dụ: 2 cột trên màn hình lớn.
+    - Áp dụng các class CSS vào `GoalsPage.jsx`.
+
++---------------------------------+
+| <header>                        |
+|  TIÊU ĐỀ TRANG (Dashboard)      |  <-- MainHeader vẫn ở trên cùng
+|---------------------------------|
+| <main>                          |
+|                                 |
+|  +---------------------------+  |
+|  |      PortfolioSummary     |  |  <-- Các block xếp chồng lên nhau
+|  +---------------------------+  |
+|                                 |
+|  +---------------------------+  |
+|  |        HoldingsChart      |  |
+|  +---------------------------+  |
+|                                 |
+|                                 |
+|  +---------------------------+  |
+|  |       PortfolioTable      |  |
+|  |           ...             |  <-- (Nội dung chính có thể cuộn)
+|  |      (có thể cuộn)        |  |
+|  +---------------------------+  |
+|                                 |
+|                                 |
+|                                 |
+|---------------------------------|
+| <nav> (Nổi & có hiệu ứng Blur)  |
+|                                 |
+| [icon]    [icon]    [icon]      |  <-- Thanh điều hướng ở dưới đáy
+| Dashboard     DCA      Goals    |
++---------------------------------+
+```
+
+### **Giai đoạn 14: Responsive cho Mobile**
+*Mục tiêu: Áp dụng các kỹ thuật responsive design để đảm bảo ứng dụng hoạt động tốt và có trải nghiệm người dùng tuyệt vời trên các thiết bị di động. Thay thế Sidebar bằng thanh điều hướng dưới đáy màn hình.*
+
+- [ ] **Task 14.1: Ẩn Sidebar và Điều chỉnh Layout chính trên Mobile**
+  - **Mục đích:** Sử dụng Media Query để thay đổi layout khi màn hình nhỏ hơn một ngưỡng nhất định (ví dụ: 768px).
+  - **Hành động:**
+    - Trong `Sidebar.module.css`, thêm một media query để set `display: none` cho class `.sidebar`.
+    - Trong `MainLayout.module.css`, thêm một media query để xóa `margin-left` của class `.mainContent`.
+
+- [ ] **Task 14.2: Xây dựng Component `BottomNav`**
+  - **Mục đích:** Tạo component thanh điều hướng cho mobile.
+  - **Hành động:**
+    - Tạo file `src/components/navigation/BottomNav.jsx`.
+    - Component này sẽ tương tự như `Sidebar`, cũng sử dụng `<NavLink>` để chuyển trang.
+
+- [ ] **Task 14.3: Tích hợp `BottomNav` vào Layout**
+  - **Mục đích:** Hiển thị `BottomNav` chỉ trên màn hình mobile.
+  - **Hành động:**
+    - Import và thêm `<BottomNav />` vào trong `MainLayout.jsx`.
+    - Viết CSS để `BottomNav` mặc định bị ẩn (`display: none`) trên màn hình lớn, và chỉ hiện ra (`display: flex`) bên trong media query cho mobile.
+
+- [ ] **Task 14.4 (Tùy chọn nhưng khuyến khích): Cài đặt và sử dụng Thư viện Icon**
+  - **Mục đích:** Sử dụng icon thay vì chữ để thanh điều hướng trông chuyên nghiệp và gọn gàng hơn.
+  - **Hành động:**
+    - Cài đặt thư viện `react-icons`: `npm install react-icons`.
+    - Thay thế các text "Dashboard", "DCA" trong `BottomNav.jsx` bằng các icon tương ứng.
+
+- [ ] **Task 14.5: Viết CSS cho `BottomNav`**
+  - **Mục đích:** Tạo kiểu cho thanh điều hướng, bao gồm cả hiệu ứng "blur" mà bạn mong muốn.
+  - **Hành động:**
+    - Tạo file `BottomNav.module.css`.
+    - Sử dụng `position: fixed`, `bottom: 0`, `backdrop-filter: blur(10px)` và Flexbox để tạo ra giao diện như phác thảo.
+---
+
+### **Giai đoạn 15: Tái kiến trúc luồng dữ liệu Context**
+
+*Mục tiêu: Giải quyết triệt để các lỗi logic và "đứt gãy" thông tin bằng cách định nghĩa lại vai trò và trách nhiệm của từng Context. Xây dựng một luồng dữ liệu rõ ràng, dễ dự đoán và dễ bảo trì, đặc biệt là cho tính năng "Hoàn thành mục tiêu".*
+
+#### **Mô tả Kiến trúc & Luồng hoạt động Chuẩn**
+
+Để giải quyết các lỗi hiện tại, chúng ta sẽ tuân thủ nghiêm ngặt theo mô hình phân chia vai trò sau:
+
+1.  **`AppContext` ("Thị trưởng"):**
+    *   **Vai trò:** Quản lý các "dịch vụ công cộng" toàn cục.
+    *   **Trách nhiệm:** Mở/Đóng **TẤT CẢ** các modal (`AddTransaction`, `Confirmation`, `Celebration`). Quản lý dữ liệu dùng chung ít thay đổi (`coinList`).
+    *   **Luồng:** Nó nhận lệnh mở/đóng modal từ các Context khác và thực thi.
+
+2.  **`PortfolioContext` ("Giám đốc Ngân hàng"):**
+    *   **Vai trò:** Quản lý tài sản, giao dịch và các tính toán liên quan.
+    *   **Trách nhiệm:** Quản lý `transactions`, tính toán `holdings` và `portfolioData`, chứa logic `smartSuggestions`.
+    *   **Luồng:** Khi cần hoàn thành mục tiêu, nó sẽ ghi nhớ mục tiêu (`goalCompletionData`), chuẩn bị "bản nháp giao dịch" và **nhờ `AppContext` mở modal**. Sau khi giao dịch được thêm, nó sẽ **báo cho `SavvyContext` biết** để đánh dấu mục tiêu hoàn thành.
+
+3.  **`SavvyContext` ("Huấn luyện viên Mục tiêu"):**
+    *   **Vai trò:** Quản lý mục tiêu tiết kiệm.
+    *   **Trách nhiệm:** Quản lý danh sách `goals`, chứa hàm `markGoalAsComplete`.
+    *   **Luồng:** Khi nhận được lệnh `markGoalAsComplete` từ `PortfolioContext`, nó sẽ cập nhật trạng thái mục tiêu và **nhờ `AppContext` mở `CelebrationModal`**.
+
+#### **Các Task cụ thể**
+
+- [ ] **Task 15.1: Hoàn thiện vai trò "Thị trưởng" cho `AppContext`**
+  - **Mục đích:** Biến `AppContext` thành trung tâm quản lý modal duy nhất.
+  - **Hành động:**
+    - Trong `AppContext.jsx`, bổ sung state và các hàm để quản lý `CelebrationModal` (`isCelebrationModalOpen`, `openCelebrationModal`, `closeCelebrationModal`).
+    - Đảm bảo `AppContext` đã có đủ logic để quản lý `AddTransactionModal` và `ConfirmationModal`.
+
+- [ ] **Task 15.2: Nâng cấp vai trò "Huấn luyện viên" cho `SavvyContext`**
+  - **Mục đích:** Kết nối luồng hoàn thành mục tiêu với modal chúc mừng.
+  - **Hành động:**
+    - Trong `SavvyContext.jsx`, import và sử dụng `useContext(AppContext)`.
+    - Sửa hàm `markGoalAsComplete` để sau khi cập nhật state `goals`, nó sẽ gọi hàm `openCelebrationModal()` từ `AppContext`.
+
+- [ ] **Task 15.3: Tái cấu trúc vai trò "Giám đốc" cho `PortfolioContext`**
+  - **Mục đích:** Sửa lại luồng xử lý "Hoàn thành mục tiêu" cho đúng kiến trúc.
+  - **Hành động:**
+    - Trong `PortfolioContext.jsx`, import và sử dụng `useContext(AppContext)`.
+    - **Sửa hàm `handleInitiateGoalCompletion`:**
+      - Ghi nhớ mục tiêu bằng `setGoalCompletionData(goal)`.
+      - Tạo một "bản nháp giao dịch" an toàn (`{ type: 'sell', coinId: '', ... }`).
+      - Gọi `openAddTransactionModal(transactionTemplate)` từ `AppContext`.
+    - **Sửa hàm `addTransaction`:**
+      - Sau khi thêm giao dịch, kiểm tra `if (goalCompletionData)`.
+      - Bên trong `if`, gọi `markGoalAsComplete(goalCompletionData.id)` (hàm được truyền từ `App.jsx`).
+      - Reset `setGoalCompletionData(null)`.
+
+- [ ] **Task 15.4: Đơn giản hóa vai trò "Người báo cáo" cho `SmartSuggestions`**
+  - **Mục đích:** Đảm bảo component này chỉ làm đúng một nhiệm vụ là "báo cáo".
+  - **Hành động:**
+    - Trong `SmartSuggestions.jsx`, xóa bỏ việc sử dụng `AppContext`.
+    - Sửa hàm `handleCompleteGoalClick` để nó chỉ gọi `handleInitiateGoalCompletion(goal)` từ `PortfolioContext` và sau đó `navigate('/')`.
+
+- [ ] **Task 15.5: Đồng bộ hóa toàn bộ luồng tại `App.jsx`**
+  - **Mục đích:** Đảm bảo các Context được cung cấp và kết nối với nhau một cách chính xác.
+  - **Hành động:**
+    - Trong `App.jsx`, đảm bảo `SavvyContext` lấy được hàm `markGoalAsComplete` và truyền nó xuống cho `PortfolioProvider` dưới dạng prop.
+    - Kiểm tra lại thứ tự của các Provider để đảm bảo `AppContext` bao bọc các Context cần sử dụng dịch vụ của nó.
