@@ -1,19 +1,28 @@
 import { PortfolioSummary } from '../components/portfolio/PortfolioSummary';
-// SỬA Ở ĐÂY: Đổi tên component và file cho đúng
 import { Portfolio } from '../components/portfolio/Portfolio'; 
 import { HoldingsChart } from '../components/portfolio/HoldingsChart';
 import { TransactionHistory } from '../components/portfolio/TransactionHistory';
+import { MainHeader } from '../components/common/MainHeader';
+import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
     return (
         <>
-            <PortfolioSummary />
-            <div className="charts-container"> {/* Optional: for styling later */}
-                {/* SỬA Ở ĐÂY: Dùng đúng tên component đã import */}
-                <Portfolio />
-                <HoldingsChart />
+            <MainHeader title="Dashboard" />
+            <div className={styles.dashboardGrid}>
+                <div className={styles.summary}>
+                    <PortfolioSummary />
+                </div>
+                <div className={styles.table}>
+                    <Portfolio />
+                </div>
+                <div className={styles.chart}>
+                    <HoldingsChart />
+                </div>
+                <div className={styles.history}>
+                    <TransactionHistory />
+                </div>
             </div>
-            <TransactionHistory />
         </>
     );
 }

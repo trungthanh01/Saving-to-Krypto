@@ -1,0 +1,33 @@
+.goalsLayout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Cột trái rộng gấp đôi cột phải */
+    gap: 30px;
+    align-items: flex-start; /* Căn các item theo chiều dọc từ trên xuống */
+}
+
+.mainContent {
+    grid-column: 1 / 2;
+}
+
+.sideContent {
+    grid-column: 2 / 3;
+    position: sticky; /* Làm cho cột gợi ý "dính" lại khi cuộn */
+    top: 20px;
+}
+
+/* Responsive for tablets and smaller laptops */
+@media (max-width: 1024px) {
+    .goalsLayout {
+        grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+    }
+
+    .mainContent {
+        grid-column: 1 / -1;
+    }
+
+    .sideContent {
+        grid-column: 1 / -1;
+        position: static; /* Bỏ "dính" trên màn hình nhỏ */
+        margin-top: 20px;
+    }
+}
