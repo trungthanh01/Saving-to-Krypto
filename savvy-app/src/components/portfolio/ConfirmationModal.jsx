@@ -3,13 +3,10 @@ import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
 
 export function ConfirmationModal() {
-    const { confirmationModal, handleCloseConfirmationModal } = useContext(AppContext);
-    const { onConfirm, isOpen, message } = confirmationModal;
+    const { confirmationModal, handleCloseConfirmationModal, handleConfirm } = useContext(AppContext);
+    const { isOpen, message } = confirmationModal;
     if (!isOpen) return null;
-    const handleConfirm = () => {
-        onConfirm();
-        handleCloseConfirmationModal();
-    }
+    
     return (
         <div className="overlay" onClick={handleCloseConfirmationModal}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>

@@ -4,23 +4,14 @@ import { SavvyContext } from "./SavvyContext.jsx";
 import { AppContext } from "./AppContext.jsx";
 export const PortfolioContext = createContext();
 
-
-
-// SỬA Ở ĐÂY: Thêm `markGoalAsComplete` vào danh sách props
 export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
     console.log("PortfolioProvider received goals:", goals);
-    const [holdings, setHoldings] = useState(() => {
-        const saved = localStorage.getItem('portfolio-holdings');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const [transactions, setTransactions] = useState(() => {
-        const saved = localStorage.getItem('portfolio-transactions');
-        return saved ? JSON.parse(saved) : [];
-    });
-    console.log(transactions, 'transactionsConsole')
-
     
+    const [holdings, setHoldings] = useState([])
+    const [transactions, setTransactions] = useState(() => {
+        const saved = localStorage.getItem('transactions');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
     const [coinList, setCoinList] = useState([]);
     const [editingTransaction, setEditingTransaction] = useState(null);
@@ -30,9 +21,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
     const [error, setError] = useState(null);
     const [smartSuggestions, setSmartSuggestions] = useState(null);
     const [goalCompletionData, setGoalCompletionData] = useState(null);
-    // XÓA DÒNG NÀY: Dòng này gây ra lỗi crash
-    // const { markGoalAsComplete } = useContext(SavvyContext);
-    // --- 2. HANDLER FUNCTIONS (useCallback) ---
+
     const handleAddTransaction = useCallback((newTransaction) => {
         setTransactions(prev => [newTransaction, ...prev]);
         if(goalCompletionData){
@@ -66,6 +55,13 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
 
 
     const { handleOpenConfirmationModal } = useContext(AppContext);
+
+
+    useEffect(() => {
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    }, [transactions]);
+
+
 
     const handleDeleteTransaction = useCallback((id) => {
         const onConfirmDelete = () => {
@@ -180,8 +176,7 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
         apiCallGuard.current = true;
     }, []);
 
-    useEffect(() => { // Update Holdings from Transactions
-        // Bước 1.1: Nhóm tất cả giao dịch theo coinId
+    useEffect(() => { 
         const transactionsByCoin = transactions.reduce((acc, transaction) => {
             const { coinId } = transaction;
             if (!acc[coinId]) {

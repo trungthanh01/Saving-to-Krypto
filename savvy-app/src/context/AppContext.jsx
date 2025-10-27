@@ -34,33 +34,34 @@ export const AppProvider = ({ children }) => {
 
     loadCoinList();
   }, []); // Mảng rỗng đảm bảo nó chỉ chạy 1 lần
-
-  const handleOpenConfirmationModal = ({ message, onConfirm }) => {
+  const handleOpenConfirmationModal = ( message, onConfirmCallback ) => {
     setConfirmationModal({
       isOpen: true,
       message,
-      onConfirm: () => {
-        onConfirm();
-        handleCloseConfirmationModal();
-      },
+      onConfirm: onConfirmCallback,
     });
   };
-
   const handleCloseConfirmationModal = () => {
     setConfirmationModal({
       isOpen: false,
       message: '',
-      onConfirm: () => {},
+      onConfirm: null,
     });
   };
 
+
+  const handleConfirm = () => {
+    if(typeof confirmationModal.onConfirm === 'function') {
+        confirmationModal.onConfirm();
+      }
+    handleCloseConfirmationModal();
+}
   const value = {
     // Confirmation Modal
     confirmationModal,
     handleOpenConfirmationModal,
     handleCloseConfirmationModal,
-
-    // ✅ Cung cấp state mới cho các component con
+    handleConfirm,
     coinList,
     isCoinListLoading,
     coinListError,
