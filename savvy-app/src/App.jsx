@@ -1,66 +1,55 @@
-import { useContext, useEffect } from 'react';
-import './App.css';
+import { useContext } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { SavvyProvider, SavvyContext } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
-import { Savvy } from './components/savvy/Savvy.jsx';
-import { Portfolio } from './components/portfolio/Portfolio.jsx';
-import { TransactionHistory } from './components/portfolio/TransactionHistory.jsx';
-import { PortfolioSummary } from './components/portfolio/PortfolioSummary.jsx';
-import { HoldingsChart } from './components/portfolio/HoldingsChart.jsx';
-import { SmartSuggestions } from './components/portfolio/SmartSuggestions.jsx';
+
+// Import Layout
+// SỬA Ở ĐÂY: đổi "layouts" thành "layout"
+import { MainLayout } from './layout/MainLayout.jsx';
+
+// Import Pages
+import { DashboardPage } from './pages/DashboardPage.jsx';
+import { DcaCalculatorPage } from './pages/DcaCalculatorPage.jsx';
+import { GoalsPage } from './pages/GoalsPage.jsx';
+
+// Import Modals & Global Components
+// Sửa tên component cho đúng với file của bạn
+import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx'; 
 import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
 import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
-import { DcaCalculator } from './components/dca/DcaCalculator.jsx';
 
-// Component con, nằm BÊN TRONG SavvyProvider
-function AppContent() {
-  // Bây giờ gọi useContext ở đây là hợp lệ
-  const { goals, markGoalAsComplete, setGoalMessage, goalMessage } = useContext(SavvyContext);
+import './App.css';
 
-  useEffect(() => {
-    if (goalMessage) {
-      const timer = setTimeout(() => {
-        setGoalMessage('');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [goalMessage, setGoalMessage]);
+// Component trung gian để lấy context từ Savvy và truyền vào Portfolio
+function AppRoutes() {
+  const { goals, markGoalAsComplete } = useContext(SavvyContext);
 
   return (
-    <div className='app-container'>
-      <header className='app-header'>
-        <h1>Savvy</h1>
-        {goalMessage && <h3 className='goalMessage'>{goalMessage}</h3>}
-      </header>
-      <main>
-        {/* Truyền các giá trị cần thiết từ SavvyContext xuống PortfolioProvider */}
-        <PortfolioProvider 
-          goals={goals} 
-          markGoalAsComplete={markGoalAsComplete}
-        >
-          <div className="portfolio-container">
-            <PortfolioSummary />
-            <HoldingsChart />
-          </div>
-          <DcaCalculator />
-          <SmartSuggestions />
-          <Portfolio />
-          <TransactionHistory />
-        </PortfolioProvider>
-        
-        <Savvy />
-        <CelebrationModal />
-        <ConfirmationModal />
-      </main>
-    </div>
+    <PortfolioProvider 
+      goals={goals} 
+      markGoalAsComplete={markGoalAsComplete}
+    >
+      {/* Routes và Modals đều nằm trong PortfolioProvider để truy cập context */}
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/dca" element={<DcaCalculatorPage />} />
+          <Route path="/goals" element={<GoalsPage />} />
+        </Route>
+      </Routes>
+      
+      <AddTransactionForm />
+      <ConfirmationModal />
+      <CelebrationModal />
+    </PortfolioProvider>
   );
 }
 
-// Component App chính, chỉ làm nhiệm vụ bao bọc
+// Component App chính giờ đây rất gọn gàng
 export function App() {
   return (
     <SavvyProvider>
-      <AppContent />
+      <AppRoutes />
     </SavvyProvider>
   );
 }

@@ -1,0 +1,58 @@
+.sidebar {
+  width: 240px;
+  background-color: #1a1d2e;
+  height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #2c2f48;
+  position: fixed; /* Cố định sidebar */
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.logo h2 {
+  color: #e0e0ff;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav li {
+  margin-bottom: 10px;
+}
+
+/* Base style for all links */
+.nav a {
+  display: block;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #a0a0d0;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover style for links that are NOT active */
+.nav a:not(.active):hover {
+  background-color: #2c2f48;
+  color: #ffffff;
+}
+
+/* Active link style */
+.active {
+  background-color: #7b61ff;
+  color: #ffffff !important; /* Dùng !important để ghi đè màu khi hover */
+  font-weight: bold;
+}

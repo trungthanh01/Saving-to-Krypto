@@ -1,0 +1,12 @@
+/* Dàn layout chính của toàn bộ ứng dụng */
+.mainLayout {
+  display: flex;
+}
+
+/* Phần nội dung chính (thẻ <main>) */
+.mainContent {
+  flex-grow: 1; /* Cho phép nội dung chính chiếm hết không gian còn lại */
+  padding: 20px;
+  margin-left: 15em; /* Quan trọng: Đẩy nội dung sang phải một khoảng bằng đúng chiều rộng của Sidebar */
+  min-height: 100vh; /* Đảm bảo nội dung luôn cao ít nhất bằng màn hình */
+}
