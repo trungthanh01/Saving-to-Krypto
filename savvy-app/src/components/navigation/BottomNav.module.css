@@ -4,14 +4,18 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background-color: rgba(26, 29, 46, 0.8); /* Màu nền bán trong suốt */
+    height: 50px;
+    background-color: rgba(148, 150, 162, 0.066); /* Màu nền bán trong suốt */
     backdrop-filter: blur(10px); /* Hiệu ứng blur */
     -webkit-backdrop-filter: blur(10px); /* Hỗ trợ Safari */
     border-top: 1px solid #2c2f48;
     z-index: 1000;
     justify-content: space-around;
     align-items: center;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    border-radius: 80px;
 }
 
 .link, .active {

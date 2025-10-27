@@ -15,7 +15,7 @@ export function BottomNav() {
             </NavLink>
             <NavLink to="/goals" className={({ isActive }) => isActive ? styles.active : styles.link}>
                 <FiTarget size={22} />
-                <span>Mục tiêu</span>
+                <span>Goals</span>
             </NavLink>
         </nav>
     );
