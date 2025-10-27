@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
+import {useNavigate} from 'react-router-dom';
 import './SmartSuggestions.css';
 
 export function SmartSuggestions() {
     const { smartSuggestions, handleInitiateGoalCompletion, totalProfitLoss } = useContext(PortfolioContext);
-
+    const navigate = useNavigate();
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -12,6 +13,10 @@ export function SmartSuggestions() {
 
     if (!smartSuggestions || smartSuggestions.completable.length === 0 && smartSuggestions.incompletable.length === 0) {
         return null;
+    }
+    const handleCompleteGoalClick = (goal) => {
+        handleInitiateGoalCompletion(goal);
+        navigate('/');
     }
 
     const {completable, incompletable} = smartSuggestions;
@@ -51,7 +56,7 @@ export function SmartSuggestions() {
                                     <span>
                                         <strong>{goal.title}</strong>: chỉ còn thiếu {formatCurrency(amountNeeded)}
                                     </span>
-                                    <button onClick={() => handleInitiateGoalCompletion(goal)}>
+                                    <button onClick={() => handleCompleteGoalClick(goal)}>
                                         Hoàn thành ngay
                                     </button>
                                 </li>
