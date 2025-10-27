@@ -66,27 +66,43 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (!coinId || !amount || !pricePerCoin) {
-            alert("Vui lòng điền đầy đủ thông tin: Coin, Số lượng, và Giá.");
+        // 1. TÌM KIẾM COIN CHÍNH XÁC
+        // Dựa vào chuỗi người dùng nhập (lưu trong state `coinId`),
+        // tìm trong `coinList` để lấy ra object coin đầy đủ.
+        const searchTerm = coinId.toLowerCase();
+        const selectedCoin = coinList.find(c => 
+            c.name.toLowerCase() === searchTerm || 
+            c.symbol.toLowerCase() === searchTerm
+        );
+
+        // 2. VALIDATE
+        if (!selectedCoin) {
+            alert("Coin không hợp lệ. Vui lòng gõ và chọn một coin từ danh sách gợi ý.");
+            return;
+        }
+        
+        if (!amount || !pricePerCoin) {
+            alert("Vui lòng điền đầy đủ thông tin: Số lượng và Giá.");
             return;
         }
 
         const transactionData = {
             id: isEditMode ? transactionToEdit.id : 't_' + new Date().getTime(),
-            coinId: coinId.toLowerCase().trim(),
+            // 3. SỬ DỤNG SYMBOL CHUẨN
+            // Luôn sử dụng `symbol` (viết hoa) từ object coin đã tìm thấy.
+            coinId: selectedCoin.symbol.toUpperCase(), 
             amount: parseFloat(amount),
             type: type,
             pricePerCoin: parseFloat(pricePerCoin),
             date: date,
         };
-
+        
         if (isEditMode) {
             editTransaction(transactionData);
         } else {
             addTransaction(transactionData);
         }
 
-        // BÂY GIỜ LOGIC NÀY SẼ HOẠT ĐỘNG
         if (goalCompletionData) {
             markGoalAsComplete(goalCompletionData.id);
         }
@@ -117,7 +133,7 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
                             <ul className="suggestion-list">
                                 {suggestions.map(suggestion => (
                                     <li key={suggestion.id} onClick={() => {
-                                        setCoinId(suggestion.id);
+                                        setCoinId(suggestion.name);
                                         setSuggestions(null);
                                     }}>
                                         <img className="suggestion-logo" src={suggestion.image} alt={suggestion.name} />
