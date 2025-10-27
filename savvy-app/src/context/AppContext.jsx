@@ -11,6 +11,10 @@ export const AppProvider = ({ children }) => {
     onConfirm: () => {},
   });
 
+  // --- State cho Add/Edit Transaction Modal ---
+  const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null); // State để giữ transaction cần sửa
+
   // ✅ --- State mới cho Danh sách Coin Toàn cục ---
   const [coinList, setCoinList] = useState([]);
   const [isCoinListLoading, setIsCoinListLoading] = useState(true);
@@ -34,6 +38,18 @@ export const AppProvider = ({ children }) => {
 
     loadCoinList();
   }, []); // Mảng rỗng đảm bảo nó chỉ chạy 1 lần
+  
+  // --- Functions cho Add/Edit Transaction Modal ---
+  const openAddTransactionModal = (transaction = null) => {
+    setEditingTransaction(transaction); // Nếu không có transaction, sẽ là null (chế độ Add)
+    setIsAddTransactionModalOpen(true);
+  };
+
+  const closeAddTransactionModal = () => {
+    setIsAddTransactionModalOpen(false);
+    setEditingTransaction(null); // Reset khi đóng modal
+  };
+
   const handleOpenConfirmationModal = ( message, onConfirmCallback ) => {
     setConfirmationModal({
       isOpen: true,
@@ -57,6 +73,12 @@ export const AppProvider = ({ children }) => {
     handleCloseConfirmationModal();
 }
   const value = {
+    // Add/Edit Transaction Modal
+    isAddTransactionModalOpen,
+    editingTransaction,
+    openAddTransactionModal,
+    closeAddTransactionModal,
+    
     // Confirmation Modal
     confirmationModal,
     handleOpenConfirmationModal,

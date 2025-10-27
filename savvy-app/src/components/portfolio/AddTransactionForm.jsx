@@ -4,12 +4,14 @@ import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import { AddButton } from "../savvy/AddButton.jsx";
 import { AppContext } from "../../context/AppContext.jsx";
 
-export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) => {
-    const {coinList} = useContext(AppContext)
+export const AddTransactionForm = memo(() => {
+    const { 
+      coinList,
+      isAddTransactionModalOpen,
+      closeAddTransactionModal,
+      editingTransaction 
+    } = useContext(AppContext);
 
-    console.log("2. AddTransactionForm rendered. isOpen is:", isOpen);
-    const portfolioCtx = useContext(PortfolioContext);
-    console.log("Context value RECEIVED in Form:", portfolioCtx);
     const { 
         addTransaction, 
         editTransaction, 
@@ -24,17 +26,17 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
     const [suggestions, setSuggestions] = useState(null);
     const [date, setDate] = useState('');   
 
-    const isEditMode = Boolean(transactionToEdit && transactionToEdit.id);
+    const isEditMode = Boolean(editingTransaction && editingTransaction.id);
 
     useEffect(() => {
-        if (isOpen) {
-            if (transactionToEdit) {
-                setCoinId(transactionToEdit.coinId);
-                setAmount(transactionToEdit.amount || '');
-                setType(transactionToEdit.type);
-                setPricePerCoin(transactionToEdit.pricePerCoin || '');
+        if (isAddTransactionModalOpen) {
+            if (editingTransaction) {
+                setCoinId(editingTransaction.coinId);
+                setAmount(editingTransaction.amount || '');
+                setType(editingTransaction.type);
+                setPricePerCoin(editingTransaction.pricePerCoin || '');
                 setSuggestions(null);
-                setDate(transactionToEdit.date || '');
+                setDate(editingTransaction.date || '');
             } else {
                 setCoinId('');
                 setAmount('');
@@ -44,7 +46,7 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
                 setDate(new Date().toISOString().split('T')[0]);
             }
         }
-    }, [isOpen, transactionToEdit]);
+    }, [isAddTransactionModalOpen, editingTransaction]);
 
     useEffect(() => {
         if (isEditMode || !coinId.trim()) {
@@ -58,8 +60,7 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
         setSuggestions(filtered);
     }, [coinId, coinList, isEditMode]);
 
-    if (!isOpen) {
-        console.log("2a. isOpen is false, returning null.");
+    if (!isAddTransactionModalOpen) {
         return null;
     }
 
@@ -87,7 +88,7 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
         }
 
         const transactionData = {
-            id: isEditMode ? transactionToEdit.id : 't_' + new Date().getTime(),
+            id: isEditMode ? editingTransaction.id : 't_' + new Date().getTime(),
             // 3. SỬ DỤNG SYMBOL CHUẨN
             // Luôn sử dụng `symbol` (viết hoa) từ object coin đã tìm thấy.
             coinId: selectedCoin.symbol.toUpperCase(), 
@@ -107,15 +108,15 @@ export const AddTransactionForm = memo(({ isOpen, onClose, transactionToEdit }) 
             markGoalAsComplete(goalCompletionData.id);
         }
 
-        onClose();
+        closeAddTransactionModal();
     };
 
     return (
-        <div className="overlay" onClick={onClose}>
+        <div className="overlay" onClick={closeAddTransactionModal}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
                 <header className="header">
                     <h2>{isEditMode ? 'Sửa Giao Dịch' : 'Thêm Giao Dịch'}</h2>
-                    <button className="closeButton" onClick={onClose}>&times;</button>
+                    <button className="closeButton" onClick={closeAddTransactionModal}>&times;</button>
                 </header>
                 <form onSubmit={handleSubmit}>
                     <div className="formGroup suggestion-wrapper">

@@ -3,6 +3,7 @@ import { PortfolioContext } from '../../context/PortfolioContext';
 import styles from './MainHeader.module.css';
 
 export function MainHeader({ title }) {
+    // Lấy hàm openAddHoldingModal từ context
     const { openAddHoldingModal } = useContext(PortfolioContext);
 
     return (

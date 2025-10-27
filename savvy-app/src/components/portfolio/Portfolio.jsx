@@ -1,9 +1,15 @@
 import { useContext } from 'react';
+// 1. Import AppContext
+import { AppContext } from '../../context/AppContext';
 import { PortfolioContext } from '../../context/PortfolioContext';
 import { HoldingItem } from './HoldingItem';
 import styles from './Portfolio.module.css';
+import { AddButton } from '../savvy/AddButton'; 
 
 export function Portfolio() {
+  // 2. Lấy `openAddHoldingModal` từ AppContext
+  const { openAddTransactionModal } = useContext(AppContext);
+  // 3. Giữ lại các state khác từ PortfolioContext
   const { portfolioData, isLoading, error } = useContext(PortfolioContext);
 
   const renderContent = () => {
@@ -45,6 +51,8 @@ export function Portfolio() {
     <section className={styles.portfolioSection}>
       <div className={styles.header}>
         <h2>Danh mục Đầu tư</h2>
+        {/* Nút này bây giờ sẽ hoạt động */}
+        <AddButton onClick={() => openAddTransactionModal()}>Thêm Giao Dịch</AddButton>
       </div>
       {renderContent()}
     </section>

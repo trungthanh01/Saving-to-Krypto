@@ -29,7 +29,6 @@ function AppRoutes() {
       goals={goals} 
       markGoalAsComplete={markGoalAsComplete}
     >
-      {/* Routes và Modals đều nằm trong PortfolioProvider để truy cập context */}
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<DashboardPage />} />
@@ -38,6 +37,7 @@ function AppRoutes() {
         </Route>
       </Routes>
       
+      {/* TRẢ LẠI CÁC MODAL VÀO ĐÂY */}
       <AddTransactionForm />
       <ConfirmationModal />
       <CelebrationModal />
