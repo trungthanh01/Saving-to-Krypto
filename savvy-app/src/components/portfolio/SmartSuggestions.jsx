@@ -17,8 +17,15 @@ export function SmartSuggestions() {
         return null;
     }
     const handleCompleteGoalClick = (goal) => {
-        handleInitiateGoalCompletion(goal);
-        openAddTransactionModal() 
+        const transactionTemplate = {
+            id: null, // Đây là giao dịch mới, chưa có id
+            type: 'sell', // Luôn là 'bán'
+            coinId: '', // Lấy coinId từ mục tiêu
+            amount: '', // Lấy số lượng cần bán
+            pricePerCoin: '', // Để trống cho người dùng nhập
+            date: new Date().toISOString().split('T')[0],
+        };
+        openAddTransactionModal(transactionTemplate) 
         navigate('/');
     }
 

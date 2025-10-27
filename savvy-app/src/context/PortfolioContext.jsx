@@ -94,19 +94,9 @@ export function PortfolioProvider({ children, goals, markGoalAsComplete }) {
 
     const handleInitiateGoalCompletion = useCallback((goal) => {
         if(!goal) return;
-
         console.log("Initiating completion for goal:", goal);
         setGoalCompletionData(goal);
-
-        handleOpenEditModal({
-            id: null,
-            type: 'sell',
-            coinId: '',
-            amount: '',
-            pricePerCoin: '',
-            date: new Date().toISOString().split('T')[0],
-        })
-    }, [handleOpenEditModal]);
+    }, []);
 
     // --- 4. DERIVED DATA (useMemo for calculations) ---
 
