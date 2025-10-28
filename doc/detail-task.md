@@ -559,64 +559,388 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
     - Sử dụng `position: fixed`, `bottom: 0`, `backdrop-filter: blur(10px)` và Flexbox để tạo ra giao diện như phác thảo.
 ---
 
-### **Giai đoạn 15: Tái kiến trúc luồng dữ liệu Context**
+### **Giai đoạn 15: Tái kiến trúc luồng dữ liệu Context (COMPLETE REFACTOR)**
 
-*Mục tiêu: Giải quyết triệt để các lỗi logic và "đứt gãy" thông tin bằng cách định nghĩa lại vai trò và trách nhiệm của từng Context. Xây dựng một luồng dữ liệu rõ ràng, dễ dự đoán và dễ bảo trì, đặc biệt là cho tính năng "Hoàn thành mục tiêu".*
+*Mục tiêu: Từ kiến trúc xáo trộn hiện tại, chúng ta sẽ xây dựng một hệ thống Context **Professional-grade**, tuân thủ nguyên lý Single Responsibility, không có state trùng lặp, và luồng dữ liệu rõ ràng theo một hướng (unidirectional data flow). Mục tiêu cuối cùng là tạo một ứng dụng dễ bảo trì, dễ mở rộng, và dễ debug.*
 
-#### **Mô tả Kiến trúc & Luồng hoạt động Chuẩn**
+---
 
-Để giải quyết các lỗi hiện tại, chúng ta sẽ tuân thủ nghiêm ngặt theo mô hình phân chia vai trò sau:
+#### **PHẦN I: NHƯ CẦU THIẾT KẾ & NGUYÊN LÝ**
 
-1.  **`AppContext` ("Thị trưởng"):**
-    *   **Vai trò:** Quản lý các "dịch vụ công cộng" toàn cục.
-    *   **Trách nhiệm:** Mở/Đóng **TẤT CẢ** các modal (`AddTransaction`, `Confirmation`, `Celebration`). Quản lý dữ liệu dùng chung ít thay đổi (`coinList`).
-    *   **Luồng:** Nó nhận lệnh mở/đóng modal từ các Context khác và thực thi.
+**Kiến trúc cần đạt:**
+1. ✅ **Single Responsibility:** Mỗi Context làm một việc duy nhất
+2. ✅ **No State Duplication:** Không có dữ liệu nằm ở 2 nơi
+3. ✅ **Clear Modal Ownership:** Mỗi modal có owner rõ ràng
+4. ✅ **Unidirectional Data Flow:** Dữ liệu chảy theo một hướng
+5. ✅ **No Circular Dependencies:** Không có import vòng tròn
+6. ✅ **Proper Context Nesting:** AppContext → SavvyContext → PortfolioContext
+7. ✅ **Goal Completion Flow:** Luồng hoàn thành mục tiêu hoàn hảo
 
-2.  **`PortfolioContext` ("Giám đốc Ngân hàng"):**
-    *   **Vai trò:** Quản lý tài sản, giao dịch và các tính toán liên quan.
-    *   **Trách nhiệm:** Quản lý `transactions`, tính toán `holdings` và `portfolioData`, chứa logic `smartSuggestions`.
-    *   **Luồng:** Khi cần hoàn thành mục tiêu, nó sẽ ghi nhớ mục tiêu (`goalCompletionData`), chuẩn bị "bản nháp giao dịch" và **nhờ `AppContext` mở modal**. Sau khi giao dịch được thêm, nó sẽ **báo cho `SavvyContext` biết** để đánh dấu mục tiêu hoàn thành.
+---
 
-3.  **`SavvyContext` ("Huấn luyện viên Mục tiêu"):**
-    *   **Vai trò:** Quản lý mục tiêu tiết kiệm.
-    *   **Trách nhiệm:** Quản lý danh sách `goals`, chứa hàm `markGoalAsComplete`.
-    *   **Luồng:** Khi nhận được lệnh `markGoalAsComplete` từ `PortfolioContext`, nó sẽ cập nhật trạng thái mục tiêu và **nhờ `AppContext` mở `CelebrationModal`**.
+#### **PHẦN II: CÁC TASK CHI TIẾT**
 
-#### **Các Task cụ thể**
+##### **TASK 15.1: Xây dựng AppContext mới (Platform Manager)**
 
-- [ ] **Task 15.1: Hoàn thiện vai trò "Thị trưởng" cho `AppContext`**
-  - **Mục đích:** Biến `AppContext` thành trung tâm quản lý modal duy nhất.
+- [x] **15.1.1: Thiết kế cấu trúc state cho AppContext**
+  - **Mục đích:** Xác định chính xác cái gì nên nằm trong AppContext
   - **Hành động:**
-    - Trong `AppContext.jsx`, bổ sung state và các hàm để quản lý `CelebrationModal` (`isCelebrationModalOpen`, `openCelebrationModal`, `closeCelebrationModal`).
-    - Đảm bảo `AppContext` đã có đủ logic để quản lý `AddTransactionModal` và `ConfirmationModal`.
+    - Xóa tất cả nội dung cũ của `AppContext.jsx`
+    - Thiết kế 3 nhóm state chính:
+      1. **Global Services State:**
+         - `coinList: Coin[]` (fetch once, shared)
+         - `isCoinListLoading: boolean`
+         - `coinListError: string | null`
+      2. **UI State:**
+         - `ui: { theme: 'light' | 'dark' }`
+      3. **Modals Management State:**
+         - `modals: { addTransaction: { isOpen, mode, data }, confirmation: {...}, celebration: {...} }`
 
-- [ ] **Task 15.2: Nâng cấp vai trò "Huấn luyện viên" cho `SavvyContext`**
-  - **Mục đích:** Kết nối luồng hoàn thành mục tiêu với modal chúc mừng.
+- [x] **15.1.2: Viết state variables và initializers**
+  - **Mục đích:** Setup các state với giá trị khởi tạo hợp lý
   - **Hành động:**
-    - Trong `SavvyContext.jsx`, import và sử dụng `useContext(AppContext)`.
-    - Sửa hàm `markGoalAsComplete` để sau khi cập nhật state `goals`, nó sẽ gọi hàm `openCelebrationModal()` từ `AppContext`.
+    - Tạo 3 `useState` chính: `coinList`, `ui`, `modals`
+    - Mỗi state phải có kiến trúc nested rõ ràng
+    - Ví dụ cho modals:
+      ```javascript
+      const [modals, setModals] = useState({
+        addTransaction: { isOpen: false, mode: 'add', data: null },
+        confirmation: { isOpen: false, message: '', onConfirm: null },
+        celebration: { isOpen: false, message: '' },
+      });
+      ```
 
-- [ ] **Task 15.3: Tái cấu trúc vai trò "Giám đốc" cho `PortfolioContext`**
-  - **Mục đích:** Sửa lại luồng xử lý "Hoàn thành mục tiêu" cho đúng kiến trúc.
+- [x] **15.1.3: Viết hàm mở/đóng AddTransactionModal**
+  - **Mục đích:** Tạo unified interface để mở modal thêm giao dịch
   - **Hành động:**
-    - Trong `PortfolioContext.jsx`, import và sử dụng `useContext(AppContext)`.
-    - **Sửa hàm `handleInitiateGoalCompletion`:**
-      - Ghi nhớ mục tiêu bằng `setGoalCompletionData(goal)`.
-      - Tạo một "bản nháp giao dịch" an toàn (`{ type: 'sell', coinId: '', ... }`).
-      - Gọi `openAddTransactionModal(transactionTemplate)` từ `AppContext`.
-    - **Sửa hàm `addTransaction`:**
-      - Sau khi thêm giao dịch, kiểm tra `if (goalCompletionData)`.
-      - Bên trong `if`, gọi `markGoalAsComplete(goalCompletionData.id)` (hàm được truyền từ `App.jsx`).
-      - Reset `setGoalCompletionData(null)`.
+    - `openAddTransactionModal(mode = 'add', data = null)` → cập nhật `modals.addTransaction`
+    - `closeAddTransactionModal()` → reset `modals.addTransaction`
+    - Đảm bảo có thể chuyển sang mode 'edit' khi nhận data
 
-- [ ] **Task 15.4: Đơn giản hóa vai trò "Người báo cáo" cho `SmartSuggestions`**
-  - **Mục đích:** Đảm bảo component này chỉ làm đúng một nhiệm vụ là "báo cáo".
+- [x] **15.1.4: Viết hàm mở/đóng ConfirmationModal**
+  - **Mục đích:** Tạo unified interface để mở modal xác nhận
   - **Hành động:**
-    - Trong `SmartSuggestions.jsx`, xóa bỏ việc sử dụng `AppContext`.
-    - Sửa hàm `handleCompleteGoalClick` để nó chỉ gọi `handleInitiateGoalCompletion(goal)` từ `PortfolioContext` và sau đó `navigate('/')`.
+    - `openConfirmationModal(message, onConfirmCallback)` → cập nhật `modals.confirmation`
+    - `closeConfirmationModal()` → reset `modals.confirmation`
+    - `handleConfirm()` → gọi `onConfirmCallback`, sau đó close modal
+    - Thêm safety check: `if (typeof modals.confirmation.onConfirm === 'function')`
 
-- [ ] **Task 15.5: Đồng bộ hóa toàn bộ luồng tại `App.jsx`**
-  - **Mục đích:** Đảm bảo các Context được cung cấp và kết nối với nhau một cách chính xác.
+- [x] **15.1.5: Viết hàm mở/đóng CelebrationModal**
+  - **Mục đích:** Tạo unified interface để mở modal chúc mừng
   - **Hành động:**
-    - Trong `App.jsx`, đảm bảo `SavvyContext` lấy được hàm `markGoalAsComplete` và truyền nó xuống cho `PortfolioProvider` dưới dạng prop.
-    - Kiểm tra lại thứ tự của các Provider để đảm bảo `AppContext` bao bọc các Context cần sử dụng dịch vụ của nó.
+    - `openCelebrationModal(message)` → cập nhật `modals.celebration`
+    - `closeCelebrationModal()` → reset `modals.celebration`
+    - Có thể add auto-close sau 3 giây (optional)
+
+- [x] **15.1.6: Viết useEffect để fetch coinList**
+  - **Mục đích:** Tải danh sách coin một lần duy nhất
+  - **Hành động:**
+    - Sử dụng `useRef` guard để đảm bảo chỉ fetch 1 lần
+    - Cập nhật `isCoinListLoading` và `coinListError` thích hợp
+    - Dependency array: `[]` (chỉ chạy 1 lần)
+
+- [x] **15.1.7: Tạo value object và export**
+  - **Mục đích:** Đóng gói tất cả state và functions vào context value
+  - **Hành động:**
+    - Dùng `useMemo` để prevent unnecessary re-renders
+    - Export `AppContext` và `AppProvider`
+    - Đảm bảo value có cấu trúc logic, dễ sử dụng
+    - Dependency array bao gồm tất cả state và functions
+
+---
+
+##### **TASK 15.2: Tối ưu hóa SavvyContext (Goals Manager)**
+
+- [ ] **15.2.1: Import AppContext vào SavvyContext**
+  - **Mục đích:** Cho phép SavvyContext gọi AppContext functions
+  - **Hành động:**
+    - Thêm: `import { AppContext } from './AppContext.jsx';`
+    - Bên trong `SavvyProvider`, dùng: `const { openCelebrationModal } = useContext(AppContext);`
+
+- [ ] **15.2.2: Sửa hàm `markGoalAsComplete`**
+  - **Mục đích:** Kết nối goal completion với celebration modal
+  - **Hành động:**
+    - Tìm goal trong `goals` array
+    - Move nó vào `completedGoals` array
+    - Remove từ `goals` array
+    - **ĐỌC KỸẤU:** Sau đó, gọi `openCelebrationModal("Chúc mừng! Bạn đã hoàn thành mục tiêu: [goalTitle]")`
+    - Cập nhật localStorage
+
+- [ ] **15.2.3: Đảm bảo dependency array đúng**
+  - **Mục đích:** Tránh infinite loops hoặc missing dependencies
+  - **Hành động:**
+    - Kiểm tra các `useEffect` và `useCallback` trong SavvyContext
+    - Thêm `openCelebrationModal` vào dependency arrays nếu cần
+
+---
+
+##### **TASK 15.3: Tái cấu trúc PortfolioContext (Portfolio Manager)**
+
+- [ ] **15.3.1: Import AppContext vào PortfolioContext**
+  - **Mục đích:** Cho phép PortfolioContext gọi AppContext functions
+  - **Hành động:**
+    - Thêm: `import { AppContext } from './AppContext.jsx';`
+    - Bên trong `PortfolioProvider`, dùng: `const { openAddTransactionModal, openConfirmationModal, closeAddTransactionModal } = useContext(AppContext);`
+    - **REMOVE:** dòng cũ `const { handleOpenConfirmationModal } = useContext(AppContext);`
+
+- [ ] **15.3.2: Xóa bỏ state trùng lặp**
+  - **Mục đích:** Loại bỏ tất cả dữ liệu đã có ở AppContext
+  - **Hành động:**
+    - **REMOVE:** `const [coinList, setCoinList] = useState([]);`
+    - **REMOVE:** `const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);`
+    - **REMOVE:** `const [editingTransaction, setEditingTransaction] = useState(null);` (duplicate!)
+    - **REMOVE:** `const apiCallGuard useRef` (không cần nữa)
+    - Thay vào đó, lấy `coinList` từ `AppContext` khi cần
+
+- [ ] **15.3.3: Sửa hàm `handleDeleteTransaction`**
+  - **Mục đích:** Sử dụng AppContext.openConfirmationModal thay vì context function cũ**
+  - **Hành động:**
+    - Thay `handleOpenConfirmationModal(...)` bằng `openConfirmationModal(...)`
+    - Kiểm tra xem callback có hoạt động đúng không
+
+- [ ] **15.3.4: Sửa hàm `handleInitiateGoalCompletion`**
+  - **Mục đích:** Chuẩn bị modal mở và dữ liệu trước khi mở
+  - **Hành động:**
+    - Nhận `goal` làm parameter
+    - Ghi nhớ nó: `setGoalCompletionData(goal)`
+    - Tạo transaction template an toàn:
+      ```javascript
+      const template = {
+        id: null,
+        type: 'sell',
+        coinId: '',
+        amount: '',
+        pricePerCoin: '',
+        date: new Date().toISOString().split('T')[0],
+      };
+      ```
+    - Gọi: `openAddTransactionModal('add', template)` từ AppContext
+
+- [ ] **15.3.5: Sửa hàm `handleAddTransaction` (rename nếu cần)**
+  - **Mục đích:** Kết nối với SavvyContext khi hoàn thành mục tiêu
+  - **Hành động:**
+    - Giữ logic cũ: `setTransactions([newTransaction, ...prev])`
+    - Sau đó, thêm logic mới:
+      ```javascript
+      if (goalCompletionData) {
+        // Gọi hàm từ SavvyContext (được truyền từ App.jsx)
+        markGoalAsComplete(goalCompletionData.id);
+        setGoalCompletionData(null);
+      }
+      ```
+    - Gọi: `closeAddTransactionModal()` từ AppContext để đóng modal
+
+- [ ] **15.3.6: Sửa context value và dependency array**
+  - **Mục đích:** Loại bỏ các property không cần thiết, thêm các property mới**
+  - **Hành động:**
+    - **REMOVE từ value:**
+      - `isAddHoldingModalOpen`
+      - `editingTransaction`
+      - `openAddHoldingModal`
+      - `openEditModal`
+      - `closeModal`
+    - **Cập nhật dependency array** để khớp với thay đổi
+
+---
+
+##### **TASK 15.4: Đơn giản hóa SmartSuggestions Component**
+
+- [ ] **15.4.1: Xóa import AppContext từ SmartSuggestions**
+  - **Mục đích:** Component chỉ nên import context mà nó thực sự cần
+  - **Hành động:**
+    - **REMOVE:** `import { AppContext } from "../../context/AppContext.jsx";`
+    - **REMOVE:** `const {openAddTransactionModal}= useContext(AppContext)`
+
+- [ ] **15.4.2: Sửa hàm `handleCompleteGoalClick`**
+  - **Mục đích:** Delegate mọi thứ cho PortfolioContext
+  - **Hành động:**
+    - Xóa tất cả logic tạo template
+    - Xóa call `openAddTransactionModal()`
+    - Thay vào đó, chỉ gọi: `handleInitiateGoalCompletion(goal)` từ PortfolioContext
+    - Sau đó, `navigate('/')`
+    - Ví dụ:
+      ```javascript
+      const handleCompleteGoalClick = (goal) => {
+        handleInitiateGoalCompletion(goal);  // ← PortfolioContext sẽ handle template + modal
+        navigate('/');
+      };
+      ```
+
+---
+
+##### **TASK 15.5: Cập nhật App.jsx (Main Orchestrator)**
+
+- [ ] **15.5.1: Kiểm tra thứ tự Context nesting**
+  - **Mục đích:** Đảm bảo Context được sắp xếp đúng
+  - **Hành động:**
+    - Cấu trúc cần là:
+      ```javascript
+      <AppProvider>
+        <SavvyProvider>
+          <PortfolioProvider>
+            {children}
+          </PortfolioProvider>
+        </SavvyProvider>
+      </AppProvider>
+      ```
+    - Kiểm tra xem có đúng không
+
+- [ ] **15.5.2: Xóa AppProvider từ AppRoutes**
+  - **Mục đích:** AppProvider nên ở ngoài, không ở trong AppRoutes
+  - **Hành động:**
+    - Di chuyển `<AppProvider>` ra ngoài `AppRoutes` function
+    - Để nó bao bọc tất cả (bên ngoài SavvyProvider)
+
+- [ ] **15.5.3: Kiểm tra props truyền vào PortfolioProvider**
+  - **Mục đích:** Chỉ truyền dữ liệu từ SavvyContext khi thực sự cần
+  - **Hành động:**
+    - Hiện tại: `goals` và `markGoalAsComplete` được truyền
+    - Giữ nguyên (đây là intentional prop passing vì circular dependency)
+    - Không truyền bất kỳ state từ AppContext
+
+---
+
+##### **TASK 15.6: Cập nhật các Modal Components**
+
+- [ ] **15.6.1: Cập nhật AddTransactionForm**
+  - **Mục đích:** Sử dụng state mới từ AppContext
+  - **Hành động:**
+    - `isOpen` = `AppContext.modals.addTransaction.isOpen`
+    - `mode` = `AppContext.modals.addTransaction.mode` (để biết là 'add' hay 'edit')
+    - `data` = `AppContext.modals.addTransaction.data`
+    - `onClose` = `AppContext.closeAddTransactionModal()`
+    - Thêm logic: Nếu `mode === 'add'` thì form trống, nếu `mode === 'edit'` thì pre-fill
+
+- [ ] **15.6.2: Cập nhật ConfirmationModal**
+  - **Mục đích:** Sử dụng state mới từ AppContext
+  - **Hành động:**
+    - `isOpen` = `AppContext.modals.confirmation.isOpen`
+    - `message` = `AppContext.modals.confirmation.message`
+    - `onConfirm` → gọi `AppContext.handleConfirm()`
+    - `onCancel` → gọi `AppContext.closeConfirmationModal()`
+
+- [ ] **15.6.3: Tạo/Cập nhật CelebrationModal**
+  - **Mục đích:** Tạo modal hoàn chỉnh được quản lý bởi AppContext
+  - **Hành động:**
+    - `isOpen` = `AppContext.modals.celebration.isOpen`
+    - `message` = `AppContext.modals.celebration.message`
+    - `onClose` = `AppContext.closeCelebrationModal()`
+    - Hiển thị animation celebration (confetti, emoji, v.v.)
+    - Auto-close sau 3 giây (optional)
+
+---
+
+##### **TASK 15.7: Testing & Verification**
+
+- [ ] **15.7.1: Test flow: Thêm giao dịch bình thường**
+  - **Mục đích:** Đảm bảo thêm giao dịch vẫn hoạt động
+  - **Hành động:**
+    - Click "Add Transaction" button
+    - AddTransactionForm modal mở ✓
+    - Điền thông tin, submit
+    - Modal đóng ✓
+    - Portfolio update ✓
+    - localStorage save ✓
+
+- [ ] **15.7.2: Test flow: Hoàn thành mục tiêu**
+  - **Mục đích:** Đảm bảo luồng hoàn thành mục tiêu hoạt động end-to-end
+  - **Hành động:**
+    1. Click "Hoàn thành" button trên SmartSuggestions ✓
+    2. AddTransactionModal mở với mode 'sell-preset' ✓
+    3. User submit transaction ✓
+    4. CelebrationModal mở ✓
+    5. Goal được di chuyển vào completedGoals ✓
+    6. localStorage update ✓
+
+- [ ] **15.7.3: Test flow: Xóa giao dịch**
+  - **Mục đích:** Đảm bảo xóa vẫn hoạt động với modal xác nhận mới
+  - **Hành động:**
+    - Click delete button trên transaction
+    - ConfirmationModal mở ✓
+    - Click "Confirm"
+    - Transaction xóa ✓
+    - Holdings recalculate ✓
+    - localStorage update ✓
+
+- [ ] **15.7.4: Test flow: Smart Suggestions update**
+  - **Mục đích:** Đảm bảo suggestions update khi profit thay đổi
+  - **Hành động:**
+    - Thêm giao dịch buy
+    - SmartSuggestions re-render ✓
+    - Hoàn thành một mục tiêu
+    - SmartSuggestions update (goal move to completed) ✓
+
+- [ ] **15.7.5: Test: No state duplication**
+  - **Mục đích:** Kiểm tra không có state trùng ở 2 nơi
+  - **Hành động:**
+    - Mở DevTools → React tab
+    - Kiểm tra AppContext state
+    - Kiểm tra PortfolioContext state
+    - Kiểm tra SavvyContext state
+    - Đảm bảo không có property trùng lặp
+
+- [ ] **15.7.6: Test: No circular imports**
+  - **Mục đích:** Kiểm tra không có import vòng tròn
+  - **Hành động:**
+    - Mở console khi chạy app
+    - Không có lỗi import ✓
+    - Kiểm tra `AppContext.jsx` - không import `PortfolioContext` ✓
+    - Kiểm tra `PortfolioContext.jsx` - có thể import `AppContext` ✓
+
+---
+
+#### **PHẦN III: CHECKLIST REFACTOR**
+
+**Trước khi bắt đầu:**
+- [ ] Backup code hiện tại
+- [ ] Đọc kỹ kiến trúc mới (Component tree, Context responsibilities)
+- [ ] In ra file này để tham khảo
+
+**Sau khi hoàn thành Task 15.1-15.6:**
+- [ ] Tất cả files compile mà không có lỗi
+- [ ] Tất cả imports tìm thấy được module
+- [ ] Console không có warnings về missing dependencies
+- [ ] Không có lỗi về circular imports
+
+**Sau khi hoàn thành Task 15.7:**
+- [ ] Tất cả 6 flows hoạt động đúng
+- [ ] Không có state trùng lặp
+- [ ] Không có race conditions
+- [ ] localStorage persists đúng cách
+
+---
+
+#### **PHẦN IV: BENEFITS SAU REFACTOR**
+
+✅ **Clear Separation of Concerns**
+- AppContext = UI state
+- PortfolioContext = Business logic
+- SavvyContext = Domain entity
+
+✅ **No State Duplication**
+- coinList chỉ ở AppContext
+- transactions chỉ ở PortfolioContext
+- goals chỉ ở SavvyContext
+
+✅ **Clear Modal Ownership**
+- AddTransactionModal → AppContext
+- ConfirmationModal → AppContext
+- CelebrationModal → AppContext
+
+✅ **Unidirectional Data Flow**
+- User action → dispatch handler → update state → re-render
+
+✅ **Easy to Debug**
+- Biết state nào ở đâu
+- Biết modal nào mở khi nào
+- Biết flow nào thực thi khi nào
+
+✅ **Easy to Extend**
+- Thêm Context mới → không ảnh hưởng cái cũ
+- Thêm modal mới → chỉ cần add vào AppContext
+- Thêm feature mới → rõ ràng nên ở Context nào
+
+✅ **Performance Optimized**
+- Mỗi component subscribe chỉ dữ liệu cần thiết
+- Avoid unnecessary re-renders
+- coinList fetch chỉ 1 lần duy nhất
