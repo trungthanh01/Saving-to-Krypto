@@ -1,27 +1,43 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef, useMemo } from 'react';
 import { fetchCoinList } from '../services/crypto-api';
 
 export const AppContext = createContext();
 
-export const AppProvider = ({ children }) => {
-  // --- State cho Confirmation Modal ---
-  const [confirmationModal, setConfirmationModal] = useState({
-    isOpen: false,
-    message: '',
-    onConfirm: () => {},
-  });
-
-  // --- State cho Add/Edit Transaction Modal ---
-  const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState(null); // State để giữ transaction cần sửa
-
-  // ✅ --- State mới cho Danh sách Coin Toàn cục ---
+export const AppProviderA = ({ children }) => {
+  //1. global service state
   const [coinList, setCoinList] = useState([]);
   const [isCoinListLoading, setIsCoinListLoading] = useState(true);
-  const [coinListError, setCoinListError] = useState(null);
+  const [coinListError, setCoinListError] = useState('');
 
-  // ✅ useEffect để tải coinList một lần duy nhất
-  useEffect(() => {
+  const apiCallGuard = useRef(false);
+  //2. UI State
+  const [ui, setUi] = useState({
+    theme: 'light', 
+  })
+  //3. Modal management State
+  const [modals, setModals] = useState({
+      addTransaction: {
+        isOpen: false, 
+        mode: 'add', 
+        data: null 
+      },
+
+      confirmation: { 
+        isOpen: false,
+        message: '',
+        onConfirm: null,
+      },
+
+      celebration: {
+        isOpen: false,
+        message: '',
+      },
+  })
+
+  //Side Effect: fetch coin list once
+  useEffect( () => {
+    if(apiCallGuard.current) return;
+
     const loadCoinList = async () => {
       try {
         setIsCoinListLoading(true);
@@ -29,65 +45,127 @@ export const AppProvider = ({ children }) => {
         setCoinList(list);
         setCoinListError(null);
       } catch (error) {
-        console.error("Lỗi khi tải danh sách coin toàn cục:", error);
-        setCoinListError('Không thể tải danh sách coin.');
+        console.error('Error fetching coin list', error);
+        setCoinListError('Failed to load coin list. Please try again');
       } finally {
-        setIsCoinListLoading(false);
+        setIsCoinListLoading(false)
       }
-    };
-
+    }
     loadCoinList();
-  }, []); // Mảng rỗng đảm bảo nó chỉ chạy 1 lần
-  
-  // --- Functions cho Add/Edit Transaction Modal ---
-  const openAddTransactionModal = (transaction = null) => {
-    setEditingTransaction(transaction); // Nếu không có transaction, sẽ là null (chế độ Add)
-    setIsAddTransactionModalOpen(true);
+    apiCallGuard.current = true; //mark as fetch
+  }, []); //run once
+
+  //Handle functions: AddTransactionModal
+  const openAddTransactionModal = (mode = 'add', data = null) => {
+    setModals( (prev) => ({
+      ...prev,
+      addTransaction: {
+        isOpen: true,
+        mode,
+        data,
+      },
+    }));
   };
 
   const closeAddTransactionModal = () => {
-    setIsAddTransactionModalOpen(false);
-    setEditingTransaction(null); // Reset khi đóng modal
+    setModals( (prev) => ({
+      ...prev,
+      addTransaction: {
+        isOpen: false,
+        mode,
+        data,
+      },
+    }));
   };
 
-  const handleOpenConfirmationModal = ( message, onConfirmCallback ) => {
-    setConfirmationModal({
-      isOpen: true,
-      message,
-      onConfirm: onConfirmCallback,
-    });
-  };
-  const handleCloseConfirmationModal = () => {
-    setConfirmationModal({
-      isOpen: false,
-      message: '',
-      onConfirm: null,
-    });
+  //Handle functions: ConfirmationModal
+  const openConfirmationModal = (message, onConfirmCallback) => {
+    setModals( (prev) => ({
+      ...prev,
+      confirmation: {
+        isOpen: true,
+        message,
+        onConfirm: onConfirmCallback,
+      },
+    }));
   };
 
+  const closeConfirmationModal = () => {
+    setModals( (prev) => ({
+      ...prev,
+      confirmation: {
+        isOpen: false,
+        message: '',
+        onConfirm: null,
+      },
+    }));
+  };
 
   const handleConfirm = () => {
-    if(typeof confirmationModal.onConfirm === 'function') {
-        confirmationModal.onConfirm();
-      }
-    handleCloseConfirmationModal();
-}
-  const value = {
-    // Add/Edit Transaction Modal
-    isAddTransactionModalOpen,
-    editingTransaction,
-    openAddTransactionModal,
-    closeAddTransactionModal,
-    
-    // Confirmation Modal
-    confirmationModal,
-    handleOpenConfirmationModal,
-    handleCloseConfirmationModal,
-    handleConfirm,
+    //make sure onConfirm is a function before calling
+    if (typeof modals.confirmation.onConfirm === 'function') {
+      modals.confirmation.onConfirm();
+    }
+    closeConfirmationModal();
+  }
+
+  //Handle function: Celebration Modal
+  const openCelebrationModal = (message) => {
+    setModals( (prev) => ({
+      ...prev,
+      celebration: {
+        isOpen: true,
+        message,
+      },
+    }));
+  };
+
+  const closeCelebrationModal = () => {
+    setModals ( (prev) => ({
+      ...prev,
+      celebration: {
+        isOpen: false,
+        message: '',
+      },
+    }));
+  };
+
+  //Handle function: UI Theme
+  const setTheme = (theme) => {
+    setUi( (prev) => ({
+      ...prev,
+      theme, //light or dảk dảk 
+    }));
+  };
+
+  //Context Value
+  const value = useMemo( () => ({
+    //global services
     coinList,
     isCoinListLoading,
     coinListError,
-  };
 
+    //UI theme
+    ui,
+    setTheme,
+
+    //modals
+    modals,
+
+    //Add Transaction modal fuction
+    openAddTransactionModal,
+    closeAddTransactionModal,
+
+    //Confirmation modal function
+    openConfirmationModal,
+    closeConfirmationModal,
+
+    //celebration modal function
+    openCelebrationModal,
+    closeCelebrationModal,
+  }),
+    [coinList, isCoinListLoading, coinListError, ui, modals]
+  );
+  
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
