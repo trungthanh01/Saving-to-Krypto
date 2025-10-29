@@ -676,7 +676,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 ##### **TASK 15.3: Tái cấu trúc PortfolioContext (Portfolio Manager)**
 
-- [ ] **15.3.1: Import AppContext vào PortfolioContext**
+- [x] **15.3.1: Import AppContext vào PortfolioContext**
   - **Mục đích:** Cho phép PortfolioContext gọi AppContext functions
   - **Hành động:**
     - Thêm: `import { AppContext } from './AppContext.jsx';`
@@ -692,13 +692,13 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
     - **REMOVE:** `const apiCallGuard useRef` (không cần nữa)
     - Thay vào đó, lấy `coinList` từ `AppContext` khi cần
 
-- [ ] **15.3.3: Sửa hàm `handleDeleteTransaction`**
+- [x] **15.3.3: Sửa hàm `handleDeleteTransaction`**
   - **Mục đích:** Sử dụng AppContext.openConfirmationModal thay vì context function cũ**
   - **Hành động:**
     - Thay `handleOpenConfirmationModal(...)` bằng `openConfirmationModal(...)`
     - Kiểm tra xem callback có hoạt động đúng không
 
-- [ ] **15.3.4: Sửa hàm `handleInitiateGoalCompletion`**
+- [x] **15.3.4: Sửa hàm `handleInitiateGoalCompletion`**
   - **Mục đích:** Chuẩn bị modal mở và dữ liệu trước khi mở
   - **Hành động:**
     - Nhận `goal` làm parameter
@@ -716,7 +716,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
       ```
     - Gọi: `openAddTransactionModal('add', template)` từ AppContext
 
-- [ ] **15.3.5: Sửa hàm `handleAddTransaction` (rename nếu cần)**
+- [x] **15.3.5: Sửa hàm `handleAddTransaction` (rename nếu cần)**
   - **Mục đích:** Kết nối với SavvyContext khi hoàn thành mục tiêu
   - **Hành động:**
     - Giữ logic cũ: `setTransactions([newTransaction, ...prev])`
@@ -730,7 +730,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
       ```
     - Gọi: `closeAddTransactionModal()` từ AppContext để đóng modal
 
-- [ ] **15.3.6: Sửa context value và dependency array**
+- [x] **15.3.6: Sửa context value và dependency array**
   - **Mục đích:** Loại bỏ các property không cần thiết, thêm các property mới**
   - **Hành động:**
     - **REMOVE từ value:**
