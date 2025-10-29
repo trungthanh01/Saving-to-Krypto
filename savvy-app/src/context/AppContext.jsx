@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useRef, useMemo } from 'react';
 import { fetchCoinList } from '../services/crypto-api';
-<script src="http://192.168.1.45:8097"></script>
 
 export const AppContext = createContext();
 
