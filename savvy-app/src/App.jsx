@@ -17,7 +17,6 @@ import { GoalsPage } from './pages/GoalsPage.jsx';
 import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx'; 
 import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
 import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
-
 import './App.css';
 
 // Component trung gian để lấy context từ Savvy và truyền vào Portfoligo
