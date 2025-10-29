@@ -651,13 +651,13 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 ##### **TASK 15.2: Tối ưu hóa SavvyContext (Goals Manager)**
 
-- [ ] **15.2.1: Import AppContext vào SavvyContext**
+- [x] **15.2.1: Import AppContext vào SavvyContext**
   - **Mục đích:** Cho phép SavvyContext gọi AppContext functions
   - **Hành động:**
     - Thêm: `import { AppContext } from './AppContext.jsx';`
     - Bên trong `SavvyProvider`, dùng: `const { openCelebrationModal } = useContext(AppContext);`
 
-- [ ] **15.2.2: Sửa hàm `markGoalAsComplete`**
+- [x] **15.2.2: Sửa hàm `markGoalAsComplete`**
   - **Mục đích:** Kết nối goal completion với celebration modal
   - **Hành động:**
     - Tìm goal trong `goals` array
@@ -666,7 +666,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
     - **ĐỌC KỸẤU:** Sau đó, gọi `openCelebrationModal("Chúc mừng! Bạn đã hoàn thành mục tiêu: [goalTitle]")`
     - Cập nhật localStorage
 
-- [ ] **15.2.3: Đảm bảo dependency array đúng**
+- [x] **15.2.3: Đảm bảo dependency array đúng**
   - **Mục đích:** Tránh infinite loops hoặc missing dependencies
   - **Hành động:**
     - Kiểm tra các `useEffect` và `useCallback` trong SavvyContext
