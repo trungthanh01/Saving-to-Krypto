@@ -811,7 +811,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
     - `onClose` = `AppContext.closeAddTransactionModal()`
     - Thêm logic: Nếu `mode === 'add'` thì form trống, nếu `mode === 'edit'` thì pre-fill
 
-- [ ] **15.6.2: Cập nhật ConfirmationModal**
+- [x] **15.6.2: Cập nhật ConfirmationModal**
   - **Mục đích:** Sử dụng state mới từ AppContext
   - **Hành động:**
     - `isOpen` = `AppContext.modals.confirmation.isOpen`
