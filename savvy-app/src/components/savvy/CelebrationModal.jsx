@@ -3,13 +3,22 @@ import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext.jsx';
 
 export function CelebrationModal() {
-    const { modals, closeCelebrationModal  } = useContext(AppContext);
-    if (!modals.isOpen){ 
+    const { 
+        modals, 
+        closeCelebrationModal  
+    } = useContext(AppContext);
+
+    if (!modals.celebration.isOpen){ 
         return null; 
     }
+
     return (
-        <div className="celebration-overlay" onClick={closeCelebrationModal}>
-            <div className="celebration-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="celebration-overlay" 
+            onClick={closeCelebrationModal}>
+
+            <div className="celebration-modal" 
+                onClick={(e) => e.stopPropagation()}>
+
                 <div className="celebration-content">
                     <h2>🎉 Chúc Mừng! 🎉</h2>
                     <p>
@@ -25,5 +34,5 @@ export function CelebrationModal() {
                 </button>
             </div>
         </div>
-    )
+    );
 }

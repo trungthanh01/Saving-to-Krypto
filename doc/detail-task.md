@@ -819,7 +819,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
     - `onConfirm` → gọi `AppContext.handleConfirm()`
     - `onCancel` → gọi `AppContext.closeConfirmationModal()`
 
-- [ ] **15.6.3: Tạo/Cập nhật CelebrationModal**
+- [x] **15.6.3: Tạo/Cập nhật CelebrationModal**
   - **Mục đích:** Tạo modal hoàn chỉnh được quản lý bởi AppContext
   - **Hành động:**
     - `isOpen` = `AppContext.modals.celebration.isOpen`
