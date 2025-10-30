@@ -802,7 +802,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 ##### **TASK 15.6: Cập nhật các Modal Components**
 
-- [ ] **15.6.1: Cập nhật AddTransactionForm**
+- [x] **15.6.1: Cập nhật AddTransactionForm**
   - **Mục đích:** Sử dụng state mới từ AppContext
   - **Hành động:**
     - `isOpen` = `AppContext.modals.addTransaction.isOpen`
