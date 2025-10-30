@@ -23,31 +23,31 @@ A modern React application that helps users manage cryptocurrency portfolio and 
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                     <AppProvider>                               │
-│              [GLOBAL APP MANAGER - UI State]                    │
-│                                                                  │
+│                     <AppProvider>                              │
+│              [GLOBAL APP MANAGER - UI State]                   │
+│                                                                │
 │  ├─ Modals: addTransaction, confirmation, celebration          │
 │  ├─ UI Theme: light/dark mode                                  │
 │  └─ Services: coinList (CryptoCompare data)                    │
-│                                                                  │
+│                                                                │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │                    <App>                                 │  │
-│  │                                                           │  │
-│  │  ┌──────────────────┐      ┌──────────────────────────┐ │  │
-│  │  │ <SavvyProvider>  │      │ <PortfolioProvider>      │ │  │
-│  │  │                  │      │                          │ │  │
-│  │  │ Manages:         │      │ Manages:                 │ │  │
-│  │  │ • Goals          │      │ • Transactions           │ │  │
-│  │  │ • Savings        │      │ • Holdings               │ │  │
-│  │  │ • Completed      │      │ • Market Data            │ │  │
-│  │  │                  │      │ • Suggestions            │ │  │
-│  │  └──────────────────┘      └──────────────────────────┘ │  │
-│  │                                                           │  │
+│  │                                                          │  │
+│  │  ┌──────────────────┐      ┌──────────────────────────┐  │  │
+│  │  │ <SavvyProvider>  │      │ <PortfolioProvider>      │  │  │
+│  │  │                  │      │                          │  │  │
+│  │  │ Manages:         │      │ Manages:                 │  │  │
+│  │  │ • Goals          │      │ • Transactions           │  │  │
+│  │  │ • Savings        │      │ • Holdings               │  │  │
+│  │  │ • Completed      │      │ • Market Data            │  │  │
+│  │  │                  │      │ • Suggestions            │  │  │
+│  │  └──────────────────┘      └──────────────────────────┘  │  │
+│  │                                                          │  │
 │  │  ┌───────────────────────────────────────────────────┐   │  │
-│  │  │         Global Modals & Routes                   │   │  │
-│  │  │  • AddTransactionForm                            │   │  │
-│  │  │  • ConfirmationModal                             │   │  │
-│  │  │  • CelebrationModal                              │   │  │
+│  │  │         Global Modals & Routes                    │   │  │
+│  │  │  • AddTransactionForm                             │   │  │
+│  │  │  • ConfirmationModal                              │   │  │
+│  │  │  • CelebrationModal                               │   │  │
 │  │  └───────────────────────────────────────────────────┘   │  │
 │  └──────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────┘
@@ -259,7 +259,7 @@ completedGoals: [
 transactions: [
   {
     id: 't_timestamp',
-    type: 'buy',           // or 'sell'
+    type: 'buy', // or 'sell'
     coinId: 'BTC',
     amount: 0.5,
     pricePerCoin: 43000,
@@ -271,7 +271,7 @@ holdings: [
   {
     id: 'BTC',
     amount: 0.5,
-    costBasis: 21500,      // Total cost to acquire
+    costBasis: 21500, // Total cost to acquire
     averageBuyPrice: 43000
   }
 ]
