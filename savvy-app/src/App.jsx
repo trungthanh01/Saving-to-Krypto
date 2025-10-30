@@ -2,9 +2,9 @@ import { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SavvyProvider, SavvyContext } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
+import { AppContext } from './context/AppContext.jsx'; // ✅ Thêm import này
 
 // Import Layout
-// SỬA Ở ĐÂY: đổi "layouts" thành "layout"
 import { MainLayout } from './layout/MainLayout.jsx';
 
 // Import Pages
@@ -13,13 +13,14 @@ import { DcaCalculatorPage } from './pages/DcaCalculatorPage.jsx';
 import { GoalsPage } from './pages/GoalsPage.jsx';
 
 // Import Modals & Global Components
-// Sửa tên component cho đúng với file của bạn
 import { AddTransactionForm } from './components/portfolio/AddTransactionForm.jsx'; 
 import { ConfirmationModal } from './components/portfolio/ConfirmationModal.jsx';
 import { CelebrationModal } from './components/savvy/CelebrationModal.jsx';
 import './App.css';
 
-// Component trung gian để lấy context từ Savvy và truyền vào Portfoligo
+// ─────────────────────────────────────────────────────────────
+// TASK 15.5.3: AppRoutes - Lấy context từ SavvyContext
+// ─────────────────────────────────────────────────────────────
 function AppRoutes() {
   const { goals, markGoalAsComplete } = useContext(SavvyContext);
 
@@ -36,7 +37,6 @@ function AppRoutes() {
         </Route>
       </Routes>
       
-      {/* TRẢ LẠI CÁC MODAL VÀO ĐÂY */}
       <AddTransactionForm />
       <ConfirmationModal />
       <CelebrationModal />
@@ -44,11 +44,27 @@ function AppRoutes() {
   );
 }
 
-// Component App chính giờ đây rất gọn gàng
 export function App() {
   return (
-    <SavvyProvider>
-      <AppRoutes />
-    </SavvyProvider>
+    <AppProvider>
+      <SavvyProvider>
+        <AppRoutes />
+      </SavvyProvider>
+    </AppProvider>
   );
 }
+// ┌─────────────────────────────────────┐
+// │   AppProvider                       │ ← OUTERMOST (cung cấp UI state)
+// │ ┌───────────────────────────────┐   │
+// │ │ SavvyProvider                 │   │ ← Bên trong (cung cấp goals)
+// │ │ ┌───────────────────────────┐ │   │
+// │ │ │ AppRoutes                 │ │   │ ← Chứa routes & PortfolioProvider
+// │ │ │ ┌─────────────────────┐   │ │   │
+// │ │ │ │ PortfolioProvider   │   │ │   │ ← INNERMOST (có access tất cả context ở ngoài)
+// │ │ │ │ ┌─────────────────┐ │   │ │   │
+// │ │ │ │ │ Routes & Modals │ │   │ │   │
+// │ │ │ │ └─────────────────┘ │   │ │   │
+// │ │ │ └─────────────────────┘   │ │   │
+// │ │ └───────────────────────────┘ │   │
+// │ └───────────────────────────────┘   │
+// └─────────────────────────────────────┘

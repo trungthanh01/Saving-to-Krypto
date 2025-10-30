@@ -770,7 +770,7 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 ##### **TASK 15.5: Cập nhật App.jsx (Main Orchestrator)**
 
-- [ ] **15.5.1: Kiểm tra thứ tự Context nesting**
+- [x] **15.5.1: Kiểm tra thứ tự Context nesting**
   - **Mục đích:** Đảm bảo Context được sắp xếp đúng
   - **Hành động:**
     - Cấu trúc cần là:
@@ -785,13 +785,13 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
       ```
     - Kiểm tra xem có đúng không
 
-- [ ] **15.5.2: Xóa AppProvider từ AppRoutes**
+- [x] **15.5.2: Xóa AppProvider từ AppRoutes**
   - **Mục đích:** AppProvider nên ở ngoài, không ở trong AppRoutes
   - **Hành động:**
     - Di chuyển `<AppProvider>` ra ngoài `AppRoutes` function
     - Để nó bao bọc tất cả (bên ngoài SavvyProvider)
 
-- [ ] **15.5.3: Kiểm tra props truyền vào PortfolioProvider**
+- [x] **15.5.3: Kiểm tra props truyền vào PortfolioProvider**
   - **Mục đích:** Chỉ truyền dữ liệu từ SavvyContext khi thực sự cần
   - **Hành động:**
     - Hiện tại: `goals` và `markGoalAsComplete` được truyền

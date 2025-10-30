@@ -3,7 +3,7 @@ import { fetchCoinList } from '../services/crypto-api';
 
 export const AppContext = createContext();
 
-export const AppProviderA = ({ children }) => {
+export const AppProvider = ({ children }) => {
   //1. global service state
   const [coinList, setCoinList] = useState([]);
   const [isCoinListLoading, setIsCoinListLoading] = useState(true);
