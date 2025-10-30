@@ -745,13 +745,13 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 
 ##### **TASK 15.4: Đơn giản hóa SmartSuggestions Component**
 
-- [ ] **15.4.1: Xóa import AppContext từ SmartSuggestions**
+- [x] **15.4.1: Xóa import AppContext từ SmartSuggestions**
   - **Mục đích:** Component chỉ nên import context mà nó thực sự cần
   - **Hành động:**
     - **REMOVE:** `import { AppContext } from "../../context/AppContext.jsx";`
     - **REMOVE:** `const {openAddTransactionModal}= useContext(AppContext)`
 
-- [ ] **15.4.2: Sửa hàm `handleCompleteGoalClick`**
+- [x] **15.4.2: Sửa hàm `handleCompleteGoalClick`**
   - **Mục đích:** Delegate mọi thứ cho PortfolioContext
   - **Hành động:**
     - Xóa tất cả logic tạo template

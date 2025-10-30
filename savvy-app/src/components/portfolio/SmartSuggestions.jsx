@@ -2,11 +2,14 @@ import { useContext } from "react";
 import { PortfolioContext } from "../../context/PortfolioContext.jsx";
 import {useNavigate} from 'react-router-dom';
 import './SmartSuggestions.css';
-import { AppContext } from "../../context/AppContext.jsx";
 
 export function SmartSuggestions() {
-    const { smartSuggestions, handleInitiateGoalCompletion, totalProfitLoss } = useContext(PortfolioContext);
-    const {openAddTransactionModal}= useContext(AppContext)
+    const { 
+        smartSuggestions, 
+        handleInitiateGoalCompletion, 
+        totalProfitLoss 
+    } = useContext(PortfolioContext);
+
     const navigate = useNavigate();
     const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -17,15 +20,7 @@ export function SmartSuggestions() {
         return null;
     }
     const handleCompleteGoalClick = (goal) => {
-        const transactionTemplate = {
-            id: null, // Đây là giao dịch mới, chưa có id
-            type: 'sell', // Luôn là 'bán'
-            coinId: '', // Lấy coinId từ mục tiêu
-            amount: '', // Lấy số lượng cần bán
-            pricePerCoin: '', // Để trống cho người dùng nhập
-            date: new Date().toISOString().split('T')[0],
-        };
-        openAddTransactionModal(transactionTemplate) 
+        handleInitiateGoalCompletion(goal)
         navigate('/');
     }
 
