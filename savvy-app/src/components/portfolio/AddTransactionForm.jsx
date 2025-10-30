@@ -36,7 +36,7 @@ export const AddTransactionForm = memo(() => {
   // DERIVED STATE: Check if in edit mode
   // ─────────────────────────────────────────────────
   // ✅ Edit mode 
-  const isEditMode = Boolean(modals.addTransaction.data);
+  const isEditMode = modals.addTransaction.mode === 'edit';
 
   // ─────────────────────────────────────────────────
   // EFFECT: Pre-fill form when modal opens/mode changes
@@ -61,7 +61,7 @@ export const AddTransactionForm = memo(() => {
       setSuggestions(null);
       setDate(new Date().toISOString().split('T')[0]);
     }
-  }, [modals.addTransaction.data]);  // ✅ Dependency: modals.addTransaction.data
+  }, [modals.addTransaction.data, modals.addTransaction.mode]);  // ✅ Dependency: modals.addTransaction.data
 
   // ─────────────────────────────────────────────────
   // EFFECT: Generate suggestions when user types coin name
@@ -79,7 +79,12 @@ export const AddTransactionForm = memo(() => {
       coin.symbol.toLowerCase().includes(coinId.toLowerCase())
     ).slice(0, 10);
 
-    setSuggestions(filtered);
+    if (filtered.length === 0) {
+      console.log('No coins found for search:', coinId);
+      console.log('Available coins:', coinList.map(c => ({ name: c.name, symbol: c.symbol })));
+    }
+
+    setSuggestions(filtered.length > 0 ? filtered : null);
   }, [coinId, coinList, isEditMode]);
 
   // ─────────────────────────────────────────────────

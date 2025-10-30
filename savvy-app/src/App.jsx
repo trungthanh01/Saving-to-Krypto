@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SavvyProvider, SavvyContext } from './context/SavvyContext.jsx';
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
-import { AppContext } from './context/AppContext.jsx'; // ✅ Thêm import này
+import { AppContext, AppProvider } from './context/AppContext.jsx'; // ✅ Thêm import này
 
 // Import Layout
 import { MainLayout } from './layout/MainLayout.jsx';

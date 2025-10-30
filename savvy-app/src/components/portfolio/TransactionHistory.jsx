@@ -6,7 +6,7 @@ export function TransactionHistory() {
     const { 
         transactions, 
         deleteTransaction, 
-        openEditModal, 
+        handleOpenEditModal, 
     } = useContext(PortfolioContext);
     console.log("Transactions being rendered:", transactions);
 
@@ -64,7 +64,7 @@ export function TransactionHistory() {
                                 <td className="align-right">{formatNumber(transaction.amount)}</td>
                                 <td className="align-right">{formatCurrency(transaction.pricePerCoin)}</td>
                                 <td className="align-center">
-                                    <button className="edit-btn" onClick={() => openEditModal(transaction)}>
+                                    <button className="edit-btn" onClick={() => handleOpenEditModal(transaction)}>
                                     ✏️
                                     </button>
                                 </td>

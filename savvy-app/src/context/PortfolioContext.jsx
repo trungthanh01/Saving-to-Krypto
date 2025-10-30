@@ -120,6 +120,10 @@ import {
         onConfirmDelete
       );
     }, [openConfirmationModal]);
+
+    const handleOpenEditModal = useCallback( (transaction) => {
+      openAddTransactionModal('edit', transaction);
+    }, [openAddTransactionModal]);
   
     // ─────────────────────────────────────────
     // TASK 15.3: HANDLER: Initiate Goal Completion
@@ -351,6 +355,7 @@ import {
         addTransaction: handleAddTransaction,
         editTransaction: handleEditTransaction,
         deleteTransaction: handleDeleteTransaction,
+        handleOpenEditModal,
   
         // Goal Completion
         handleInitiateGoalCompletion,
@@ -373,6 +378,7 @@ import {
         handleAddTransaction,
         handleEditTransaction,
         handleDeleteTransaction,
+        handleOpenEditModal,
         handleInitiateGoalCompletion,
         markGoalAsComplete,
         portfolioTotalValue,

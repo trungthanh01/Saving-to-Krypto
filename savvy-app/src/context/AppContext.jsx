@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useRef, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { fetchCoinList } from '../services/crypto-api';
 
 export const AppContext = createContext();
@@ -72,8 +72,8 @@ export const AppProvider = ({ children }) => {
       ...prev,
       addTransaction: {
         isOpen: false,
-        mode,
-        data,
+        mode: 'add',
+        data: null,
       },
     }));
   };
@@ -101,13 +101,13 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     //make sure onConfirm is a function before calling
     if (typeof modals.confirmation.onConfirm === 'function') {
       modals.confirmation.onConfirm();
     }
     closeConfirmationModal();
-  }
+  }, [modals.confirmation.onConfirm, closeConfirmationModal])
 
   //Handle function: Celebration Modal
   const openCelebrationModal = (message) => {
@@ -163,6 +163,9 @@ export const AppProvider = ({ children }) => {
     //celebration modal function
     openCelebrationModal,
     closeCelebrationModal,
+
+    //confirm
+    handleConfirm,
   }),
     [coinList, isCoinListLoading, coinListError, ui, modals]
   );
