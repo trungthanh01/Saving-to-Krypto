@@ -276,152 +276,330 @@
 
 ---
 
-### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực**
-+------------------------------------------------------+
-|                                                      |
-|           **Cỗ Máy Thời Gian DCA** 🚀                |
-|                                                      |
-|  Đồng coin: [ Bitcoin (BTC)      ▼ ]                 |
-|                                                      |
-|  Số tiền đầu tư: [ $50 ]                             |
-|                                                      |
-|  Tần suất:   [ Mỗi tháng          ▼ ]                |
-|                                                      |
-|  Kể từ:      [ 3 năm trước       ▼ ]                 |
-|                                                      |
-|                 +-----------------+                  |
-|                 |   Xem kết quả   |                  |
-|                 +-----------------+                  |
-|                                                      |
-|  +------------------------------------------------+  |
-|  |                                                |  |
-|  |   "Nếu bạn đầu tư $50 mỗi tháng vào Bitcoin    |  |
-|  |   kể từ 3 năm trước, bây giờ bạn sẽ có         |  |
-|  |   $XX,XXX."                                    |  |
-|  |                                                |  |
-|  +------------------------------------------------+  |
-|                                                      |
-+------------------------------------------------------+
-
-*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA). Xây dựng nó như một component độc lập và tích hợp vào luồng thêm giao dịch để tối đa hóa động lực.
-
-- [x] **Task 11.1: Tích hợp API Dữ liệu Lịch sử**
-  - **Mục đích:** Lấy được dữ liệu giá của một đồng coin trong quá khứ.
-  - **Hành động:**
-    - Trong `services/crypto-api.js`, tạo hàm mới `fetchCoinHistory(coinId, days)` để gọi API `/coins/{id}/market_chart`.
-
-- [ ] **Task 11.2: Xây dựng Logic Tính toán DCA**
-  - **Mục đích:** Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA.
-  - **Hành động:**
-    - Tạo file tiện ích `src/utils/dca-calculator.js`.
-    - Viết hàm `calculateDcaResult({ historicalData, investment, frequency, period })` để giả lập quá trình đầu tư và trả về kết quả.
-
-- [ ] **Task 11.3: Xây dựng Component `DcaCalculator`**
-  - **Mục đích:** Tạo một công cụ tương tác độc lập để người dùng có thể khám phá các kịch bản DCA.
-  - **Hành động:**
-    - Tạo file `src/components/dca/DcaCalculator.jsx`.
-    - Xây dựng giao diện với các input: chọn coin, số tiền, tần suất, khoảng thời gian.
-    - Quản lý state nội bộ cho các input và kết quả, xử lý trạng thái loading.
-
-- [ ] **Task 11.4: Tích hợp `DcaCalculator` vào Giao diện Chính**
-  - **Mục đích:** Đặt công cụ DCA vào một vị trí dễ thấy trên trang chính để khuyến khích người dùng sử dụng.
-  - **Hành động:**
-    - Import và render component `<DcaCalculator />` trong `App.jsx`, ngay phía trên component `SmartSuggestions`.
-
-- [ ] **Task 11.5: Tạo `DcaResultModal`**
-  - **Mục đích:** Tạo một modal tái sử dụng để hiển thị kết quả tính toán DCA một cách nổi bật sau khi người dùng thêm một giao dịch.
-  - **Hành động:**
-    - Tạo file `src/components/dca/DcaResultModal.jsx`.
-    - Thiết kế modal để hiển thị thông điệp truyền cảm hứng dựa trên kết quả DCA.
-
-- [ ] **Task 11.6: Kích hoạt Modal sau khi Thêm Giao dịch**
-  - **Mục đích:** Cung cấp phản hồi tích cực và củng cố hành vi đầu tư của người dùng.
-  - **Hành động:**
-    - Trong `PortfolioContext`, sau khi `handleAddTransaction` thành công, kích hoạt flow tính toán DCA.
-    - Sử dụng `AppContext` để quản lý state mở/đóng và dữ liệu cho `DcaResultModal`.
-    - Hiển thị modal với kết quả tính toán dựa trên giao dịch vừa thực hiện.
+### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực** ⭐ **[IN PROGRESS - 2025-11-02]**
+|+------------------------------------------------------+
+||                                                      |
+||           **Cỗ Máy Thời Gian DCA** 🚀                |
+||                                                      |
+||  Đồng coin: [ Bitcoin (BTC)      ▼ ]                 |
+||                                                      |
+||  Số tiền đầu tư: [ $50 ]                             |
+||                                                      |
+||  Tần suất:   [ Mỗi tháng          ▼ ]                |
+||                                                      |
+||  Kể từ:      [ 3 năm trước       ▼ ]                 |
+||                                                      |
+||                 +-----------------+                  |
+||                 |   Xem kết quả   |                  |
+||                 +-----------------+                  |
+||                                                      |
+||  +------------------------------------------------+  |
+||  |                                                |  |
+||  |   "Nếu bạn đầu tư $50 mỗi tháng vào Bitcoin    |  |
+||  |   kể từ 3 năm trước, bây giờ bạn sẽ có         |  |
+||  |   $XX,XXX."                                    |  |
+||  |                                                |  |
+||  +------------------------------------------------+  |
+||                                                      |
+|+------------------------------------------------------+
+|
+|*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA). Xây dựng nó như một component độc lập và tích hợp vào luồng thêm giao dịch để tối đa hóa động lực.
+|
+|---
+|
+|#### **PHẦN I: NHƯ CẦU THIẾT KẾ & NGUYÊN LÝ**
+|
+|**Kiến trúc cần đạt:**
+|1. ✅ **Accurate Calculation**: Tính toán đúng DCA với phí giao dịch
+|2. ✅ **Price Lookup**: Lấy giá ON-OR-BEFORE (không phải gần nhất bất kỳ)
+|3. ✅ **Fee Support**: Hỗ trợ phí giao dịch tùy chỉnh
+|4. ✅ **Metadata Tracking**: Track số lần mua, skip, lịch sử chi tiết
+|5. ✅ **Clear Logging**: Console.log() chi tiết cho debugging
+|6. ✅ **User Input**: Cho phép user thay đổi phí giao dịch
+|7. ✅ **Result Display**: Hiển thị ROI%, metadata, chi tiết
+|
+|---
+|
+|#### **PHẦN II: CÁC TASK CHI TIẾT**
+|
+|##### **TASK 11.1: Tích hợp API Dữ liệu Lịch sử** ✅ COMPLETED
+|
+|- [x] **11.1.1: Tạo hàm `fetchCoinHistory()` trong crypto-api.js**
+|  - **Mục đích:** Lấy dữ liệu giá lịch sử của coin từ CryptoCompare API
+|  - **Hành động:**
+|    - Endpoint: `https://min-api.cryptocompare.com/data/v2/histoday?fsym={symbol}&tsym=USD&limit={limit}`
+|    - Giới hạn: 2000 ngày (free tier)
+|    - Return: `response.data.Data.Data` (mảng dữ liệu)
+|
+|---
+|
+|##### **TASK 11.2: Xây dựng Logic Tính toán DCA** ⭐ **[IN PROGRESS - 2025-11-02]**
+|
+|*Mục đích: Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA với phí giao dịch, lấy giá đúng cách, và tracking metadata.*
+|
+|- [ ] **11.2.1: Thay thế `findClosestPrice()` bằng `getPriceOnOrBefore()`**
+|  - **Mục đích:** Fix logic tìm giá → chỉ lấy giá ngày trước hoặc bằng target date
+|  - **Hành động:**
+|    1. Xóa hàm `findClosestPrice()` cũ (dòng 7-22)
+|    2. Viết hàm `getPriceOnOrBefore(historicalData, targetDate)`:
+|       - Lặp qua `historicalData` để tìm giá có timestamp ≤ targetDate
+|       - Nếu tìm được → trả về giá
+|       - Nếu không tìm được → lấy giá ngày sau làm fallback
+|       - Nếu vẫn không → trả về `null`
+|    3. **Tip:** Có thể dùng `for loop` hoặc `.findLast()` (ES2023)
+|    4. Kiểm tra logic bằng tay trước khi code
+|
+|- [ ] **11.2.2: Thêm parameter `feeRate` vào hàm `calculateDcaResult()`**
+|  - **Mục đích:** Cho phép tính toán với phí giao dịch
+|  - **Hành động:**
+|    1. Thêm vào function signature: `feeRate = 0.0002` (mặc định 0.02%)
+|    2. Trong vòng lặp, đổi công thức:
+|       ```javascript
+|       const investmentAfterFee = investment * (1 - feeRate);
+|       const coinsBought = investmentAfterFee / price;
+|       ```
+|    3. Kiểm tra: nếu `feeRate = 0`, kết quả phải giống công thức cũ
+|
+|- [ ] **11.2.3: Thêm tracking `validBuys` & `skippedBuys`**
+|  - **Mục đích:** Track số lần mua hợp lệ vs bỏ qua, để debug
+|  - **Hành động:**
+|    1. Khởi tạo `let validBuys = 0;` và `let skippedBuys = 0;`
+|    2. Mỗi khi mua thành công → `validBuys++`
+|    3. Mỗi khi bỏ qua (price = null) → `skippedBuys++`
+|    4. Thêm vào return object: `validBuys, skippedBuys`
+|
+|- [ ] **11.2.4: Thêm tracking `buyHistory`**
+|  - **Mục đích:** Chuẩn bị dữ liệu chi tiết từng lần mua (cho Task 11.3+)
+|  - **Hành động:**
+|    1. Khởi tạo `let buyHistory = [];`
+|    2. Mỗi khi mua thành công, push object:
+|       ```javascript
+|       buyHistory.push({
+|         date: currentDate.toISOString().split('T')[0],
+|         price: price,
+|         coinsBought: coinsBought,
+|         investmentAmount: investment,
+|         cumulativeCoins: totalCoins,
+|         cumulativeInvested: totalInvested,
+|       });
+|       ```
+|    3. Thêm vào return object: `buyHistory`
+|
+|- [ ] **11.2.5: Tính `roiPct` và thêm vào return**
+|  - **Mục đích:** Có số % để display kết quả
+|  - **Hành động:**
+|    1. Tính: `const roiPct = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;`
+|    2. Thêm vào return object: `roiPct`
+|    3. Thêm vào return object: `feeRate: feeRate * 100` (để show %)
+|
+|- [ ] **11.2.6: Thêm `console.log()` statements để debug**
+|  - **Mục đích:** Quan sát dữ liệu đầu vào & kết quả
+|  - **Hành động:**
+|    1. Ở đầu hàm, log input params:
+|       ```javascript
+|       console.log('📊 [DCA] Input params:', {
+|         historicalDataLength: historicalData.length,
+|         investment,
+|         frequency,
+|         periodDays,
+|         feeRate: (feeRate * 100).toFixed(4) + '%',
+|       });
+|       ```
+|    2. Ở cuối hàm, log result:
+|       ```javascript
+|       console.log('✅ [DCA] Calculation complete:', {
+|         validBuys,
+|         skippedBuys,
+|         totalInvested: '$' + totalInvested.toLocaleString(),
+|         totalCoins: totalCoins.toFixed(8),
+|         currentValue: '$' + currentValue.toLocaleString(),
+|         profitLoss: '$' + profitLoss.toLocaleString(),
+|         roiPct: roiPct.toFixed(2) + '%',
+|       });
+|       ```
+|    3. Dùng emoji để dễ tìm trong console (🔗, 🔄, 📊, ✅)
+|
+|---
+|
+|##### **TASK 11.3: Xây dựng Component `DcaCalculator`** ⭐ **[IN PROGRESS - 2025-11-02]**
+|
+|*Mục đích: Tạo một công cụ tương tác độc lập để người dùng có thể khám phá các kịch bản DCA, với fee input, metadata display, và logging.*
+|
+|- [ ] **11.3.1: Thêm `feeRate` vào state `inputs`**
+|  - **Mục đích:** User có thể thay đổi phí giao dịch
+|  - **Hành động:**
+|    1. Tìm `useState(inputs)` (khoảng dòng 12)
+|    2. Thêm property: `feeRate: 0.02` (mặc định 0.02%)
+|    3. Kiểm tra: state nên có `{ coinId, investment, frequency, startDate, feeRate }`
+|
+|- [ ] **11.3.2: Thêm input field cho Fee trong form**
+|  - **Mục đích:** User có UI để nhập phí
+|  - **Hành động:**
+|    1. Tìm `<div className={styles.formControl}>` cuối cùng (sau startDate)
+|    2. Thêm block mới:
+|       ```javascript
+|       <div className={styles.formControl}>
+|         <label htmlFor="feeRate">Phí giao dịch (%)</label>
+|         <input
+|           type="number"
+|           name="feeRate"
+|           id="feeRate"
+|           value={inputs.feeRate}
+|           onChange={handleInputChange}
+|           min="0"
+|           max="1"
+|           step="0.01"
+|           placeholder="VD: 0.02"
+|         />
+|       </div>
+|       ```
+|    3. Trong `handleInputChange()`, kiểm tra logic cho `feeRate`
+|
+|- [ ] **11.3.3: Cập nhật `handleSubmit()` để pass `feeRate`**
+|  - **Mục đích:** Gửi phí tới hàm tính toán
+|  - **Hành động:**
+|    1. Tìm `calculateDcaResult({ ... })` (khoảng dòng 92)
+|    2. Thêm: `feeRate: inputs.feeRate / 100,` (chuyển % → decimal)
+|    3. Kiểm tra: `0.02 / 100 = 0.0002` ✓
+|
+|- [ ] **11.3.4: Hiển thị metadata trong kết quả**
+|  - **Mục đích:** User thấy ROI%, buy count, coin total
+|  - **Hành động:**
+|    1. Tìm phần hiển thị result (khoảng dòng 186-210)
+|    2. Thêm ROI% vào p tag:
+|       ```javascript
+|       <p className={result.profitLoss >= 0 ? styles.profit : styles.loss}>
+|         (Tổng vốn: ${result.totalInvested.toLocaleString()})
+|         <br/>
+|         (Lời/Lỗ: ${result.profitLoss.toLocaleString(undefined, { maximumFractionDigits: 2 })})
+|         <br/>
+|         (ROI: {result.roiPct.toFixed(2)}%)
+|       </p>
+|       ```
+|    3. Thêm div metadata sau p tag:
+|       ```javascript
+|       <div className={styles.metadata}>
+|         <p>📈 Lần mua: {result.validBuys} / {result.validBuys + result.skippedBuys}</p>
+|         <p>💰 Phí giao dịch: {result.feeRate}%</p>
+|         <p>📊 Giá hiện tại: ${result.latestPrice.toLocaleString(undefined, { maximumFractionDigits: 8 })}</p>
+|         <p>🪙 Số coin: {result.totalCoins.toFixed(8)}</p>
+|       </div>
+|       ```
+|
+|- [ ] **11.3.5: Thêm console.log() cho API requests/responses**
+|  - **Mục đích:** Quan sát dữ liệu API trước xử lý
+|  - **Hành động:**
+|    1. Sau gọi `fetchCoinHistory()`, log:
+|       ```javascript
+|       const rawHistoricalData = await fetchCoinHistory(inputs.coinId, diffDays);
+|       console.log('🔗 [API] Raw response:', {
+|         coinId: inputs.coinId,
+|         requestedDays: diffDays,
+|         receivedDataPoints: rawHistoricalData?.length || 0,
+|         firstItem: rawHistoricalData?.[0],
+|         lastItem: rawHistoricalData?.[rawHistoricalData.length - 1],
+|       });
+|       ```
+|    2. Sau transform, log:
+|       ```javascript
+|       const historicalData = transformCryptoCompareData(rawHistoricalData);
+|       console.log('🔄 [TRANSFORM] Transformed data:', {
+|         transformedLength: historicalData.length,
+|         firstItem: historicalData?.[0],
+|         lastItem: historicalData?.[historicalData.length - 1],
+|       });
+|       ```
+|
+|- [ ] **11.3.6: Test & Debug (Manual)**
+|  - **Mục đích:** Kiểm tra kết quả so sánh với website reference
+|  - **Hành động:**
+|    1. Chạy: `npm run dev`
+|    2. Mở DevTools (F12) → Console
+|    3. Chọn LINK, từ 2017-11-09 → 2025-09-12
+|    4. Bấm "Xem kết quả"
+|    5. Xem logs:
+|       - 🔗 [API] Raw response → Check `receivedDataPoints` (nên ~2000)
+|       - 🔄 [TRANSFORM] Transformed data → Check format
+|       - 📊 [DCA] Input params → Check fee = 0.02%
+|       - ✅ [DCA] Calculation complete → Compare với website
+|    6. So sánh:
+|       - Website: $14,960
+|       - App: bao nhiêu?
+|       - Nếu sai → debug từng step
+|
+|---
+|
+|##### **TASK 11.4: Tích hợp `DcaCalculator` vào Giao diện Chính**
+|
+|- [ ] **11.4.1: Import & render trong App.jsx**
+|  - **Mục đích:** Hiển thị DCA Calculator trên dashboard
+|  - **Hành động:**
+|    - Import: `import { DcaCalculator } from './components/dca/DcaCalculator';`
+|    - Render trên `DashboardPage.jsx`, phía trên `SmartSuggestions`
+|
+|---
+|
+|##### **TASK 11.5: Tạo `DcaResultModal`**
+|
+|- [ ] **11.5.1: Xây dựng component `DcaResultModal.jsx`**
+|  - **Mục đích:** Modal hiển thị kết quả DCA nổi bật
+|  - **Hành động:**
+|    - Tạo file `src/components/dca/DcaResultModal.jsx`
+|    - Nhận props: `isOpen`, `result`, `onClose`
+|    - Hiển thị thông điệp truyền cảm hứng dựa trên ROI%
+|
+|---
+|
+|##### **TASK 11.6: Kích hoạt Modal sau khi Thêm Giao dịch**
+|
+|- [ ] **11.6.1: Tích hợp DcaResultModal vào PortfolioContext**
+|  - **Mục đích:** Hiển thị modal khi user thêm transaction thành công
+|  - **Hành động:**
+|    - Sau khi `handleAddTransaction` thành công, tính DCA
+|    - Gọi `AppContext` để mở modal với kết quả
+|    - Hiển thị `DcaResultModal` với kết quả tính toán
+|
+|---
+|
+|#### **PHẦN III: CHECKLIST HOÀN THÀNH**
+|
+|**Trước khi bắt đầu:**
+|- [ ] Backup code hiện tại
+|- [ ] Đọc kỹ `doc/TASK-SUMMARY.md`
+|- [ ] Đọc `doc/DCA-LOGGING-GUIDE.md`
+|- [ ] Hiểu công thức: `coinsBought = (investment * (1 - feeRate)) / price`
+|
+|**Sau khi hoàn thành Task 11.2:**
+|- [ ] `calculateDcaResult()` không có lỗi
+|- [ ] `getPriceOnOrBefore()` hoạt động đúng
+|- [ ] `feeRate` được tính vào
+|- [ ] `console.log()` statements hoạt động
+|
+|**Sau khi hoàn thành Task 11.3:**
+|- [ ] DcaCalculator component compile mà không lỗi
+|- [ ] Fee input field hiển thị
+|- [ ] Metadata hiển thị đúng
+|- [ ] console.log() statements hoạt động
+|
+|**Sau khi test toàn bộ:**
+|- [ ] Test LINK example: $14,960 ± 1%
+|- [ ] Không có JavaScript errors
+|- [ ] console.log() messages rõ ràng & dễ đọc
+|- [ ] Tất cả 4 stages log hiển thị: 🔗, 🔄, 📊, ✅
+|
+|---
+|
+|#### **PHẦN IV: REFERENCE LINKS**
+|
+|- **Main Guide:** `doc/detail-task.md` (file này)
+|- **Quick Templates:** `doc/DCA-LOGGING-GUIDE.md`
+|- **Task Summary:** `doc/TASK-SUMMARY.md`
+|- **Website Reference:** https://dcacryptocalculator.com/chainlink?start_date=2017-11-09&finish_date=2025-09-12&regular_investment=10&currency_code=USD&investment_interval=monthly&exchange_fee=0.02
+|
+|---
+|
 
 ---
-Tuyệt vời! Đây chính xác là cách tiếp cận của một Senior Developer. Trước khi viết một dòng code nào, chúng ta phải hiểu rõ logic bằng ngôn ngữ tự nhiên.
-
-Hãy cùng nhau đóng vai một "nhà du hành thời gian" và tính toán thử một kịch bản đơn giản nhé.
-
----
-
-### **Kịch bản ví dụ**
-
-*   **Đầu tư vào:** Bitcoin
-*   **Số tiền mỗi tháng:** $100
-*   **Bắt đầu từ:** 3 tháng trước (Giả sử là ngày 25/07/2025)
-*   **Dữ liệu giá chúng ta có:**
-    *   Giá ngày 25/07/2025: **$50,000**
-    *   Giá ngày 25/08/2025: **$52,000**
-    *   Giá ngày 25/09/2025: **$55,000**
-    *   Giá hôm nay (25/10/2025): **$60,000**
-
----
-
-### **"Chạy tay" từng bước**
-
-**Bước 1: Chuẩn bị sổ sách**
-
-*   `Tổng Tiền Đã Đầu Tư` = $0
-*   `Tổng Số Bitcoin Sở Hữu` = 0 BTC
-
-**Bước 2: Chuyến du hành đầu tiên - Quay về ngày 25/07/2025**
-
-*   "Hôm nay là ngày đầu tư đầu tiên. Tôi sẽ bỏ ra **$100**."
-*   "Tôi nhìn vào bảng giá, giá Bitcoin hôm nay là **$50,000**."
-*   **Công thức:** `Số Bitcoin mua được = Số tiền bỏ ra / Giá tại thời điểm đó`
-*   **Tính toán:** `$100 / $50,000 = 0.002` BTC.
-*   **Cập nhật sổ sách:**
-    *   `Tổng Tiền Đã Đầu Tư` = $0 + $100 = **$100**
-    *   `Tổng Số Bitcoin Sở Hữu` = 0 + 0.002 = **0.002 BTC**
-
-**Bước 3: Chuyến du hành thứ hai - Tiến tới ngày 25/08/2025**
-
-*   "Đã một tháng trôi qua. Hôm nay tôi lại bỏ ra **$100** nữa."
-*   "Giá Bitcoin hôm nay đã tăng lên **$52,000**."
-*   **Công thức:** (Vẫn là công thức cũ)
-*   **Tính toán:** `$100 / $52,000 = 0.00192` BTC (làm tròn).
-*   **Cập nhật sổ sách:**
-    *   `Tổng Tiền Đã Đầu Tư` = $100 + $100 = **$200**
-    *   `Tổng Số Bitcoin Sở Hữu` = 0.002 + 0.00192 = **0.00392 BTC**
-
-**Bước 4: Chuyến du hành cuối cùng - Tiến tới ngày 25/09/2025**
-
-*   "Lần đầu tư cuối cùng trong quá khứ. Bỏ ra **$100**."
-*   "Giá hôm nay là **$55,000**."
-*   **Công thức:** (Vẫn là công thức cũ)
-*   **Tính toán:** `$100 / $55,000 = 0.00181` BTC (làm tròn).
-*   **Cập nhật sổ sách:**
-    *   `Tổng Tiền Đã Đầu Tư` = $200 + $100 = **$300**
-    *   `Tổng Số Bitcoin Sở Hữu` = 0.00392 + 0.00181 = **0.00573 BTC**
-
-**Bước 5: Quay về hiện tại - Ngày 25/10/2025**
-
-*   "Chuyến du hành kết thúc. Giờ hãy xem thành quả."
-*   "Giá Bitcoin hiện tại là **$60,000**."
-*   **Công thức:** `Giá Trị Hiện Tại = Tổng Số Bitcoin Sở Hữu * Giá Hiện Tại`
-*   **Tính toán:** `0.00573 * $60,000 = $343.8`
-
----
-
-### **Kết quả cuối cùng**
-
-Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết quả:
-
-```
-{
-  totalInvested: 300,        // Tổng số tiền đã bỏ ra
-  totalCoins: 0.00573,       // Tổng số coin tích lũy được
-  currentValue: 343.8,       // Giá trị của số coin đó ở hiện tại
-  // (Chúng ta có thể tính thêm cả PnL)
-  profitLoss: 43.8           // Lời/lỗ = 343.8 - 300
-}
-```
-
-
 
 ### **Giai đoạn 12: Tái cấu trúc Layout và Điều hướng Trang**
 *Mục tiêu: Chuyển đổi từ ứng dụng một trang (Single-Page Application) lộn xộn thành một ứng dụng đa trang có cấu trúc rõ ràng, chuyên nghiệp bằng cách sử dụng thư viện `react-router-dom`. Cải thiện trải nghiệm người dùng bằng cách tổ chức các tính năng vào một layout với thanh điều hướng bên (Sidebar).*
@@ -944,3 +1122,193 @@ Sau khi kết thúc quá trình, chúng ta sẽ trả về một object kết qu
 - Mỗi component subscribe chỉ dữ liệu cần thiết
 - Avoid unnecessary re-renders
 - coinList fetch chỉ 1 lần duy nhất
+
+---
+
+#### **🎯 HƯỚNG DẪN: Cách Dùng `console.log()` để Debug API Data**
+
+**Tại sao cần log dữ liệu?**
+- Xem dữ liệu API trả về có đúng không
+- Kiểm tra transformation (từ raw data → processed data) có logic không
+- Debug từng bước để hiểu luồng code
+- So sánh dữ liệu của chúng ta với dữ liệu website reference
+
+**🖥️ Cách mở Console:**
+1. **Trên Chrome/Edge:** Nhấn `F12` → Click tab `Console`
+2. **Trên Firefox:** Nhấn `F12` → Click tab `Console`
+3. **Trên Safari:** 
+   - Menu → Develop → Show Web Inspector
+   - Click tab `Console`
+
+**💡 Chiến lược logging cho DCA Calculator:**
+
+```javascript
+// ========== 1. LOG API RESPONSE ==========
+console.log('🔗 [API] Raw response from fetchCoinHistory:', {
+  coinId: inputs.coinId,
+  requestedDays: diffDays,
+  receivedDataPoints: rawHistoricalData?.length || 0,
+  firstItem: rawHistoricalData?.[0],  // { time: 1509168000, close: 0.25, ... }
+  lastItem: rawHistoricalData?.[rawHistoricalData.length - 1],
+});
+// 💥 Kiểm tra:
+//   - receivedDataPoints: nên gần 2000 (miễn phí limit)
+//   - firstItem.time: timestamp của 2017-11-09 (số giây)
+//   - lastItem.time: timestamp của 2025-09-12 (số giây)
+
+// ========== 2. LOG TRANSFORMED DATA ==========
+console.log('🔄 [TRANSFORM] Transformed data:', {
+  transformedLength: historicalData.length,
+  firstItem: historicalData?.[0],  // [timestamp_ms, price]
+  lastItem: historicalData?.[historicalData.length - 1],
+  sample3Items: historicalData?.slice(0, 3), // Xem 3 item đầu
+});
+// 💥 Kiểm tra:
+//   - Timestamp nên là milliseconds (000 ở cuối)
+//   - Price nên là số dương (> 0)
+
+// ========== 3. LOG INPUT PARAMETERS ==========
+console.log('📊 [DCA] Input parameters:', {
+  investment: inputs.investment,
+  frequency: inputs.frequency,
+  feeRate: (inputs.feeRate / 100) * 100 + '%', // Để check không
+  startDate: inputs.startDate,
+  diffDays: diffDays,
+});
+
+// ========== 4. LOG RESULT ==========
+console.log('✅ [DCA] Final Result:', {
+  totalInvested: result.totalInvested,
+  totalCoins: result.totalCoins.toFixed(8),
+  currentValue: result.currentValue.toFixed(2),
+  profitLoss: result.profitLoss.toFixed(2),
+  roiPct: result.roiPct.toFixed(2) + '%',
+  validBuys: result.validBuys,
+  skippedBuys: result.skippedBuys,
+});
+// 💥 So sánh với website:
+//   - Website: $14,960
+//   - App: ? (Nếu khác → có vấn đề cần fix)
+```
+
+**📍 Các loại log dùng:**
+
+|| Emoji | Ý nghĩa | Dùng khi |
+||--------|---------|---------|
+|| 🔗 | API Call | Fetch dữ liệu từ API |
+|| 🔄 | Transform | Chuyển đổi format dữ liệu |
+|| 📊 | Data Processing | Tính toán/xử lý dữ liệu |
+|| ✅ | Success | Kết quả hoàn tất, OK |
+|| ❌ | Error | Có lỗi xảy ra |
+|| ⚠️ | Warning | Cảnh báo (có thể sai) |
+|| 🐛 | Debug | Chi tiết để debug |
+
+**Ví dụ log từng step trong `calculateDcaResult()`:**
+
+```javascript
+export const calculateDcaResult = ({ historicalData, investment, frequency, periodDays, feeRate = 0.0002 }) => {
+  console.log('📊 [DCA] Starting calculation...', { 
+    dataLength: historicalData.length, 
+    feeRate: feeRate * 100 + '%' 
+  });
+
+  let totalInvested = 0;
+  let totalCoins = 0;
+  let validBuys = 0;
+  let skippedBuys = 0;
+  let currentDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+  
+  let buyCount = 0;  // Counter để log chi tiết từng lần mua
+  while (currentDate <= now) {
+    const price = getPriceOnOrBefore(historicalData, currentDate);
+
+    if (price !== null && price > 0) {
+      const investmentAfterFee = investment * (1 - feeRate);
+      const coinsBought = investmentAfterFee / price;
+      totalCoins += coinsBought;
+      totalInvested += investment;
+      validBuys++;
+
+      // Log chi tiết (chỉ log 3 lần mua đầu + 3 lần cuối để không spam console)
+      if (buyCount < 3 || validBuys > result.validBuys - 3) {
+        console.log(`🛒 Buy #${validBuys}:`, {
+          date: currentDate.toLocaleDateString('vi-VN'),
+          price: price.toFixed(2),
+          coinsBought: coinsBought.toFixed(8),
+          totalCoins: totalCoins.toFixed(8),
+        });
+      } else if (buyCount === 3) {
+        console.log('... (trung gian) ...');
+      }
+      buyCount++;
+    } else {
+      skippedBuys++;
+      console.log(`⏭️ Skipped date:`, {
+        date: currentDate.toLocaleDateString('vi-VN'),
+        reason: price === null ? 'No data' : 'Invalid price',
+      });
+    }
+
+    if (frequency === 'monthly') {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    } else {
+      currentDate.setDate(currentDate.getDate() + 7);
+    }
+  }
+
+  const latestPrice = historicalData[historicalData.length - 1][1];
+  const currentValue = totalCoins * latestPrice;
+  const profitLoss = currentValue - totalInvested;
+  const roiPct = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
+
+  console.log('✅ [DCA] Calculation complete:', {
+    validBuys,
+    skippedBuys,
+    totalInvested: '$' + totalInvested.toLocaleString(),
+    totalCoins: totalCoins.toFixed(8),
+    latestPrice: '$' + latestPrice.toFixed(2),
+    currentValue: '$' + currentValue.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+    profitLoss: '$' + profitLoss.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+    roiPct: roiPct.toFixed(2) + '%',
+  });
+
+  return { ... };
+};
+```
+
+**🔍 Cách đọc kết quả trong Console:**
+
+1. **Mở DevTools Console**
+2. **Tìm các message với emoji:**
+   - 🔗 [API] → Check dữ liệu từ server
+   - 🔄 [TRANSFORM] → Check format sau chuyển đổi
+   - 🛒 Buy #1, Buy #2, ... → Xem chi tiết từng lần mua
+   - ✅ [DCA] Calculation complete → Xem kết quả cuối
+3. **Right-click vào object** → "Store as global variable" → `temp1`
+4. **Type `temp1` vào console** để xem chi tiết
+5. **Expand object** bằng cách click mũi tên `▶`
+
+**💾 Export log để so sánh:**
+
+```javascript
+// Copy toàn bộ log ra ngoài
+const logData = {
+  timestamp: new Date().toISOString(),
+  result: result,
+  comparison: {
+    website: 14960,
+    app: result.currentValue,
+    difference: result.currentValue - 14960,
+  }
+};
+
+// Copy vào Notepad để lưu
+console.log('%cCOPY THIS:', 'color: green; font-size: 16px;');
+console.log(JSON.stringify(logData, null, 2));
+```
+
+---
+
+#### **PHẦN IV: BENEFITS SAU REFACTOR**
+
+✅ **Clear Separation of Concerns**
