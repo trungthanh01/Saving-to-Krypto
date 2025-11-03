@@ -932,7 +932,7 @@ console.log(JSON.stringify(logData, null, 2));
 |
 |*Mục đích: Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA với phí giao dịch, lấy giá đúng cách, và tracking metadata.*
 |
-|- [ ] **11.2.1: Thay thế `findClosestPrice()` bằng `getPriceOnOrBefore()`**
+|- [x] **11.2.1: Thay thế `findClosestPrice()` bằng `getPriceOnOrBefore()`**
 |  - **Mục đích:** Fix logic tìm giá → chỉ lấy giá ngày trước hoặc bằng target date
 |  - **Hành động:**
 |    1. Xóa hàm `findClosestPrice()` cũ (dòng 7-22)
@@ -944,7 +944,7 @@ console.log(JSON.stringify(logData, null, 2));
 |    3. **Tip:** Có thể dùng `for loop` hoặc `.findLast()` (ES2023)
 |    4. Kiểm tra logic bằng tay trước khi code
 |
-|- [ ] **11.2.2: Thêm parameter `feeRate` vào hàm `calculateDcaResult()`**
+|- [x] **11.2.2: Thêm parameter `feeRate` vào hàm `calculateDcaResult()`**
 |  - **Mục đích:** Cho phép tính toán với phí giao dịch
 |  - **Hành động:**
 |    1. Thêm vào function signature: `feeRate = 0.0002` (mặc định 0.02%)
@@ -955,7 +955,7 @@ console.log(JSON.stringify(logData, null, 2));
 |       ```
 |    3. Kiểm tra: nếu `feeRate = 0`, kết quả phải giống công thức cũ
 |
-|- [ ] **11.2.3: Thêm tracking `validBuys` & `skippedBuys`**
+|- [x] **11.2.3: Thêm tracking `validBuys` & `skippedBuys`**
 |  - **Mục đích:** Track số lần mua hợp lệ vs bỏ qua, để debug
 |  - **Hành động:**
 |    1. Khởi tạo `let validBuys = 0;` và `let skippedBuys = 0;`
@@ -963,7 +963,7 @@ console.log(JSON.stringify(logData, null, 2));
 |    3. Mỗi khi bỏ qua (price = null) → `skippedBuys++`
 |    4. Thêm vào return object: `validBuys, skippedBuys`
 |
-|- [ ] **11.2.4: Thêm tracking `buyHistory`**
+|- [x] **11.2.4: Thêm tracking `buyHistory`**
 |  - **Mục đích:** Chuẩn bị dữ liệu chi tiết từng lần mua (cho Task 11.3+)
 |  - **Hành động:**
 |    1. Khởi tạo `let buyHistory = [];`
@@ -980,14 +980,14 @@ console.log(JSON.stringify(logData, null, 2));
 |       ```
 |    3. Thêm vào return object: `buyHistory`
 |
-|- [ ] **11.2.5: Tính `roiPct` và thêm vào return**
+|- [x] **11.2.5: Tính `roiPct` và thêm vào return**
 |  - **Mục đích:** Có số % để display kết quả
 |  - **Hành động:**
 |    1. Tính: `const roiPct = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;`
 |    2. Thêm vào return object: `roiPct`
 |    3. Thêm vào return object: `feeRate: feeRate * 100` (để show %)
 |
-|- [ ] **11.2.6: Thêm `console.log()` statements để debug**
+|- [x] **11.2.6: Thêm `console.log()` statements để debug**
 |  - **Mục đích:** Quan sát dữ liệu đầu vào & kết quả
 |  - **Hành động:**
 |    1. Ở đầu hàm, log input params:
@@ -1020,14 +1020,14 @@ console.log(JSON.stringify(logData, null, 2));
 |
 |*Mục đích: Tạo một công cụ tương tác độc lập để người dùng có thể khám phá các kịch bản DCA, với fee input, metadata display, và logging.*
 |
-|- [ ] **11.3.1: Thêm `feeRate` vào state `inputs`**
+|- [x] **11.3.1: Thêm `feeRate` vào state `inputs`**
 |  - **Mục đích:** User có thể thay đổi phí giao dịch
 |  - **Hành động:**
 |    1. Tìm `useState(inputs)` (khoảng dòng 12)
 |    2. Thêm property: `feeRate: 0.02` (mặc định 0.02%)
 |    3. Kiểm tra: state nên có `{ coinId, investment, frequency, startDate, feeRate }`
 |
-|- [ ] **11.3.2: Thêm input field cho Fee trong form**
+|- [x] **11.3.2: Thêm input field cho Fee trong form**
 |  - **Mục đích:** User có UI để nhập phí
 |  - **Hành động:**
 |    1. Tìm `<div className={styles.formControl}>` cuối cùng (sau startDate)
