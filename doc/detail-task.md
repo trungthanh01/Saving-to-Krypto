@@ -1050,14 +1050,14 @@ console.log(JSON.stringify(logData, null, 2));
 |       ```
 |    3. Trong `handleInputChange()`, kiểm tra logic cho `feeRate`
 |
-|- [ ] **11.3.3: Cập nhật `handleSubmit()` để pass `feeRate`**
+|- [x] **11.3.3: Cập nhật `handleSubmit()` để pass `feeRate`**
 |  - **Mục đích:** Gửi phí tới hàm tính toán
 |  - **Hành động:**
 |    1. Tìm `calculateDcaResult({ ... })` (khoảng dòng 92)
 |    2. Thêm: `feeRate: inputs.feeRate / 100,` (chuyển % → decimal)
 |    3. Kiểm tra: `0.02 / 100 = 0.0002` ✓
 |
-|- [ ] **11.3.4: Hiển thị metadata trong kết quả**
+|- [x] **11.3.4: Hiển thị metadata trong kết quả**
 |  - **Mục đích:** User thấy ROI%, buy count, coin total
 |  - **Hành động:**
 |    1. Tìm phần hiển thị result (khoảng dòng 186-210)
@@ -1081,7 +1081,7 @@ console.log(JSON.stringify(logData, null, 2));
 |       </div>
 |       ```
 |
-|- [ ] **11.3.5: Thêm console.log() cho API requests/responses**
+|- [x] **11.3.5: Thêm console.log() cho API requests/responses**
 |  - **Mục đích:** Quan sát dữ liệu API trước xử lý
 |  - **Hành động:**
 |    1. Sau gọi `fetchCoinHistory()`, log:
@@ -1105,7 +1105,7 @@ console.log(JSON.stringify(logData, null, 2));
 |       });
 |       ```
 |
-|- [ ] **11.3.6: Test & Debug (Manual)**
+|- [x] **11.3.6: Test & Debug (Manual)**
 |  - **Mục đích:** Kiểm tra kết quả so sánh với website reference
 |  - **Hành động:**
 |    1. Chạy: `npm run dev`
@@ -1126,7 +1126,7 @@ console.log(JSON.stringify(logData, null, 2));
 |
 |##### **TASK 11.4: Tích hợp `DcaCalculator` vào Giao diện Chính**
 |
-|- [ ] **11.4.1: Import & render trong App.jsx**
+|- [x] **11.4.1: Import & render trong App.jsx**
 |  - **Mục đích:** Hiển thị DCA Calculator trên dashboard
 |  - **Hành động:**
 |    - Import: `import { DcaCalculator } from './components/dca/DcaCalculator';`
