@@ -85,9 +85,28 @@ export const DcaCalculator = () => {
 
       // 2. Gọi API (coinId giờ là symbol, vd: "BTC")
       const rawHistoricalData = await fetchCoinHistory(inputs.coinId, diffDays);
+     // Trước transform
+      console.log('🔗 [API] Raw response:', {
+        receivedDataPoints: rawHistoricalData?.length || 0,
+        firstItem: rawHistoricalData?.[0],
+        lastItem: rawHistoricalData?.[rawHistoricalData.length - 1],
+      });
 
-      // 3. "Biên dịch" dữ liệu trước khi tính toán
+    // Transform
       const historicalData = transformCryptoCompareData(rawHistoricalData);
+
+      console.log('📊 [INSPECT] historicalData:', {
+        length: historicalData.length,
+        firstDate: new Date(historicalData[0][0]).toLocaleDateString('vi-VN'),
+        firstPrice: historicalData[0][1],
+        lastDate: new Date(historicalData[historicalData.length - 1][0]).toLocaleDateString('vi-VN'),
+        lastPrice: historicalData[historicalData.length - 1][1],
+        sample3Items: [
+          historicalData[0],
+          historicalData[Math.floor(historicalData.length / 2)],
+          historicalData[historicalData.length - 1],
+        ]
+      });
 
       const dcaResult = calculateDcaResult({
         historicalData, // Dữ liệu đã được chuẩn hóa
