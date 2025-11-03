@@ -173,3 +173,43 @@
   margin-top: 20px;
 }
 
+/* --- Result Metadata --- */
+.resultMetadata {
+  background-color: #1a1d2e;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 20px;
+  border-left: 4px solid #7b61ff;
+  text-align: left;
+}
+
+.resultMetadata h4 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #e0e0ff;
+  font-weight: bold;
+}
+
+.resultMetadata ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resultMetadata li {
+  padding: 8px 0;
+  color: #a0a0d0;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #2c2f48;
+  font-size: 0.95rem;
+}
+
+.resultMetadata li:last-child {
+  border-bottom: none;
+}
+
+.resultMetadata strong {
+  color: #e0e0ff;
+  font-weight: 600;
+}
