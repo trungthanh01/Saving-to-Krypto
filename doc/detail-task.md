@@ -871,325 +871,728 @@ console.log(JSON.stringify(logData, null, 2));
 
 ✅ **Clear Separation of Concerns**
 
-### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Công cụ tạo Động lực** ⭐ **[IN PROGRESS - 2025-11-02]**
-|+------------------------------------------------------+
-||                                                      |
-||           **Cỗ Máy Thời Gian DCA** 🚀                |
-||                                                      |
-||  Đồng coin: [ Bitcoin (BTC)      ▼ ]                 |
-||                                                      |
-||  Số tiền đầu tư: [ $50 ]                             |
-||                                                      |
-||  Tần suất:   [ Mỗi tháng          ▼ ]                |
-||                                                      |
-||  Kể từ:      [ 3 năm trước       ▼ ]                 |
-||                                                      |
-||                 +-----------------+                  |
-||                 |   Xem kết quả   |                  |
-||                 +-----------------+                  |
-||                                                      |
-||  +------------------------------------------------+  |
-||  |                                                |  |
-||  |   "Nếu bạn đầu tư $50 mỗi tháng vào Bitcoin    |  |
-||  |   kể từ 3 năm trước, bây giờ bạn sẽ có         |  |
-||  |   $XX,XXX."                                    |  |
-||  |                                                |  |
-||  +------------------------------------------------+  |
-||                                                      |
-|+------------------------------------------------------+
-|
-|*   **Tầm nhìn:** Cung cấp một công cụ tính toán giả lập, cho phép người dùng thấy được tiềm năng của việc đầu tư dài hạn theo chiến lược trung bình giá (DCA). Xây dựng nó như một component độc lập và tích hợp vào luồng thêm giao dịch để tối đa hóa động lực.
-|
-|---
-|
-|#### **PHẦN I: NHƯ CẦU THIẾT KẾ & NGUYÊN LÝ**
-|
-|**Kiến trúc cần đạt:**
-|1. ✅ **Accurate Calculation**: Tính toán đúng DCA với phí giao dịch
-|2. ✅ **Price Lookup**: Lấy giá ON-OR-BEFORE (không phải gần nhất bất kỳ)
-|3. ✅ **Fee Support**: Hỗ trợ phí giao dịch tùy chỉnh
-|4. ✅ **Metadata Tracking**: Track số lần mua, skip, lịch sử chi tiết
-|5. ✅ **Clear Logging**: Console.log() chi tiết cho debugging
-|6. ✅ **User Input**: Cho phép user thay đổi phí giao dịch
-|7. ✅ **Result Display**: Hiển thị ROI%, metadata, chi tiết
-|
-|---
-|
-|#### **PHẦN II: CÁC TASK CHI TIẾT**
-|
-|##### **TASK 11.1: Tích hợp API Dữ liệu Lịch sử** ✅ COMPLETED
-|
-|- [x] **11.1.1: Tạo hàm `fetchCoinHistory()` trong crypto-api.js**
-|  - **Mục đích:** Lấy dữ liệu giá lịch sử của coin từ CryptoCompare API
-|  - **Hành động:**
-|    - Endpoint: `https://min-api.cryptocompare.com/data/v2/histoday?fsym={symbol}&tsym=USD&limit={limit}`
-|    - Giới hạn: 2000 ngày (free tier)
-|    - Return: `response.data.Data.Data` (mảng dữ liệu)
-|
-|---
-|
-|##### **TASK 11.2: Xây dựng Logic Tính toán DCA** ⭐ **[IN PROGRESS - 2025-11-02]**
-|
-|*Mục đích: Tạo ra một hàm "pure" để tính toán kết quả của chiến lược DCA với phí giao dịch, lấy giá đúng cách, và tracking metadata.*
-|
-|- [x] **11.2.1: Thay thế `findClosestPrice()` bằng `getPriceOnOrBefore()`**
-|  - **Mục đích:** Fix logic tìm giá → chỉ lấy giá ngày trước hoặc bằng target date
-|  - **Hành động:**
-|    1. Xóa hàm `findClosestPrice()` cũ (dòng 7-22)
-|    2. Viết hàm `getPriceOnOrBefore(historicalData, targetDate)`:
-|       - Lặp qua `historicalData` để tìm giá có timestamp ≤ targetDate
-|       - Nếu tìm được → trả về giá
-|       - Nếu không tìm được → lấy giá ngày sau làm fallback
-|       - Nếu vẫn không → trả về `null`
-|    3. **Tip:** Có thể dùng `for loop` hoặc `.findLast()` (ES2023)
-|    4. Kiểm tra logic bằng tay trước khi code
-|
-|- [x] **11.2.2: Thêm parameter `feeRate` vào hàm `calculateDcaResult()`**
-|  - **Mục đích:** Cho phép tính toán với phí giao dịch
-|  - **Hành động:**
-|    1. Thêm vào function signature: `feeRate = 0.0002` (mặc định 0.02%)
-|    2. Trong vòng lặp, đổi công thức:
-|       ```javascript
-|       const investmentAfterFee = investment * (1 - feeRate);
-|       const coinsBought = investmentAfterFee / price;
-|       ```
-|    3. Kiểm tra: nếu `feeRate = 0`, kết quả phải giống công thức cũ
-|
-|- [x] **11.2.3: Thêm tracking `validBuys` & `skippedBuys`**
-|  - **Mục đích:** Track số lần mua hợp lệ vs bỏ qua, để debug
-|  - **Hành động:**
-|    1. Khởi tạo `let validBuys = 0;` và `let skippedBuys = 0;`
-|    2. Mỗi khi mua thành công → `validBuys++`
-|    3. Mỗi khi bỏ qua (price = null) → `skippedBuys++`
-|    4. Thêm vào return object: `validBuys, skippedBuys`
-|
-|- [x] **11.2.4: Thêm tracking `buyHistory`**
-|  - **Mục đích:** Chuẩn bị dữ liệu chi tiết từng lần mua (cho Task 11.3+)
-|  - **Hành động:**
-|    1. Khởi tạo `let buyHistory = [];`
-|    2. Mỗi khi mua thành công, push object:
-|       ```javascript
-|       buyHistory.push({
-|         date: currentDate.toISOString().split('T')[0],
-|         price: price,
-|         coinsBought: coinsBought,
-|         investmentAmount: investment,
-|         cumulativeCoins: totalCoins,
-|         cumulativeInvested: totalInvested,
-|       });
-|       ```
-|    3. Thêm vào return object: `buyHistory`
-|
-|- [x] **11.2.5: Tính `roiPct` và thêm vào return**
-|  - **Mục đích:** Có số % để display kết quả
-|  - **Hành động:**
-|    1. Tính: `const roiPct = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;`
-|    2. Thêm vào return object: `roiPct`
-|    3. Thêm vào return object: `feeRate: feeRate * 100` (để show %)
-|
-|- [x] **11.2.6: Thêm `console.log()` statements để debug**
-|  - **Mục đích:** Quan sát dữ liệu đầu vào & kết quả
-|  - **Hành động:**
-|    1. Ở đầu hàm, log input params:
-|       ```javascript
-|       console.log('📊 [DCA] Input params:', {
-|         historicalDataLength: historicalData.length,
-|         investment,
-|         frequency,
-|         periodDays,
-|         feeRate: (feeRate * 100).toFixed(4) + '%',
-|       });
-|       ```
-|    2. Ở cuối hàm, log result:
-|       ```javascript
-|       console.log('✅ [DCA] Calculation complete:', {
-|         validBuys,
-|         skippedBuys,
-|         totalInvested: '$' + totalInvested.toLocaleString(),
-|         totalCoins: totalCoins.toFixed(8),
-|         currentValue: '$' + currentValue.toLocaleString(),
-|         profitLoss: '$' + profitLoss.toLocaleString(),
-|         roiPct: roiPct.toFixed(2) + '%',
-|       });
-|       ```
-|    3. Dùng emoji để dễ tìm trong console (🔗, 🔄, 📊, ✅)
-|
-|---
-|
-|##### **TASK 11.3: Xây dựng Component `DcaCalculator`** ⭐ **[IN PROGRESS - 2025-11-02]**
-|
-|*Mục đích: Tạo một công cụ tương tác độc lập để người dùng có thể khám phá các kịch bản DCA, với fee input, metadata display, và logging.*
-|
-|- [x] **11.3.1: Thêm `feeRate` vào state `inputs`**
-|  - **Mục đích:** User có thể thay đổi phí giao dịch
-|  - **Hành động:**
-|    1. Tìm `useState(inputs)` (khoảng dòng 12)
-|    2. Thêm property: `feeRate: 0.02` (mặc định 0.02%)
-|    3. Kiểm tra: state nên có `{ coinId, investment, frequency, startDate, feeRate }`
-|
-|- [x] **11.3.2: Thêm input field cho Fee trong form**
-|  - **Mục đích:** User có UI để nhập phí
-|  - **Hành động:**
-|    1. Tìm `<div className={styles.formControl}>` cuối cùng (sau startDate)
-|    2. Thêm block mới:
-|       ```javascript
-|       <div className={styles.formControl}>
-|         <label htmlFor="feeRate">Phí giao dịch (%)</label>
-|         <input
-|           type="number"
-|           name="feeRate"
-|           id="feeRate"
-|           value={inputs.feeRate}
-|           onChange={handleInputChange}
-|           min="0"
-|           max="1"
-|           step="0.01"
-|           placeholder="VD: 0.02"
-|         />
-|       </div>
-|       ```
-|    3. Trong `handleInputChange()`, kiểm tra logic cho `feeRate`
-|
-|- [x] **11.3.3: Cập nhật `handleSubmit()` để pass `feeRate`**
-|  - **Mục đích:** Gửi phí tới hàm tính toán
-|  - **Hành động:**
-|    1. Tìm `calculateDcaResult({ ... })` (khoảng dòng 92)
-|    2. Thêm: `feeRate: inputs.feeRate / 100,` (chuyển % → decimal)
-|    3. Kiểm tra: `0.02 / 100 = 0.0002` ✓
-|
-|- [x] **11.3.4: Hiển thị metadata trong kết quả**
-|  - **Mục đích:** User thấy ROI%, buy count, coin total
-|  - **Hành động:**
-|    1. Tìm phần hiển thị result (khoảng dòng 186-210)
-|    2. Thêm ROI% vào p tag:
-|       ```javascript
-|       <p className={result.profitLoss >= 0 ? styles.profit : styles.loss}>
-|         (Tổng vốn: ${result.totalInvested.toLocaleString()})
-|         <br/>
-|         (Lời/Lỗ: ${result.profitLoss.toLocaleString(undefined, { maximumFractionDigits: 2 })})
-|         <br/>
-|         (ROI: {result.roiPct.toFixed(2)}%)
-|       </p>
-|       ```
-|    3. Thêm div metadata sau p tag:
-|       ```javascript
-|       <div className={styles.metadata}>
-|         <p>📈 Lần mua: {result.validBuys} / {result.validBuys + result.skippedBuys}</p>
-|         <p>💰 Phí giao dịch: {result.feeRate}%</p>
-|         <p>📊 Giá hiện tại: ${result.latestPrice.toLocaleString(undefined, { maximumFractionDigits: 8 })}</p>
-|         <p>🪙 Số coin: {result.totalCoins.toFixed(8)}</p>
-|       </div>
-|       ```
-|
-|- [x] **11.3.5: Thêm console.log() cho API requests/responses**
-|  - **Mục đích:** Quan sát dữ liệu API trước xử lý
-|  - **Hành động:**
-|    1. Sau gọi `fetchCoinHistory()`, log:
-|       ```javascript
-|       const rawHistoricalData = await fetchCoinHistory(inputs.coinId, diffDays);
-|       console.log('🔗 [API] Raw response:', {
-|         coinId: inputs.coinId,
-|         requestedDays: diffDays,
-|         receivedDataPoints: rawHistoricalData?.length || 0,
-|         firstItem: rawHistoricalData?.[0],
-|         lastItem: rawHistoricalData?.[rawHistoricalData.length - 1],
-|       });
-|       ```
-|    2. Sau transform, log:
-|       ```javascript
-|       const historicalData = transformCryptoCompareData(rawHistoricalData);
-|       console.log('🔄 [TRANSFORM] Transformed data:', {
-|         transformedLength: historicalData.length,
-|         firstItem: historicalData?.[0],
-|         lastItem: historicalData?.[historicalData.length - 1],
-|       });
-|       ```
-|
-|- [x] **11.3.6: Test & Debug (Manual)**
-|  - **Mục đích:** Kiểm tra kết quả so sánh với website reference
-|  - **Hành động:**
-|    1. Chạy: `npm run dev`
-|    2. Mở DevTools (F12) → Console
-|    3. Chọn LINK, từ 2017-11-09 → 2025-09-12
-|    4. Bấm "Xem kết quả"
-|    5. Xem logs:
-|       - 🔗 [API] Raw response → Check `receivedDataPoints` (nên ~2000)
-|       - 🔄 [TRANSFORM] Transformed data → Check format
-|       - 📊 [DCA] Input params → Check fee = 0.02%
-|       - ✅ [DCA] Calculation complete → Compare với website
-|    6. So sánh:
-|       - Website: $14,960
-|       - App: bao nhiêu?
-|       - Nếu sai → debug từng step
-|
-|---
-|
-|##### **TASK 11.4: Tích hợp `DcaCalculator` vào Giao diện Chính**
-|
-|- [x] **11.4.1: Import & render trong App.jsx**
-|  - **Mục đích:** Hiển thị DCA Calculator trên dashboard
-|  - **Hành động:**
-|    - Import: `import { DcaCalculator } from './components/dca/DcaCalculator';`
-|    - Render trên `DashboardPage.jsx`, phía trên `SmartSuggestions`
-|
-|---
-|
-|##### **TASK 11.5: Tạo `DcaResultModal`**
-|
-|- [ ] **11.5.1: Xây dựng component `DcaResultModal.jsx`**
-|  - **Mục đích:** Modal hiển thị kết quả DCA nổi bật
-|  - **Hành động:**
-|    - Tạo file `src/components/dca/DcaResultModal.jsx`
-|    - Nhận props: `isOpen`, `result`, `onClose`
-|    - Hiển thị thông điệp truyền cảm hứng dựa trên ROI%
-|
-|---
-|
-|##### **TASK 11.6: Kích hoạt Modal sau khi Thêm Giao dịch**
-|
-|- [ ] **11.6.1: Tích hợp DcaResultModal vào PortfolioContext**
-|  - **Mục đích:** Hiển thị modal khi user thêm transaction thành công
-|  - **Hành động:**
-|    - Sau khi `handleAddTransaction` thành công, tính DCA
-|    - Gọi `AppContext` để mở modal với kết quả
-|    - Hiển thị `DcaResultModal` với kết quả tính toán
-|
-|---
-|
-|#### **PHẦN III: CHECKLIST HOÀN THÀNH**
-|
-|**Trước khi bắt đầu:**
-|- [ ] Backup code hiện tại
-|- [ ] Đọc kỹ `doc/TASK-SUMMARY.md`
-|- [ ] Đọc `doc/DCA-LOGGING-GUIDE.md`
-|- [ ] Hiểu công thức: `coinsBought = (investment * (1 - feeRate)) / price`
-|
-|**Sau khi hoàn thành Task 11.2:**
-|- [ ] `calculateDcaResult()` không có lỗi
-|- [ ] `getPriceOnOrBefore()` hoạt động đúng
-|- [ ] `feeRate` được tính vào
-|- [ ] `console.log()` statements hoạt động
-|
-|**Sau khi hoàn thành Task 11.3:**
-|- [ ] DcaCalculator component compile mà không lỗi
-|- [ ] Fee input field hiển thị
-|- [ ] Metadata hiển thị đúng
-|- [ ] console.log() statements hoạt động
-|
-|**Sau khi test toàn bộ:**
-|- [ ] Test LINK example: $14,960 ± 1%
-|- [ ] Không có JavaScript errors
-|- [ ] console.log() messages rõ ràng & dễ đọc
-|- [ ] Tất cả 4 stages log hiển thị: 🔗, 🔄, 📊, ✅
-|
-|---
-|
-|#### **PHẦN IV: REFERENCE LINKS**
-|
-|- **Main Guide:** `doc/detail-task.md` (file này)
-|- **Quick Templates:** `doc/DCA-LOGGING-GUIDE.md`
-|- **Task Summary:** `doc/TASK-SUMMARY.md`
-|- **Website Reference:** https://dcacryptocalculator.com/chainlink?start_date=2017-11-09&finish_date=2025-09-12&regular_investment=10&currency_code=USD&investment_interval=monthly&exchange_fee=0.02
-|
-|---
-|
+### **Giai đoạn 11: "Cỗ máy thời gian" DCA - Nâng cấp Hybrid Investor Model** ⭐ **[CONTINUED - 2025-11-04]**
+
+#### **PHẦN VI: TASK 11.5-11.9 - HYBRID DCA WITH MESSAGE GENERATOR**
+
+##### **TASK 11.5: Xây dựng Message Generator cho Kết quả DCA** ⭐ **[NEW - PRIORITY 1]**
+
+*Mục đích: Tạo một hệ thống message động để hiển thị kết quả DCA theo từng strategy (Lump Sum, DCA Only, Hybrid).*
+
+|- [ ] **11.5.1: Tạo file `src/utils/message-generator.js`**
+  - **Mục đích:** Tách logic tạo message ra khỏi component
+  - **Hành động:**
+    1. Tạo file mới: `src/utils/message-generator.js`
+    2. Viết helper function `formatCurrency()`:
+       ```javascript
+       export function formatCurrency(num) {
+         return `$${num.toLocaleString('en-US', { 
+           minimumFractionDigits: 2, 
+           maximumFractionDigits: 2 
+         })}`;
+       }
+       ```
+    3. Viết helper function `formatCoins()`:
+       ```javascript
+       export function formatCoins(num) {
+         return num.toLocaleString('en-US', { 
+           minimumFractionDigits: 2, 
+           maximumFractionDigits: 2 
+         });
+       }
+       ```
+    4. Viết helper function `formatDate()`:
+       ```javascript
+       export function formatDate(dateStr) {
+         const date = new Date(dateStr);
+         return date.toLocaleDateString('vi-VN');
+       }
+       ```
+    5. Viết helper function `formatROI()`:
+       ```javascript
+       export function formatROI(num) {
+         const sign = num >= 0 ? "+" : "-";
+         const emoji = num >= 0 ? "✅" : "❌";
+         return `${sign}${Math.abs(num).toFixed(2)}% ${emoji}`;
+       }
+       ```
+
+|- [ ] **11.5.2: Viết `generateResultMessage()` function chính**
+  - **Mục đích:** Factory function tạo message theo strategy
+  - **Hành động:**
+    1. Viết function signature:
+       ```javascript
+       export function generateResultMessage(result) {
+         const {
+           strategy,
+           lumpSum,
+           dca,
+           totalInvestment,
+           totalCoins,
+           totalValue,
+           roi,
+           coin
+         } = result;
+       ```
+    2. Tính profit/loss:
+       ```javascript
+       const profitLoss = totalValue - totalInvestment;
+       const profitLossSign = profitLoss >= 0 ? "Lời" : "Lỗ";
+       ```
+    3. Viết template cho "Lump Sum Only":
+       ```javascript
+       if (strategy === "lump_sum") {
+         return `
+📌 Nếu bạn đầu tư ban đầu với vốn ${formatCurrency(lumpSum.investment)} vào ${coin}
+   vào ngày ${formatDate(lumpSum.date)}
+   
+   bây giờ bạn sẽ có:
+   
+   💰 ${formatCoins(totalCoins)} ${coin}
+   
+   Tổng vốn đầu tư: ${formatCurrency(totalInvestment)}
+   Giá trị hiện tại: ${formatCurrency(totalValue)}
+   ${profitLossSign}: ${formatCurrency(Math.abs(profitLoss))}
+   ROI: ${formatROI(roi)}
+         `.trim();
+       }
+       ```
+    4. Viết template cho "DCA Only":
+       ```javascript
+       if (strategy === "dca_only") {
+         return `
+📊 Kết quả Giả lập DCA
+
+   Nếu bạn đã đầu tư ${formatCurrency(dca.monthlyInvestment)} mỗi tháng vào ${coin}
+   kể từ ngày ${formatDate(dca.dcaStartDate)} (trong ${dca.dcaMonths} tháng)
+   
+   bây giờ bạn sẽ có:
+   
+   💰 ${formatCoins(totalCoins)} ${coin}
+   
+   Tổng vốn đầu tư: ${formatCurrency(totalInvestment)}
+   Giá trị hiện tại: ${formatCurrency(totalValue)}
+   ${profitLossSign}: ${formatCurrency(Math.abs(profitLoss))}
+   ROI: ${formatROI(roi)}
+         `.trim();
+       }
+       ```
+    5. Viết template cho "Hybrid":
+       ```javascript
+       if (strategy === "hybrid") {
+         return `
+🚀 Kết quả Giả lập Hybrid Investment
+
+   Nếu bạn đầu tư ban đầu với vốn ${formatCurrency(lumpSum.investment)} vào ${coin}
+   vào ngày ${formatDate(lumpSum.date)}
+   
+   ✨ và tiếp tục DCA ${formatCurrency(dca.monthlyInvestment)} mỗi tháng
+   kể từ ngày ${formatDate(dca.dcaStartDate)} (trong ${dca.dcaMonths} tháng)
+   
+   bây giờ bạn sẽ có:
+   
+   💰 ${formatCoins(totalCoins)} ${coin}
+   
+   Tổng vốn đầu tư: ${formatCurrency(totalInvestment)}
+   Giá trị hiện tại: ${formatCurrency(totalValue)}
+   ${profitLossSign}: ${formatCurrency(Math.abs(profitLoss))}
+   ROI: ${formatROI(roi)}
+         `.trim();
+       }
+       ```
+
+|- [ ] **11.5.3: Test message templates bằng tay**
+  - **Mục đích:** Đảm bảo 3 templates hoạt động đúng
+  - **Hành động:**
+    1. Tạo mock data cho Lump Sum:
+       ```javascript
+       const mockLumpSum = {
+         strategy: 'lump_sum',
+         lumpSum: { investment: 3000, date: '2024-01-01', price: 10 },
+         totalInvestment: 3000,
+         totalCoins: 300,
+         totalValue: 4650,
+         roi: 55,
+         coin: 'LINK'
+       };
+       ```
+    2. Call `generateResultMessage(mockLumpSum)` và xem output
+    3. Kiểm tra: emoji, format tiền (có dấu phẩy), ngày (DD/MM/YYYY), ROI %
+    4. Repeat cho mock DCA Only và Hybrid
+
+---
+
+##### **TASK 11.6: Nâng cấp Form - Strategy Selector** ⭐ **[NEW - PRIORITY 1]**
+
+*Mục đích: Cập nhật DcaCalculator form để support 3 strategies flexible.*
+
+|- [ ] **11.6.1: Thêm state cho strategy selector**
+  - **Mục đích:** Quản lý strategy choice và inputs
+  - **Hành động:**
+    1. Mở file `src/components/dca/DcaCalculator.jsx`
+    2. Tìm dòng `const [inputs, setInputs] = useState({...})`
+    3. Thêm 3 state mới (sau `inputs`):
+       ```javascript
+       const [strategy, setStrategy] = useState('hybrid');
+       
+       const [lumpSum, setLumpSum] = useState({
+         initialInvestment: '',
+         initialDate: ''
+       });
+       
+       const [dcaInput, setDcaInput] = useState({
+         monthlyInvestment: '',
+         startDate: '',
+         dcaMonths: ''
+       });
+       ```
+
+|- [ ] **11.6.2: Render strategy selector UI**
+  - **Mục đích:** User chọn strategy (3 radio buttons)
+  - **Hành động:**
+    1. Tìm vị trí render (trước `<div className={styles.formControls}>` đầu tiên)
+    2. Thêm section mới:
+       ```javascript
+       <div className={styles.strategySelector}>
+         <label style={{marginBottom: '10px', fontWeight: 'bold'}}>Chọn chiến lược:</label>
+         <div style={{display: 'flex', gap: '20px', marginBottom: '20px'}}>
+           <label>
+             <input 
+               type="radio" 
+               name="strategy"
+               value="lump_sum" 
+               checked={strategy === 'lump_sum'}
+               onChange={(e) => setStrategy(e.target.value)}
+             />
+             💰 Lump Sum (Vốn đầu thôi)
+           </label>
+           <label>
+             <input 
+               type="radio" 
+               name="strategy"
+               value="dca_only" 
+               checked={strategy === 'dca_only'}
+               onChange={(e) => setStrategy(e.target.value)}
+             />
+             📈 DCA Only (Góp hàng tháng)
+           </label>
+           <label>
+             <input 
+               type="radio" 
+               name="strategy"
+               value="hybrid" 
+               checked={strategy === 'hybrid'}
+               onChange={(e) => setStrategy(e.target.value)}
+             />
+             🚀 Hybrid (Vốn + Góp)
+           </label>
+         </div>
+       </div>
+       ```
+
+|- [ ] **11.6.3: Conditional Lump Sum section**
+  - **Mục đích:** Hiển thị Lump Sum inputs khi user chọn
+  - **Hành động:**
+    1. Tìm vị trí sau strategy selector
+    2. Thêm conditional section:
+       ```javascript
+       {(strategy === 'lump_sum' || strategy === 'hybrid') && (
+         <div className={styles.section} style={{borderLeft: '4px solid #7b61ff', paddingLeft: '15px'}}>
+           <h3 style={{color: '#e0e0ff', marginBottom: '15px'}}>💰 Lump Sum Investment</h3>
+           <div className={styles.formControls}>
+             <div className={styles.formControl}>
+               <label htmlFor="initialInvestment">Vốn đầu tư lần đầu ($)</label>
+               <input
+                 type="number"
+                 id="initialInvestment"
+                 value={lumpSum.initialInvestment}
+                 onChange={(e) => setLumpSum({...lumpSum, initialInvestment: e.target.value})}
+                 placeholder="VD: 3000"
+                 step="100"
+                 min="0"
+               />
+             </div>
+             <div className={styles.formControl}>
+               <label htmlFor="initialDate">Ngày đầu tư</label>
+               <input
+                 type="date"
+                 id="initialDate"
+                 value={lumpSum.initialDate}
+                 onChange={(e) => setLumpSum({...lumpSum, initialDate: e.target.value})}
+               />
+             </div>
+           </div>
+         </div>
+       )}
+       ```
+
+|- [ ] **11.6.4: Conditional DCA section**
+  - **Mục đích:** Hiển thị DCA inputs khi user chọn
+  - **Hành động:**
+    1. Thêm section sau Lump Sum section:
+       ```javascript
+       {(strategy === 'dca_only' || strategy === 'hybrid') && (
+         <div className={styles.section} style={{borderLeft: '4px solid #7b61ff', paddingLeft: '15px'}}>
+           <h3 style={{color: '#e0e0ff', marginBottom: '15px'}}>📈 DCA Investment</h3>
+           <div className={styles.formControls}>
+             <div className={styles.formControl}>
+               <label htmlFor="monthlyInvestment">Số tiền hàng tháng ($)</label>
+               <input
+                 type="number"
+                 id="monthlyInvestment"
+                 value={dcaInput.monthlyInvestment}
+                 onChange={(e) => setDcaInput({...dcaInput, monthlyInvestment: e.target.value})}
+                 placeholder="VD: 100"
+                 step="10"
+                 min="0"
+               />
+             </div>
+             <div className={styles.formControl}>
+               <label htmlFor="dcaStartDate">Ngày bắt đầu DCA</label>
+               <input
+                 type="date"
+                 id="dcaStartDate"
+                 value={dcaInput.startDate}
+                 onChange={(e) => setDcaInput({...dcaInput, startDate: e.target.value})}
+               />
+             </div>
+             <div className={styles.formControl}>
+               <label htmlFor="dcaMonths">Số tháng</label>
+               <input
+                 type="number"
+                 id="dcaMonths"
+                 value={dcaInput.dcaMonths}
+                 onChange={(e) => setDcaInput({...dcaInput, dcaMonths: e.target.value})}
+                 placeholder="VD: 20"
+                 min="1"
+                 max="120"
+               />
+             </div>
+           </div>
+         </div>
+       )}
+       ```
+
+|- [ ] **11.6.5: Thêm validation logic trong handleSubmit()**
+  - **Mục đích:** Đảm bảo user fill đầy đủ input
+  - **Hành động:**
+    1. Tìm function `handleSubmit()` (khoảng dòng 80-100)
+    2. Thêm validation ở đầu function:
+       ```javascript
+       // Validate Hybrid
+       if (strategy === 'hybrid') {
+         if (!lumpSum.initialInvestment || !lumpSum.initialDate || !dcaInput.monthlyInvestment || !dcaInput.dcaMonths) {
+           alert('Vui lòng nhập cả Lump Sum và DCA');
+           return;
+         }
+       }
+       
+       // Validate Lump Sum Only
+       if (strategy === 'lump_sum' && (!lumpSum.initialInvestment || !lumpSum.initialDate)) {
+         alert('Vui lòng nhập Lump Sum Investment');
+         return;
+       }
+       
+       // Validate DCA Only
+       if (strategy === 'dca_only' && (!dcaInput.monthlyInvestment || !dcaInput.dcaMonths)) {
+         alert('Vui lòng nhập DCA Investment');
+         return;
+       }
+       ```
+
+---
+
+##### **TASK 11.7: Upgrade calculateDcaResult() - Hybrid Logic** ⭐ **[NEW - PRIORITY 1]**
+
+*Mục đích: Mở rộng function tính toán để support cả 3 strategies với merge logic.*
+
+|- [ ] **11.7.1: Update function signature**
+  - **Mục đích:** Thêm parameters mới
+  - **Hành động:**
+    1. Mở file `src/utils/dca-calculator.js`
+    2. Tìm function `calculateDcaResult()` (khoảng dòng 60-70)
+    3. Cập nhật signature:
+       ```javascript
+       export const calculateDcaResult = ({
+         historicalData,
+         coin,
+         strategy = 'hybrid',
+         
+         // Lump Sum params
+         initialInvestment = 0,
+         initialDate = null,
+         
+         // DCA params
+         monthlyInvestment = 0,
+         dcaMonths = 0,
+         
+         // Common
+         feeRate = 0.0002
+       }) => {
+       ```
+
+|- [ ] **11.7.2: Implement Lump Sum calculation logic**
+  - **Mục đích:** Tính coin từ vốn đầu tiên
+  - **Hành động:**
+    1. Thêm sau dòng `console.log('📊 [DCA] Input params...')`:
+       ```javascript
+       let lumpSumResult = null;
+       if (initialInvestment > 0 && initialDate) {
+         const initialPrice = getPriceOnOrBefore(historicalData, new Date(initialDate));
+         if (initialPrice !== null) {
+           const lumpSumCoins = initialInvestment / initialPrice;
+           lumpSumResult = {
+             investment: initialInvestment,
+             date: initialDate,
+             price: initialPrice,
+             coins: lumpSumCoins
+           };
+           console.log('💰 [LUMP SUM]:', {
+             investment: formatCurrency(initialInvestment),
+             date: initialDate,
+             price: formatCurrency(initialPrice),
+             coins: lumpSumCoins.toFixed(8)
+           });
+         }
+       }
+       ```
+
+|- [ ] **11.7.3: Implement DCA calculation logic**
+  - **Mục đích:** Tính coin từ các lần góp hàng tháng
+  - **Hành động:**
+    1. Thêm sau Lump Sum calculation:
+       ```javascript
+       let dcaResult = null;
+       if (monthlyInvestment > 0 && dcaMonths > 0) {
+         // Auto-start: Nếu hybrid, DCA bắt đầu từ tháng tiếp theo
+         let dcaStartDate = initialDate ? addMonths(new Date(initialDate), 1) : new Date();
+         let dcaCoins = 0;
+         
+         for (let month = 0; month < dcaMonths; month++) {
+           const monthDate = addMonths(dcaStartDate, month);
+           const monthPrice = getPriceOnOrBefore(historicalData, monthDate);
+           if (monthPrice !== null && monthPrice > 0) {
+             const investmentAfterFee = monthlyInvestment * (1 - feeRate);
+             dcaCoins += investmentAfterFee / monthPrice;
+           }
+         }
+         
+         dcaResult = {
+           monthlyInvestment,
+           dcaStartDate: dcaStartDate.toISOString().split('T')[0],
+           dcaMonths,
+           totalInvestment: monthlyInvestment * dcaMonths,
+           coins: dcaCoins
+         };
+         
+         console.log('📈 [DCA]:', {
+           monthly: formatCurrency(monthlyInvestment),
+           months: dcaMonths,
+           totalInvestment: formatCurrency(dcaResult.totalInvestment),
+           coins: dcaCoins.toFixed(8)
+         });
+       }
+       ```
+    2. **Lưu ý:** Cần helper function `addMonths()`:
+       ```javascript
+       function addMonths(date, months) {
+         const result = new Date(date);
+         result.setMonth(result.getMonth() + months);
+         return result;
+       }
+       ```
+
+|- [ ] **11.7.4: Merge results & calculate total**
+  - **Mục điff:** Cộng Lump Sum + DCA, tính ROI
+  - **Hành động:**
+    1. Thêm sau DCA calculation:
+       ```javascript
+       // Determine strategy
+       let strategyLabel = 'hybrid';
+       if (lumpSumResult && !dcaResult) strategyLabel = 'lump_sum';
+       if (!lumpSumResult && dcaResult) strategyLabel = 'dca_only';
+       
+       // Calculate totals
+       const totalInvestment = (lumpSumResult?.investment || 0) + (dcaResult?.totalInvestment || 0);
+       const totalCoins = (lumpSumResult?.coins || 0) + (dcaResult?.coins || 0);
+       const latestPrice = historicalData[historicalData.length - 1][1];
+       const totalValue = totalCoins * latestPrice;
+       const profitLoss = totalValue - totalInvestment;
+       const roi = totalInvestment > 0 ? (profitLoss / totalInvestment) * 100 : 0;
+       
+       console.log('✅ [RESULT]:', {
+         strategy: strategyLabel,
+         totalInvestment: formatCurrency(totalInvestment),
+         totalCoins: totalCoins.toFixed(8),
+         currentValue: formatCurrency(totalValue),
+         roi: roi.toFixed(2) + '%'
+       });
+       ```
+
+|- [ ] **11.7.5: Return complete object**
+  - **Mục đích:** Return tất cả dữ liệu cần thiết
+  - **Hành động:**
+    1. Tìm dòng `return { ... }` cuối function
+    2. Cập nhật return object:
+       ```javascript
+       return {
+         strategy: strategyLabel,
+         lumpSum: lumpSumResult,
+         dca: dcaResult,
+         totalInvestment,
+         totalCoins,
+         totalValue,
+         profitLoss,
+         roi,
+         coin,
+         currentPrice: latestPrice
+       };
+       ```
+
+---
+
+##### **TASK 11.8: Update DcaCalculator UI - Message Display** ⭐ **[NEW - PRIORITY 2]**
+
+*Mục đích: Tích hợp message generator vào component để hiển thị result đẹp.*
+
+|- [ ] **11.8.1: Import message generator**
+  - **Mục đích:** Lấy function tạo message
+  - **Hành động:**
+    1. Mở file `src/components/dca/DcaCalculator.jsx`
+    2. Tìm dòng import ở đầu file
+    3. Thêm:
+       ```javascript
+       import { generateResultMessage } from '../../utils/message-generator.js';
+       ```
+
+|- [ ] **11.8.2: Thêm state cho message**
+  - **Mục đích:** Lưu message khi result update
+  - **Hành động:**
+    1. Tìm dòng `const [result, setResult] = useState(null)`
+    2. Thêm dưới đó:
+       ```javascript
+       const [message, setMessage] = useState('');
+       ```
+
+|- [ ] **11.8.3: Generate message trong handleSubmit()**
+  - **Mục đích:** Tạo message khi nhấn Calculate
+  - **Hành động:**
+    1. Tìm dòng `setResult(dcaResult)` trong `handleSubmit()`
+    2. Thêm ngay sau:
+       ```javascript
+       const msg = generateResultMessage(dcaResult);
+       setMessage(msg);
+       console.log('📬 [MESSAGE] Generated:', msg);
+       ```
+
+|- [ ] **11.8.4: Render message box**
+  - **Mục đích:** Hiển thị message trong result section
+  - **Hành động:**
+    1. Tìm section render result (khoảng dòng 230-280)
+    2. Thêm message box TRƯỚC các detail metadata:
+       ```javascript
+       {result && (
+         <div className={styles.resultSection}>
+           {/* Message Box - Chính */}
+           <div className={styles.messageBox}>
+             <pre className={styles.resultMessage}>
+               {message}
+             </pre>
+           </div>
+           
+           {/* Chi tiết thêm (optional) */}
+           {result.lumpSum && (
+             <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#2c2f48', borderRadius: '4px'}}>
+               <h4 style={{color: '#e0e0ff', margin: '0 0 8px 0'}}>💰 Lump Sum Details:</h4>
+               <p style={{margin: '4px 0', color: '#a0a0d0'}}>Investment: ${result.lumpSum.investment}</p>
+               <p style={{margin: '4px 0', color: '#a0a0d0'}}>Coins: {result.lumpSum.coins.toFixed(8)}</p>
+             </div>
+           )}
+           
+           {result.dca && (
+             <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#2c2f48', borderRadius: '4px'}}>
+               <h4 style={{color: '#e0e0ff', margin: '0 0 8px 0'}}>📈 DCA Details:</h4>
+               <p style={{margin: '4px 0', color: '#a0a0d0'}}>Monthly: ${result.dca.monthlyInvestment}</p>
+               <p style={{margin: '4px 0', color: '#a0a0d0'}}>Coins: {result.dca.coins.toFixed(8)}</p>
+             </div>
+           )}
+         </div>
+       )}
+       ```
+
+|- [ ] **11.8.5: Update CSS - Add message styling**
+  - **Mục đích:** Message hiển thị đẹp
+  - **Hành động:**
+    1. Mở file `src/components/dca/DcaCalculator.module.css`
+    2. Thêm cuối file:
+       ```css
+       .messageBox {
+         background-color: #1a1d2e;
+         padding: 20px;
+         border-radius: 8px;
+         border-left: 4px solid #7b61ff;
+         margin-top: 20px;
+         margin-bottom: 20px;
+       }
+       
+       .resultMessage {
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         font-size: 0.95rem;
+         line-height: 1.8;
+         color: #a0a0d0;
+         white-space: pre-wrap;
+         word-wrap: break-word;
+         margin: 0;
+         padding: 0;
+       }
+       ```
+
+---
+
+##### **TASK 11.9: Test All 3 Strategies** ⭐ **[NEW - PRIORITY 2]**
+
+*Mục đích: Validate tất cả scenarios hoạt động đúng.*
+
+|- [ ] **11.9.1: Test Lump Sum Only**
+  - **Mục đích:** Verify Lump Sum strategy
+  - **Hành động:**
+    1. Mở app: `npm run dev`
+    2. Chuyển đến DCA Calculator
+    3. Input:
+       - Strategy: "💰 Lump Sum (Vốn đầu thôi)"
+       - Coin: LINK
+       - Lump Sum Investment: 3000
+       - Initial Date: 2024-01-01
+       - Fee Rate: 0.02
+    4. Click "Calculate"
+    5. **Verify:**
+       - Message bắt đầu bằng "📌 Nếu bạn đầu tư ban đầu..."
+       - Console logs: 💰 [LUMP SUM] + ✅ [RESULT]
+       - Coins, investment, ROI display chính xác
+
+|- [ ] **11.9.2: Test DCA Only**
+  - **Mục đích:** Verify DCA strategy
+  - **Hành động:**
+    1. Reload page
+    2. Input:
+       - Strategy: "📈 DCA Only (Góp hàng tháng)"
+       - Coin: LINK
+       - Monthly Investment: 100
+       - Start Date: 2024-01-01
+       - Months: 20
+       - Fee Rate: 0.02
+    3. Click "Calculate"
+    4. **Verify:**
+       - Message bắt đầu bằng "📊 Kết quả Giả lập DCA..."
+       - Console logs: 📈 [DCA] + ✅ [RESULT]
+       - Total investment = $2000, coins calculated
+
+|- [ ] **11.9.3: Test Hybrid Mode**
+  - **Mục đích:** Verify Hybrid strategy & auto-start
+  - **Hành động:**
+    1. Reload page
+    2. Input:
+       - Strategy: "🚀 Hybrid (Vốn + Góp)"
+       - Coin: LINK
+       - Lump Sum: $3000 (2024-01-01)
+       - Monthly: $100 x 20 months
+       - Fee Rate: 0.02
+    3. Click "Calculate"
+    4. **Verify:**
+       - Message bắt đầu bằng "🚀 Kết quả Giả lập Hybrid Investment..."
+       - Console: 💰 [LUMP SUM] + 📈 [DCA] + ✅ [RESULT]
+       - **CRITICAL:** DCA auto-start = 2024-02-01 (1 tháng sau)
+       - Total coins = Lump Sum coins + DCA coins
+       - Check in DCA Details: Start date phải là 02/01/2024
+
+|- [ ] **11.9.4: Edge Cases Testing**
+  - **Scenario 1: Empty inputs**
+    - Leave all empty → Click Calculate
+    - Expected: Alert error
+  - **Scenario 2: Negative numbers**
+    - Input -1000 → Click Calculate
+    - Expected: Handle gracefully (either alert or treat as 0)
+  - **Scenario 3: Both Lump Sum & DCA = 0**
+    - Input 0 cho cả 2 → Click Calculate
+    - Expected: Alert error
+  - **Scenario 4: Fee rate = 0**
+    - Input fee = 0%
+    - Expected: Results match non-fee calculation
+  - **Scenario 5: Very small amounts**
+    - Input: Lump Sum $10, Monthly $1
+    - Expected: Work correctly, coins calculated
+
+|- [ ] **11.9.5: Console log verification**
+  - **Mục đích:** Đảm bảo logging hoạt động
+  - **Hành động:**
+    1. Mở DevTools (F12) → Console tab
+    2. Test Hybrid scenario
+    3. Verify order of logs:
+       - 🔗 [API] Raw response (nếu có)
+       - 🔄 [TRANSFORM] Transformed data (nếu có)
+       - 💰 [LUMP SUM] (nếu có)
+       - 📈 [DCA] (nếu có)
+       - ✅ [RESULT]
+       - 📬 [MESSAGE] Generated
+    4. Expand objects để kiểm tra chi tiết
+    5. Copy console output để keep reference
+
+---
+
+#### **PHẦN VII: COMPLETION CHECKLIST - DETAILED**
+
+**Before Starting All Tasks:**
+- [ ] Backup current code (git commit hoặc copy folder)
+- [ ] Read all Tasks 11.5-11.9 completely
+- [ ] Understand 3 strategies & merge logic
+- [ ] Understand Feynman method: "Giải thích như dạy trẻ"
+
+**After TASK 11.5 Completion (Message Generator):**
+- [ ] File `src/utils/message-generator.js` created
+- [ ] 5 functions exist: formatCurrency, formatCoins, formatDate, formatROI, generateResultMessage
+- [ ] All functions export correctly
+- [ ] 3 message templates render without errors
+- [ ] Test mock data → message output matches expected format
+- [ ] No syntax errors (npm run dev works)
+
+**After TASK 11.6 Completion (Strategy Form):**
+- [ ] 3 radio buttons show (Lump Sum, DCA Only, Hybrid)
+- [ ] Lump Sum section shows/hides based on strategy
+- [ ] DCA section shows/hides based on strategy
+- [ ] State updates when user changes strategy
+- [ ] Validation alerts work (try empty inputs)
+- [ ] Form doesn't submit with incomplete data
+
+**After TASK 11.7 Completion (Hybrid Calc):**
+- [ ] calculateDcaResult() accepts new parameters
+- [ ] Lump Sum calculation works (test manually)
+- [ ] DCA calculation works (test manually)
+- [ ] DCA auto-start = 1 month after Lump Sum (hybrid)
+- [ ] Merge: totalCoins = lump + dca (match manually)
+- [ ] Console logs appear: 💰, 📈, ✅
+- [ ] Return object has all required properties
+
+**After TASK 11.8 Completion (UI Display):**
+- [ ] Message box renders in result section
+- [ ] Message text appears (not blank)
+- [ ] CSS styling applied (border-left purple, padding)
+- [ ] Format readable (no weird line breaks)
+- [ ] Metadata details show (Lump Sum & DCA details)
+- [ ] No layout errors
+
+**After TASK 11.9 Completion (FINAL - ALL TESTS PASS):**
+- [ ] Lump Sum Only: ✅ message "📌", console 💰 + ✅
+- [ ] DCA Only: ✅ message "📊", console 📈 + ✅
+- [ ] Hybrid: ✅ message "🚀", console 💰 + 📈 + ✅
+- [ ] Hybrid: DCA auto-start verified (date +1 month)
+- [ ] All edge cases handled gracefully
+- [ ] No JavaScript console errors
+- [ ] All logs appear in correct order
+- [ ] Result display matches expectation
+- [ ] Ready for production! 🚀
+
+---
+</rewritten_file>
+
+
+---
