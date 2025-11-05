@@ -2,20 +2,32 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { calculateDcaResult, calculateDaysBetween, transformCryptoCompareData } from '../../utils/dca-calculator';
 import { fetchCoinHistory } from '../../services/crypto-api';
+import { generateResultMessage } from '../../utils/message-generator';
 import styles from './DcaCalculator.module.css';
 
 export const DcaCalculator = () => {
   const { coinList, isCoinListLoading, coinListError } = useContext(AppContext);
 
+  // ======= STATES =======
   const [inputs, setInputs] = useState({
     coinId: '',
     investment: 50,
     frequency: 'monthly',
     startDate: '',
-    feeRate: 0.02, // 📌 LƯU Ý: Đây là % (0.02%), UI nhập dạng phần trăm
+    feeRate: 0.02,
   });
 
-  // State mới cho autocomplete
+  const [strategy, setStrategy] = useState('hybrid');
+  const [lumpSum, setLumpSum] = useState({
+    initialInvestment: '',
+    initialDate: ''
+  });
+  const [dcaInput, setDcaInput] = useState({
+    monthlyInvestment: '',
+    startDate: '',
+    dcaMonths: ''
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
@@ -24,7 +36,7 @@ export const DcaCalculator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // useEffect cho logic autocomplete
+  // ======= EFFECTS =======
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setSuggestions([]);
@@ -38,6 +50,7 @@ export const DcaCalculator = () => {
     setIsSuggestionsVisible(true);
   }, [searchTerm, coinList]);
 
+  // ======= HANDLERS =======
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -65,6 +78,7 @@ export const DcaCalculator = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Validate coin & startDate
     if (!inputs.coinId || !inputs.startDate) {
       setError('Vui lòng chọn coin và ngày bắt đầu.');
       return;
@@ -73,6 +87,34 @@ export const DcaCalculator = () => {
     setIsLoading(true);
     setError('');
     setResult(null);
+
+    // ✅ Validate theo strategy
+    if (strategy === 'hybrid') {
+      if (
+        !lumpSum.initialInvestment || 
+        !lumpSum.initialDate || 
+        !dcaInput.monthlyInvestment || 
+        !dcaInput.dcaMonths
+      ) {
+        alert('Vui lòng điền đầy đủ thông tin Lump Sum & DCA');
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    if (strategy === 'lump_sum' && 
+      (!lumpSum.initialInvestment || !lumpSum.initialDate)) {
+      alert('Vui lòng nhập Lump Sum Investment');
+      setIsLoading(false);
+      return;
+    }
+    
+    if (strategy === 'dca_only' && 
+      (!dcaInput.monthlyInvestment || !dcaInput.dcaMonths)) {
+      alert('Vui lòng nhập DCA Investment');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const diffDays = calculateDaysBetween(inputs.startDate);
@@ -84,6 +126,7 @@ export const DcaCalculator = () => {
       }
 
       console.log('📊 [DcaCalculator] Form Input:', {
+        strategy,
         coinId: inputs.coinId,
         investment: inputs.investment,
         frequency: inputs.frequency,
@@ -117,13 +160,13 @@ export const DcaCalculator = () => {
         ],
       });
 
-      // ✅ TASK 11.3.3: Gọi calculateDcaResult với feeRate chuyển đổi
+      // ✅ Gọi calculateDcaResult với feeRate chuyển đổi
       const dcaResult = calculateDcaResult({
         historicalData,
         investment: inputs.investment,
         frequency: inputs.frequency,
         periodDays: diffDays,
-        feeRate: inputs.feeRate / 100, // ✅ Chuyển từ % (0.02) sang decimal (0.0002)
+        feeRate: inputs.feeRate / 100,
       });
 
       console.log('✅ [DCA Result]:', dcaResult);
@@ -138,6 +181,7 @@ export const DcaCalculator = () => {
     }
   };
 
+  // ======= RENDER =======
   return (
     <div className={styles.calculatorSection}>
       <h2>Cỗ Máy Thời Gian DCA 🚀</h2>
@@ -148,7 +192,116 @@ export const DcaCalculator = () => {
       {coinList.length > 0 && (
         <form className={styles.calculatorForm} onSubmit={handleSubmit} autoComplete="off">
           <div className={styles.formControls}>
-            {/* ✅ TASK 11.3.1: Coin Search Input */}
+            {/* ✅ TASK 11.6.1: Strategy Selector */}
+            <div className={styles.strategySelector}>
+              <label style={{ marginBottom: '10px', fontWeight: 'bold' }}>Chọn chiến lược:</label>
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="strategy"
+                    value="lump_sum" 
+                    checked={strategy === 'lump_sum'}
+                    onChange={(e) => setStrategy(e.target.value)}
+                  />
+                  💰 Lump Sum (Vốn đầu thôi)
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="strategy"
+                    value="dca_only" 
+                    checked={strategy === 'dca_only'}
+                    onChange={(e) => setStrategy(e.target.value)}
+                  />
+                  📈 DCA Only (Góp hàng tháng)
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="strategy"
+                    value="hybrid" 
+                    checked={strategy === 'hybrid'}
+                    onChange={(e) => setStrategy(e.target.value)}
+                  />
+                  🚀 Hybrid (Vốn + Góp)
+                </label>
+              </div>
+            </div>
+
+            {/* ✅ TASK 11.6.3: Conditional Lump Sum Section */}
+            {(strategy === 'lump_sum' || strategy === 'hybrid') && (
+              <div className={styles.section} style={{ borderLeft: '4px solid #7b61ff', paddingLeft: '15px' }}>
+                <h3 style={{ color: '#e0e0ff', marginBottom: '15px' }}>💰 Lump Sum Investment</h3>
+                <div className={styles.formControls}>
+                  <div className={styles.formControl}>
+                    <label htmlFor="initialInvestment">Vốn đầu tư lần đầu ($)</label>
+                    <input
+                      type="number"
+                      id="initialInvestment"
+                      value={lumpSum.initialInvestment}
+                      onChange={(e) => setLumpSum({ ...lumpSum, initialInvestment: e.target.value })}
+                      placeholder="VD: 3000"
+                      step="100"
+                      min="0"
+                    />
+                  </div>
+                  <div className={styles.formControl}>
+                    <label htmlFor="initialDate">Ngày đầu tư</label>
+                    <input
+                      type="date"
+                      id="initialDate"
+                      value={lumpSum.initialDate}
+                      onChange={(e) => setLumpSum({ ...lumpSum, initialDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ✅ TASK 11.6.4: Conditional DCA Section */}
+            {(strategy === 'dca_only' || strategy === 'hybrid') && (
+              <div className={styles.section} style={{ borderLeft: '4px solid #7b61ff', paddingLeft: '15px' }}>
+                <h3 style={{ color: '#e0e0ff', marginBottom: '15px' }}>📈 DCA Investment</h3>
+                <div className={styles.formControls}>
+                  <div className={styles.formControl}>
+                    <label htmlFor="monthlyInvestment">Số tiền hàng tháng ($)</label>
+                    <input
+                      type="number"
+                      id="monthlyInvestment"
+                      value={dcaInput.monthlyInvestment}
+                      onChange={(e) => setDcaInput({ ...dcaInput, monthlyInvestment: e.target.value })}
+                      placeholder="VD: 100"
+                      step="10"
+                      min="0"
+                    />
+                  </div>
+                  <div className={styles.formControl}>
+                    <label htmlFor="dcaStartDate">Ngày bắt đầu DCA</label>
+                    <input
+                      type="date"
+                      id="dcaStartDate"
+                      value={dcaInput.startDate}
+                      onChange={(e) => setDcaInput({ ...dcaInput, startDate: e.target.value })}
+                    />
+                  </div>
+                  <div className={styles.formControl}>
+                    <label htmlFor="dcaMonths">Số tháng</label>
+                    <input
+                      type="number"
+                      id="dcaMonths"
+                      value={dcaInput.dcaMonths}
+                      onChange={(e) => setDcaInput({ ...dcaInput, dcaMonths: e.target.value })}
+                      placeholder="VD: 20"
+                      min="1"
+                      max="120"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Coin Search with Autocomplete */}
             <div className={styles.formControl} onBlur={() => setTimeout(() => setIsSuggestionsVisible(false), 100)}>
               <label htmlFor="coinSearch">Chọn Coin</label>
               <input
@@ -178,7 +331,7 @@ export const DcaCalculator = () => {
                 type="number"
                 name="investment"
                 id="investment"
-                placeholder='0'
+                placeholder="0"
                 value={inputs.investment.toString()}
                 onChange={handleInputChange}
                 min="1"
@@ -186,7 +339,7 @@ export const DcaCalculator = () => {
               />
             </div>
 
-            {/* ✅ TASK 11.3.1: Fee Rate Input (với label rõ ràng hơn) */}
+            {/* Fee Rate Input */}
             <div className={styles.formControl}>
               <label htmlFor="feeRate">
                 Phí giao dịch (%) <span style={{ fontSize: '0.85em', color: '#666' }}>mặc định 0.02%</span>
@@ -233,7 +386,7 @@ export const DcaCalculator = () => {
         </form>
       )}
 
-      {/* ✅ TASK 11.3.4: RESULT SECTION MỚI - Hiển thị metadata đầy đủ */}
+      {/* Result Section */}
       <div className={styles.resultSection}>
         {isLoading && <p>Đang tải dữ liệu và tính toán...</p>}
 
@@ -266,25 +419,15 @@ export const DcaCalculator = () => {
               </p>
             </div>
 
-            {/* ✅ TASK 11.3.4: Metadata Details */}
+            {/* Metadata Details */}
             <div className={styles.resultMetadata}>
               <h4>Chi tiết Tính toán:</h4>
               <ul>
-                <li>
-                  Số lần mua thành công: <strong>{result.validBuys}</strong>
-                </li>
-                <li>
-                  Số lần bỏ qua: <strong>{result.skippedBuys}</strong>
-                </li>
-                <li>
-                  Tổng số coin: <strong>{result.totalCoins.toFixed(8)}</strong>
-                </li>
-                <li>
-                  Giá hiện tại: <strong>${result.latestPrice.toFixed(2)}</strong>
-                </li>
-                <li>
-                  Phí giao dịch: <strong>{(result.feeRate ?? 0).toFixed(4)}%</strong>
-                </li>
+                <li>Số lần mua thành công: <strong>{result.validBuys}</strong></li>
+                <li>Số lần bỏ qua: <strong>{result.skippedBuys}</strong></li>
+                <li>Tổng số coin: <strong>{result.totalCoins.toFixed(8)}</strong></li>
+                <li>Giá hiện tại: <strong>${result.latestPrice.toFixed(2)}</strong></li>
+                <li>Phí giao dịch: <strong>{(result.feeRate ?? 0).toFixed(4)}%</strong></li>
               </ul>
             </div>
 
