@@ -1,3 +1,13 @@
+const formatCurrency = (num) => {
+  return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+const addMonths = (date, months) => {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+};
+
 /**
  * Tìm giá gần nhất trong dữ liệu lịch sử cho một ngày cụ thể.
  * @param {Array<[number, number]>} historicalData - Mảng dữ liệu lịch sử [[timestamp, price]].
@@ -25,7 +35,7 @@ const getPriceOnOrBefore = (historicalData, targetDate) => {
   // Fallback: không có ngày <= target, lấy ngày sau
   for (const [timestamp, price] of historicalData) {
     if (timestamp > targetTimestamp) {
-      return price; // Trả về giá ngày đầu tiên > target
+      return price;
     }
   }
 
@@ -44,7 +54,6 @@ export const calculateDaysBetween = (startDateInput) => {
   const now = new Date();
   const startDate = new Date(startDateInput);
 
-  // Đảm bảo startDate không phải là một ngày trong tương lai
   if (startDate > now) return 0;
 
   const diffTime = now - startDate;
@@ -54,111 +63,177 @@ export const calculateDaysBetween = (startDateInput) => {
 };
 
 /**
- * Tính toán kết quả của chiến lược đầu tư trung bình giá (DCA).
+ * Tính toán kết quả hybrid - Support 3 strategies (Lump Sum, DCA Only, Hybrid)
  * @param {object} params
- * @param {Array<[number, number]>} params.historicalData - Mảng dữ liệu giá lịch sử.
- * @param {number} params.investment - Số tiền đầu tư mỗi lần.
- * @param {string} params.frequency - Tần suất ('monthly' hoặc 'weekly').
- * @param {number} params.periodDays - Khoảng thời gian đầu tư tính bằng ngày.
- * @param {number} params.feeRate - Tỷ lệ phí giao dịch (default 0.0002 = 0.02%).
- * @returns {{totalInvested: number, totalCoins: number, currentValue: number, profitLoss: number, roiPct: number, validBuys: number, skippedBuys: number, feeRate: number, buyHistory: Array} | null}
+ * @param {Array<[number, number]>} params.historicalData - Mảng dữ liệu giá lịch sử [[timestamp, price]]
+ * @param {string} params.strategy - Chiến lược ('lump_sum' | 'dca_only' | 'hybrid')
+ * @param {number} params.initialInvestment - Vốn ban đầu (Lump Sum)
+ * @param {string} params.initialDate - Ngày đầu tư (Lump Sum)
+ * @param {number} params.monthlyInvestment - Tiền đầu tư hàng tháng (DCA)
+ * @param {number} params.dcaMonths - Số tháng DCA
+ * @param {number} params.feeRate - Tỷ lệ phí giao dịch (default 0.0002 = 0.02%)
+ * @returns {object|null} Kết quả đầu tư kết hợp
  */
 export const calculateDcaResult = ({
   historicalData,
+  strategy = 'hybrid',
+  // Lump Sum params
+  initialInvestment = 0,
+  initialDate = null,
+  // DCA params
+  monthlyInvestment = 0,
+  dcaMonths = 0,
+  // Legacy params (for backward compatibility)
   investment,
   frequency = 'monthly',
   periodDays,
   feeRate = 0.0002,
 }) => {
   if (!historicalData || historicalData.length < 2) {
+    console.error('❌ Invalid historicalData');
     return null;
   }
 
   console.log('📊 [calculateDcaResult] Input:', {
+    strategy,
     historicalDataLength: historicalData.length,
-    investment,
-    frequency,
-    periodDays,
+    initialInvestment: initialInvestment > 0 ? formatCurrency(initialInvestment) : 'N/A',
+    initialDate,
+    monthlyInvestment: monthlyInvestment > 0 ? formatCurrency(monthlyInvestment) : 'N/A',
+    dcaMonths: dcaMonths > 0 ? dcaMonths : 'N/A',
     feeRate: (feeRate * 100).toFixed(4) + '%',
   });
 
-  let totalInvested = 0;
-  let totalCoins = 0;
-  let validBuys = 0;
-  let skippedBuys = 0;
-  let buyHistory = []; // ✅ MOVED INSIDE FUNCTION
-
-  const now = new Date();
-  const startDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
-  let currentDate = new Date(startDate);
-
-  while (currentDate <= now) {
-    const price = getPriceOnOrBefore(historicalData, currentDate);
-
-    if (price !== null && price > 0) {
-      const investmentAfterFee = investment * (1 - feeRate);
-      const coinsBought = investmentAfterFee / price;
-      totalCoins += coinsBought;
-      totalInvested += investment;
-      validBuys++;
-
-      // ✅ TRACK BUY HISTORY
-      buyHistory.push({
-        date: currentDate.toISOString().split('T')[0],
-        price: price,
-        coinsBought: coinsBought,
-        investmentAmount: investment,
-        cumulativeCoins: totalCoins,
-        cumulativeInvested: totalInvested,
+  // ======= SECTION 1: LUMP SUM CALCULATION =======
+  let lumpSumResult = null;
+  if (initialInvestment > 0 && initialDate) {
+    const initialPrice = getPriceOnOrBefore(historicalData, new Date(initialDate));
+    if (initialPrice !== null && initialPrice > 0) {
+      const investmentAfterFee = initialInvestment * (1 - feeRate);
+      const lumpSumCoins = investmentAfterFee / initialPrice;
+      
+      lumpSumResult = {
+        investment: initialInvestment,
+        date: initialDate,
+        price: initialPrice,
+        coins: lumpSumCoins
+      };
+      
+      console.log('💰 [LUMP SUM] Calculation:', {
+        investment: formatCurrency(initialInvestment),
+        date: initialDate,
+        price: formatCurrency(initialPrice),
+        coinsAfterFee: lumpSumCoins.toFixed(8),
+        feeDeducted: formatCurrency(initialInvestment * feeRate)
       });
-
-      // Log chi tiết (chỉ log 3 lần đầu + 3 lần cuối)
-      if (validBuys <= 3 || validBuys > (validBuys + skippedBuys) - 3) {
-        console.log(`🛒 Buy #${validBuys}:`, {
-          date: currentDate.toLocaleDateString('vi-VN'),
-          price: price.toFixed(8),
-          coinsBought: coinsBought.toFixed(8),
-          totalCoins: totalCoins.toFixed(8),
-        });
-      }
-    } else {
-      skippedBuys++;
-    }
-
-    if (frequency === 'monthly') {
-      currentDate.setMonth(currentDate.getMonth() + 1);
-    } else {
-      currentDate.setDate(currentDate.getDate() + 7);
     }
   }
 
-  const latestPrice = historicalData[historicalData.length - 1][1];
-  const currentValue = totalCoins * latestPrice;
-  const profitLoss = currentValue - totalInvested;
-  const roiPct = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
+  // ======= SECTION 2: DCA CALCULATION =======
+  let dcaResult = null;
+  if (monthlyInvestment > 0 && dcaMonths > 0) {
+    // Auto-start: Nếu hybrid, DCA bắt đầu từ tháng tiếp theo sau Lump Sum
+    const dcaStartDate = initialDate 
+      ? addMonths(new Date(initialDate), 1) 
+      : new Date()
+    ;
 
-  console.log('✅ [DCA] Calculation complete:', {
-    validBuys,
-    skippedBuys,
-    totalInvested: '$' + totalInvested.toLocaleString(),
+    let dcaTotalCoins = 0;
+    let dcaTotalInvested = 0;
+    
+    console.log('📈 [DCA] Starting calculation:', {
+      startDate: dcaStartDate.toLocaleDateString('vi-VN'),
+      months: dcaMonths,
+      monthlyAmount: formatCurrency(monthlyInvestment)
+    });
+
+    for (let month = 0; month < dcaMonths; month++) {
+      const monthDate = addMonths(dcaStartDate, month);
+      const monthPrice = getPriceOnOrBefore(historicalData, monthDate);
+      
+      if (monthPrice !== null && monthPrice > 0) {
+        const investmentAfterFee = monthlyInvestment * (1 - feeRate);
+        const monthCoins = investmentAfterFee / monthPrice;
+        dcaTotalCoins += monthCoins;
+        dcaTotalInvested += monthlyInvestment;
+
+        // Log chi tiết (chỉ log tháng 1, 2, 3 và 2 tháng cuối)
+        if (month < 3 || month >= dcaMonths - 2) {
+          console.log(`  🛒 Month ${month + 1}:`, {
+            date: monthDate.toLocaleDateString('vi-VN'),
+            price: formatCurrency(monthPrice),
+            coins: monthCoins.toFixed(8),
+            cumulative: dcaTotalCoins.toFixed(8)
+          });
+        }
+      }
+    }
+    
+    dcaResult = {
+      monthlyInvestment,
+      dcaStartDate: dcaStartDate.toISOString().split('T')[0],
+      dcaMonths,
+      totalInvestment: dcaTotalInvested,
+      coins: dcaTotalCoins
+    };
+    
+    console.log('📈 [DCA] Complete:', {
+      totalInvestment: formatCurrency(dcaTotalInvested),
+      totalCoins: dcaTotalCoins.toFixed(8)
+    });
+  }
+
+  // ======= SECTION 3: MERGE RESULTS & CALCULATE TOTALS =======
+  // Determine actual strategy based on results
+  let strategyLabel = strategy;
+  if (lumpSumResult && !dcaResult) strategyLabel = 'lump_sum';
+  if (!lumpSumResult && dcaResult) strategyLabel = 'dca_only';
+  if (lumpSumResult && dcaResult) strategyLabel = 'hybrid';
+
+  const totalInvestment = 
+    (lumpSumResult?.investment || 0) 
+    + (dcaResult?.totalInvestment || 0)
+  ;
+  const totalCoins = 
+    (lumpSumResult?.coins || 0) 
+    + (dcaResult?.coins || 0)
+  ;
+  const latestPrice = historicalData[historicalData.length - 1][1];
+  const totalValue = totalCoins * latestPrice;
+  const profitLoss = totalValue - totalInvestment;
+  
+  const roi = 
+    totalInvestment > 0 
+    ? (profitLoss / totalInvestment) * 100 
+    : 0
+  ;
+  
+  console.log('✅ [MERGED RESULT]:', {
+    strategy: strategyLabel,
+    totalInvestment: formatCurrency(totalInvestment),
     totalCoins: totalCoins.toFixed(8),
-    latestPrice: '$' + latestPrice.toFixed(2),
-    currentValue: '$' + currentValue.toLocaleString(undefined, { maximumFractionDigits: 2 }),
-    profitLoss: '$' + profitLoss.toLocaleString(undefined, { maximumFractionDigits: 2 }),
-    roiPct: roiPct.toFixed(2) + '%',
+    currentPrice: formatCurrency(latestPrice),
+    totalValue: formatCurrency(totalValue),
+    profitLoss: formatCurrency(profitLoss),
+    roi: roi.toFixed(2) + '%'
   });
 
+  // ======= RETURN OBJECT =======
   return {
-    totalInvested,
+    strategy: strategyLabel,
+    lumpSum: lumpSumResult,
+    dca: dcaResult,
+    totalInvestment,
     totalCoins,
-    currentValue,
+    totalValue,
     profitLoss,
-    roiPct, // ✅ CHỈ INCLUDE MỘT LẦN
-    validBuys,
-    skippedBuys,
-    feeRate: feeRate * 100,
-    buyHistory,
+    roi,
     latestPrice,
+    // Backward compatibility
+    validBuys: (lumpSumResult ? 1 : 0) + (dcaResult?.dcaMonths || 0),
+    currentValue: totalValue,
+    roiPct: roi,
+    feeRate
   };
 };
 
@@ -170,7 +245,7 @@ export const calculateDcaResult = ({
 export const transformCryptoCompareData = (cryptoCompareData) => {
   if (!cryptoCompareData) return [];
   return cryptoCompareData.map(dayData => [
-    dayData.time * 1000, // CryptoCompare trả về timestamp theo giây, cần đổi sang mili giây
-    dayData.close, // 'close' là giá đóng cửa của ngày hôm đó
+    dayData.time * 1000, // CryptoCompare: timestamp theo giây → mili giây
+    dayData.close, // Giá đóng cửa của ngày hôm đó
   ]);
 };

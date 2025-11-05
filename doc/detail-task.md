@@ -879,7 +879,7 @@ console.log(JSON.stringify(logData, null, 2));
 
 *Mục đích: Tạo một hệ thống message động để hiển thị kết quả DCA theo từng strategy (Lump Sum, DCA Only, Hybrid).*
 
-|- [ ] **11.5.1: Tạo file `src/utils/message-generator.js`**
+|- [x] **11.5.1: Tạo file `src/utils/message-generator.js`**
   - **Mục đích:** Tách logic tạo message ra khỏi component
   - **Hành động:**
     1. Tạo file mới: `src/utils/message-generator.js`
@@ -917,7 +917,7 @@ console.log(JSON.stringify(logData, null, 2));
        }
        ```
 
-|- [ ] **11.5.2: Viết `generateResultMessage()` function chính**
+|- [x] **11.5.2: Viết `generateResultMessage()` function chính**
   - **Mục đích:** Factory function tạo message theo strategy
   - **Hành động:**
     1. Viết function signature:
@@ -956,7 +956,20 @@ console.log(JSON.stringify(logData, null, 2));
    ROI: ${formatROI(roi)}
          `.trim();
        }
+  ---
+    Nếu bạn đầu tư ban đầu với vốn $3,000.00 vào LINK
+      vào ngày 09/01/2024
+      
+      bây giờ bạn sẽ có:
+      
+      💰 300.00 LINK
+      
+      Tổng vốn đầu tư: $3,000.00
+      Giá trị hiện tại: $4,650.00
+      Lời: $1,650.00
+      ROI: +55.00% ✅
        ```
+  ---
     4. Viết template cho "DCA Only":
        ```javascript
        if (strategy === "dca_only") {
@@ -1001,7 +1014,7 @@ console.log(JSON.stringify(logData, null, 2));
        }
        ```
 
-|- [ ] **11.5.3: Test message templates bằng tay**
+|- [x] **11.5.3: Test message templates bằng tay**
   - **Mục đích:** Đảm bảo 3 templates hoạt động đúng
   - **Hành động:**
     1. Tạo mock data cho Lump Sum:
@@ -1025,8 +1038,38 @@ console.log(JSON.stringify(logData, null, 2));
 ##### **TASK 11.6: Nâng cấp Form - Strategy Selector** ⭐ **[NEW - PRIORITY 1]**
 
 *Mục đích: Cập nhật DcaCalculator form để support 3 strategies flexible.*
+┌─────────────────────────────────────────────────┐
+│        DCA CALCULATOR - FLEXIBLE                │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  🪙 COIN SELECTION                             │
+│  ├─ Coin: [LINK ▼]                            │
+│  └─ Fee Rate: [0.02 %]                        │
+│                                                 │
+│  ┌─────────────────────────────────────────┐  │
+│  │ 💰 LUMP SUM (Optional)                  │  │
+│  ├─────────────────────────────────────────┤  │
+│  │ ☑ Enable Lump Sum Investment            │  │
+│  │ ├─ Initial Amount: [3000]               │  │
+│  │ ├─ Purchase Date: [2024-01-01]          │  │
+│  │ └─ [Auto] Coins: 300 LINK               │  │
+│  └─────────────────────────────────────────┘  │
+│                                                 │
+│  ┌─────────────────────────────────────────┐  │
+│  │ 📈 DCA (Optional)                       │  │
+│  ├─────────────────────────────────────────┤  │
+│  │ ☑ Enable DCA Investment                 │  │
+│  │ ├─ Monthly Amount: [100]                │  │
+│  │ ├─ Start Date: [2024-02-01]             │  │
+│  │ ├─ Duration: [20] months                │  │
+│  │ └─ [Auto] DCA Start: 1 month after      │  │
+│  └─────────────────────────────────────────┘  │
+│                                                 │
+│         [CALCULATE RESULT]                     │
+│                                                 │
+└─────────────────────────────────────────────────┘
 
-|- [ ] **11.6.1: Thêm state cho strategy selector**
+|- [x] **11.6.1: Thêm state cho strategy selector**
   - **Mục đích:** Quản lý strategy choice và inputs
   - **Hành động:**
     1. Mở file `src/components/dca/DcaCalculator.jsx`
@@ -1047,7 +1090,7 @@ console.log(JSON.stringify(logData, null, 2));
        });
        ```
 
-|- [ ] **11.6.2: Render strategy selector UI**
+|- [x] **11.6.2: Render strategy selector UI**
   - **Mục đích:** User chọn strategy (3 radio buttons)
   - **Hành động:**
     1. Tìm vị trí render (trước `<div className={styles.formControls}>` đầu tiên)
@@ -1090,7 +1133,7 @@ console.log(JSON.stringify(logData, null, 2));
        </div>
        ```
 
-|- [ ] **11.6.3: Conditional Lump Sum section**
+|- [x] **11.6.3: Conditional Lump Sum section**
   - **Mục đích:** Hiển thị Lump Sum inputs khi user chọn
   - **Hành động:**
     1. Tìm vị trí sau strategy selector
@@ -1126,7 +1169,7 @@ console.log(JSON.stringify(logData, null, 2));
        )}
        ```
 
-|- [ ] **11.6.4: Conditional DCA section**
+|- [x] **11.6.4: Conditional DCA section**
   - **Mục đích:** Hiển thị DCA inputs khi user chọn
   - **Hành động:**
     1. Thêm section sau Lump Sum section:
@@ -1173,7 +1216,7 @@ console.log(JSON.stringify(logData, null, 2));
        )}
        ```
 
-|- [ ] **11.6.5: Thêm validation logic trong handleSubmit()**
+|- [x] **11.6.5: Thêm validation logic trong handleSubmit()**
   - **Mục đích:** Đảm bảo user fill đầy đủ input
   - **Hành động:**
     1. Tìm function `handleSubmit()` (khoảng dòng 80-100)
@@ -1206,7 +1249,7 @@ console.log(JSON.stringify(logData, null, 2));
 
 *Mục đích: Mở rộng function tính toán để support cả 3 strategies với merge logic.*
 
-|- [ ] **11.7.1: Update function signature**
+|- [x] **11.7.1: Update function signature**
   - **Mục đích:** Thêm parameters mới
   - **Hành động:**
     1. Mở file `src/utils/dca-calculator.js`
@@ -1231,7 +1274,7 @@ console.log(JSON.stringify(logData, null, 2));
        }) => {
        ```
 
-|- [ ] **11.7.2: Implement Lump Sum calculation logic**
+|- [x] **11.7.2: Implement Lump Sum calculation logic**
   - **Mục đích:** Tính coin từ vốn đầu tiên
   - **Hành động:**
     1. Thêm sau dòng `console.log('📊 [DCA] Input params...')`:
@@ -1257,7 +1300,7 @@ console.log(JSON.stringify(logData, null, 2));
        }
        ```
 
-|- [ ] **11.7.3: Implement DCA calculation logic**
+|- [x] **11.7.3: Implement DCA calculation logic**
   - **Mục đích:** Tính coin từ các lần góp hàng tháng
   - **Hành động:**
     1. Thêm sau Lump Sum calculation:
@@ -1302,7 +1345,7 @@ console.log(JSON.stringify(logData, null, 2));
        }
        ```
 
-|- [ ] **11.7.4: Merge results & calculate total**
+|- [x] **11.7.4: Merge results & calculate total**
   - **Mục điff:** Cộng Lump Sum + DCA, tính ROI
   - **Hành động:**
     1. Thêm sau DCA calculation:
@@ -1329,7 +1372,7 @@ console.log(JSON.stringify(logData, null, 2));
        });
        ```
 
-|- [ ] **11.7.5: Return complete object**
+|- [x] **11.7.5: Return complete object**
   - **Mục đích:** Return tất cả dữ liệu cần thiết
   - **Hành động:**
     1. Tìm dòng `return { ... }` cuối function
