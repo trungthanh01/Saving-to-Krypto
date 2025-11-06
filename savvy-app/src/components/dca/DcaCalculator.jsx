@@ -9,14 +9,6 @@ export const DcaCalculator = () => {
   const { coinList, isCoinListLoading, coinListError } = useContext(AppContext);
 
   // ======= STATES =======
-  const [inputs, setInputs] = useState({
-    coinId: '',
-    investment: 50,
-    frequency: 'monthly',
-    startDate: '',
-    feeRate: 0.02,
-  });
-
   const [strategy, setStrategy] = useState('hybrid');
   const [lumpSum, setLumpSum] = useState({
     initialInvestment: '',
@@ -33,8 +25,12 @@ export const DcaCalculator = () => {
   const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
 
   const [result, setResult] = useState(null);
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedCoin, setSelectedCoin] = useState(null);
+
+  const [feeRate, setFeeRate] = useState(0.02);
 
   // ======= EFFECTS =======
   useEffect(() => {
@@ -51,44 +47,28 @@ export const DcaCalculator = () => {
   }, [searchTerm, coinList]);
 
   // ======= HANDLERS =======
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === 'coinSearch') {
-      setSearchTerm(value);
-      if (inputs.coinId) {
-        setInputs(prev => ({ ...prev, coinId: '' }));
-      }
-    } else {
-      setInputs(prevInputs => ({
-        ...prevInputs,
-        [name]: name === 'investment' || name === 'feeRate' 
-          ? Number(value) || 0 
-          : value,
-      }));
-    }
+  const handleCoinSearch = (value) => {
+    setSearchTerm(value);
   };
 
   const handleSuggestionClick = (coin) => {
-    setInputs(prev => ({ ...prev, coinId: coin.id }));
     setSearchTerm(coin.name);
+    setSelectedCoin(coin);
     setIsSuggestionsVisible(false);
+  };
+
+  const handleFeeRateChange = (e) => {
+    setFeeRate(Number(e.target.value) || 0);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Validate coin & startDate
-    if (!inputs.coinId || !inputs.startDate) {
-      setError('Vui lòng chọn coin và ngày bắt đầu.');
+    if (!selectedCoin?.id) {
+      setError('Vui lòng chọn coin.');
       return;
     }
 
-    setIsLoading(true);
-    setError('');
-    setResult(null);
-
-    // ✅ Validate theo strategy
     if (strategy === 'hybrid') {
       if (
         !lumpSum.initialInvestment || 
@@ -96,28 +76,40 @@ export const DcaCalculator = () => {
         !dcaInput.monthlyInvestment || 
         !dcaInput.dcaMonths
       ) {
-        alert('Vui lòng điền đầy đủ thông tin Lump Sum & DCA');
-        setIsLoading(false);
+        setError('Vui lòng điền đầy đủ thông tin Lump Sum & DCA.');
         return;
       }
     }
 
     if (strategy === 'lump_sum' && 
       (!lumpSum.initialInvestment || !lumpSum.initialDate)) {
-      alert('Vui lòng nhập Lump Sum Investment');
-      setIsLoading(false);
+      setError('Vui lòng nhập Lump Sum Investment.');
       return;
     }
     
     if (strategy === 'dca_only' && 
       (!dcaInput.monthlyInvestment || !dcaInput.dcaMonths)) {
-      alert('Vui lòng nhập DCA Investment');
-      setIsLoading(false);
+      setError('Vui lòng nhập DCA Investment.');
       return;
     }
 
+    setIsLoading(true);
+    setError('');
+    setResult(null);
+
     try {
-      const diffDays = calculateDaysBetween(inputs.startDate);
+      let startDate;
+      if (strategy === 'lump_sum') {
+        startDate = lumpSum.initialDate;
+      } else if (strategy === 'dca_only') {
+        startDate = dcaInput.startDate;
+      } else {
+        startDate = new Date(lumpSum.initialDate) < new Date(dcaInput.startDate) 
+          ? lumpSum.initialDate 
+          : dcaInput.startDate;
+      }
+
+      const diffDays = calculateDaysBetween(startDate);
 
       if (diffDays <= 0) {
         setError("Ngày bắt đầu không hợp lệ hoặc ở trong tương lai.");
@@ -125,18 +117,18 @@ export const DcaCalculator = () => {
         return;
       }
 
-      console.log('📊 [DcaCalculator] Form Input:', {
+      console.log('📊 [DcaCalculator] Strategy Input:', {
         strategy,
-        coinId: inputs.coinId,
-        investment: inputs.investment,
-        frequency: inputs.frequency,
-        startDate: inputs.startDate,
+        coinId: selectedCoin.id,
+        coinName: selectedCoin.name,
+        startDate,
         diffDays: diffDays,
-        feeRatePercent: inputs.feeRate + '%',
+        feeRatePercent: feeRate + '%',
+        lumpSum: strategy !== 'dca_only' ? lumpSum : 'N/A',
+        dcaInput: strategy !== 'lump_sum' ? dcaInput : 'N/A',
       });
 
-      // 🔗 Gọi API lấy dữ liệu lịch sử
-      const rawHistoricalData = await fetchCoinHistory(inputs.coinId, diffDays);
+      const rawHistoricalData = await fetchCoinHistory(selectedCoin.id, diffDays);
 
       console.log('🔗 [API] Raw response:', {
         receivedDataPoints: rawHistoricalData?.length || 0,
@@ -144,7 +136,6 @@ export const DcaCalculator = () => {
         lastItem: rawHistoricalData?.[rawHistoricalData.length - 1],
       });
 
-      // 🔄 Transform dữ liệu từ CryptoCompare format sang [[timestamp, price]]
       const historicalData = transformCryptoCompareData(rawHistoricalData);
 
       console.log('📊 [INSPECT] historicalData:', {
@@ -153,29 +144,39 @@ export const DcaCalculator = () => {
         firstPrice: historicalData[0][1],
         lastDate: new Date(historicalData[historicalData.length - 1][0]).toLocaleDateString('vi-VN'),
         lastPrice: historicalData[historicalData.length - 1][1],
-        sample3Items: [
-          historicalData[0],
-          historicalData[Math.floor(historicalData.length / 2)],
-          historicalData[historicalData.length - 1],
-        ],
       });
 
-      // ✅ Gọi calculateDcaResult với feeRate chuyển đổi
       const dcaResult = calculateDcaResult({
         historicalData,
-        investment: inputs.investment,
-        frequency: inputs.frequency,
-        periodDays: diffDays,
-        feeRate: inputs.feeRate / 100,
+        strategy: strategy,
+        initialInvestment: strategy !== 'dca_only' ? Number(lumpSum.initialInvestment) || 0 : 0,
+        initialDate: strategy !== 'dca_only' ? lumpSum.initialDate : null,
+        monthlyInvestment: strategy !== 'lump_sum' ? Number(dcaInput.monthlyInvestment) || 0 : 0,
+        dcaMonths: strategy !== 'lump_sum' ? Number(dcaInput.dcaMonths) || 0 : 0,
+        feeRate: feeRate / 100,
       });
 
       console.log('✅ [DCA Result]:', dcaResult);
 
-      setResult(dcaResult);
+      if (!dcaResult) {
+        setError('Không thể tính toán. Vui lòng kiểm tra dữ liệu.');
+        setIsLoading(false);
+        return;
+      }
+
+      const resultWithCoin = {
+        ...dcaResult,
+        coin: selectedCoin.symbol.toUpperCase()
+      };
+
+      setResult(resultWithCoin);
+      const msg = generateResultMessage(resultWithCoin);
+      setMessage(msg);
+      console.log('📬 [MESSAGE] Generated:', msg);
 
     } catch (err) {
       console.error("Lỗi khi tính toán DCA:", err);
-      setError('Đã có lỗi xảy ra. Không thể lấy dữ liệu giá hoặc tính toán.');
+      setError('Đã có lỗi xảy ra. Không thể lấy dữ liệu hoặc tính toán.');
     } finally {
       setIsLoading(false);
     }
@@ -192,50 +193,89 @@ export const DcaCalculator = () => {
       {coinList.length > 0 && (
         <form className={styles.calculatorForm} onSubmit={handleSubmit} autoComplete="off">
           <div className={styles.formControls}>
-            {/* ✅ TASK 11.6.1: Strategy Selector */}
+            {/* ✅ STRATEGY SELECTOR - FULL WIDTH */}
             <div className={styles.strategySelector}>
-              <label style={{ marginBottom: '10px', fontWeight: 'bold' }}>Chọn chiến lược:</label>
-              <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="strategy"
-                    value="lump_sum" 
-                    checked={strategy === 'lump_sum'}
-                    onChange={(e) => setStrategy(e.target.value)}
-                  />
-                  💰 Lump Sum (Vốn đầu thôi)
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="strategy"
-                    value="dca_only" 
-                    checked={strategy === 'dca_only'}
-                    onChange={(e) => setStrategy(e.target.value)}
-                  />
-                  📈 DCA Only (Góp hàng tháng)
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="strategy"
-                    value="hybrid" 
-                    checked={strategy === 'hybrid'}
-                    onChange={(e) => setStrategy(e.target.value)}
-                  />
-                  🚀 Hybrid (Vốn + Góp)
-                </label>
-              </div>
+              <label style={{ marginBottom: '10px', fontWeight: 'bold', display: 'block' }}>
+                Chọn chiến lược:
+              </label>
+              <label>
+                <input 
+                  type="radio" 
+                  name="strategy"
+                  value="lump_sum" 
+                  checked={strategy === 'lump_sum'}
+                  onChange={(e) => setStrategy(e.target.value)}
+                />
+                💰 Lump Sum (Vốn đầu thôi)
+              </label>
+              <label>
+                <input 
+                  type="radio" 
+                  name="strategy"
+                  value="dca_only" 
+                  checked={strategy === 'dca_only'}
+                  onChange={(e) => setStrategy(e.target.value)}
+                />
+                📈 DCA Only (Góp hàng tháng)
+              </label>
+              <label>
+                <input 
+                  type="radio" 
+                  name="strategy"
+                  value="hybrid" 
+                  checked={strategy === 'hybrid'}
+                  onChange={(e) => setStrategy(e.target.value)}
+                />
+                🚀 Hybrid (Vốn + Góp)
+              </label>
             </div>
 
-            {/* ✅ TASK 11.6.3: Conditional Lump Sum Section */}
+            {/* ✅ COIN SEARCH */}
+            <div className={styles.formControl} onBlur={() => setTimeout(() => setIsSuggestionsVisible(false), 100)}>
+              <label htmlFor="coinSearch">Chọn Coin</label>
+              <input
+                type="text"
+                id="coinSearch"
+                placeholder="Tìm kiếm (vd: Bitcoin, ETH...)"
+                value={searchTerm}
+                onChange={(e) => handleCoinSearch(e.target.value)}
+              />
+              {isSuggestionsVisible && suggestions.length > 0 && (
+                <ul className={styles.suggestionList}>
+                  {suggestions.map(coin => (
+                    <li key={coin.id} onMouseDown={() => handleSuggestionClick(coin)}>
+                      <img src={coin.image} alt={coin.name} />
+                      <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* ✅ FEE RATE */}
+            <div className={styles.formControl}>
+              <label htmlFor="feeRate">
+                Phí giao dịch (%) <span style={{ fontSize: '0.85em' }}>mặc định 0.02%</span>
+              </label>
+              <input
+                type="number"
+                id="feeRate"
+                value={feeRate}
+                onChange={handleFeeRateChange}
+                min="0"
+                max="1"
+                step="0.01"
+                placeholder="0.02"
+              />
+            </div>
+
+            {/* ✅ LUMP SUM SECTION */}
             {(strategy === 'lump_sum' || strategy === 'hybrid') && (
-              <div className={styles.section} style={{ borderLeft: '4px solid #7b61ff', paddingLeft: '15px' }}>
-                <h3 style={{ color: '#e0e0ff', marginBottom: '15px' }}>💰 Lump Sum Investment</h3>
+              <div className={styles.section}>
+                <h3>💰 Lump Sum Investment</h3>
                 <div className={styles.formControls}>
                   <div className={styles.formControl}>
-                    <label htmlFor="initialInvestment">Vốn đầu tư lần đầu ($)</label>
+                    <label htmlFor="initialInvestment">Vốn đầu tư ($)</label>
                     <input
                       type="number"
                       id="initialInvestment"
@@ -253,16 +293,17 @@ export const DcaCalculator = () => {
                       id="initialDate"
                       value={lumpSum.initialDate}
                       onChange={(e) => setLumpSum({ ...lumpSum, initialDate: e.target.value })}
+                      max={new Date().toISOString().split("T")[0]}
                     />
                   </div>
                 </div>
               </div>
             )}
 
-            {/* ✅ TASK 11.6.4: Conditional DCA Section */}
+            {/* ✅ DCA SECTION */}
             {(strategy === 'dca_only' || strategy === 'hybrid') && (
-              <div className={styles.section} style={{ borderLeft: '4px solid #7b61ff', paddingLeft: '15px' }}>
-                <h3 style={{ color: '#e0e0ff', marginBottom: '15px' }}>📈 DCA Investment</h3>
+              <div className={styles.section}>
+                <h3>📈 DCA Investment</h3>
                 <div className={styles.formControls}>
                   <div className={styles.formControl}>
                     <label htmlFor="monthlyInvestment">Số tiền hàng tháng ($)</label>
@@ -283,6 +324,7 @@ export const DcaCalculator = () => {
                       id="dcaStartDate"
                       value={dcaInput.startDate}
                       onChange={(e) => setDcaInput({ ...dcaInput, startDate: e.target.value })}
+                      max={new Date().toISOString().split("T")[0]}
                     />
                   </div>
                   <div className={styles.formControl}>
@@ -300,141 +342,63 @@ export const DcaCalculator = () => {
                 </div>
               </div>
             )}
-
-            {/* Coin Search with Autocomplete */}
-            <div className={styles.formControl} onBlur={() => setTimeout(() => setIsSuggestionsVisible(false), 100)}>
-              <label htmlFor="coinSearch">Chọn Coin</label>
-              <input
-                type="text"
-                name="coinSearch"
-                id="coinSearch"
-                placeholder="Tìm kiếm (vd: Bitcoin, ETH...)"
-                value={searchTerm}
-                onChange={handleInputChange}
-              />
-              {isSuggestionsVisible && suggestions.length > 0 && (
-                <ul className={styles.suggestionList}>
-                  {suggestions.map(coin => (
-                    <li key={coin.id} onMouseDown={() => handleSuggestionClick(coin)}>
-                      <img src={coin.image} alt={coin.name} />
-                      <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {/* Investment Amount */}
-            <div className={styles.formControl}>
-              <label htmlFor="investment">Số tiền đầu tư ($)</label>
-              <input
-                type="number"
-                name="investment"
-                id="investment"
-                placeholder="0"
-                value={inputs.investment.toString()}
-                onChange={handleInputChange}
-                min="1"
-                step="any"
-              />
-            </div>
-
-            {/* Fee Rate Input */}
-            <div className={styles.formControl}>
-              <label htmlFor="feeRate">
-                Phí giao dịch (%) <span style={{ fontSize: '0.85em', color: '#666' }}>mặc định 0.02%</span>
-              </label>
-              <input
-                type="number"
-                name="feeRate"
-                id="feeRate"
-                value={inputs.feeRate}
-                onChange={handleInputChange}
-                min="0"
-                max="1"
-                step="0.01"
-                placeholder="0.02"
-              />
-            </div>
-
-            {/* Frequency */}
-            <div className={styles.formControl}>
-              <label htmlFor="frequency">Tần suất</label>
-              <select name="frequency" id="frequency" value={inputs.frequency} onChange={handleInputChange}>
-                <option value="monthly">Hàng tháng</option>
-                <option value="weekly">Hàng tuần</option>
-              </select>
-            </div>
-
-            {/* Start Date */}
-            <div className={styles.formControl}>
-              <label htmlFor="startDate">Ngày bắt đầu</label>
-              <input
-                type="date"
-                name="startDate"
-                id="startDate"
-                value={inputs.startDate}
-                onChange={handleInputChange}
-                max={new Date().toISOString().split("T")[0]}
-              />
-            </div>
           </div>
 
-          <button type="submit" className={styles.submitButton} disabled={isLoading || !inputs.coinId}>
-            {isLoading ? 'Đang tính toán...' : 'Xem kết quả'}
+          <button type="submit" className={styles.submitButton} disabled={isLoading || !selectedCoin}>
+            {isLoading ? '⏳ Đang tính toán...' : '🚀 Xem kết quả'}
           </button>
         </form>
       )}
 
       {/* Result Section */}
       <div className={styles.resultSection}>
-        {isLoading && <p>Đang tải dữ liệu và tính toán...</p>}
+        {isLoading && <p>📊 Đang tải dữ liệu và tính toán...</p>}
 
         {error && <p className={styles.errorText}>{error}</p>}
 
         {result && (
-          <div className={styles.resultCard}>
-            <h3>Kết quả Giả lập DCA</h3>
-            <p>
-              Nếu bạn đã đầu tư
-              <strong> ${inputs.investment.toLocaleString()}</strong> mỗi
-              <strong> {inputs.frequency === 'monthly' ? 'tháng' : 'tuần'}</strong> vào
-              <strong> {searchTerm}</strong>
-            </p>
-            <p>
-              kể từ ngày <strong>{new Date(inputs.startDate).toLocaleDateString('vi-VN')}</strong>
-              {' '}(với phí {inputs.feeRate}%)
-            </p>
+          <>
+            {/* ✅ Dynamic Message Box */}
+            {message && (
+              <div className={styles.messageBox}>
+                <div className={styles.messageBoxHeader}>
+                  {result.strategy === 'lump_sum' && '🎯 Phân tích Lump Sum'}
+                  {result.strategy === 'dca_only' && '📊 Phân tích DCA'}
+                  {result.strategy === 'hybrid' && '🚀 Phân tích Hybrid'}
+                </div>
+                <pre className={styles.resultMessage}>
+                  {message}
+                </pre>
+              </div>
+            )}
 
-            {/* Main Result */}
-            <div className={styles.resultSummary}>
-              <p>...bây giờ bạn sẽ có:</p>
-              <h2>${result.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-              <p className={result.profitLoss >= 0 ? styles.profit : styles.loss}>
-                Tổng vốn đầu tư: <strong>${result.totalInvested.toLocaleString()}</strong>
-                <br />
-                Lời/Lỗ: <strong>${result.profitLoss.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
-                <br />
-                ROI: <strong>{result.roiPct.toFixed(2)}%</strong>
-              </p>
-            </div>
+            {/* ✅ Lump Sum Details */}
+            {result.lumpSum && (
+              <div className={styles.detailsBox}>
+                <h4>💰 Chi tiết Lump Sum</h4>
+                <div className={styles.detailsGrid}>
+                  <p><span>Vốn đầu tư:</span> <strong>${result.lumpSum.investment.toLocaleString()}</strong></p>
+                  <p><span>Ngày đầu tư:</span> <strong>{new Date(result.lumpSum.date).toLocaleDateString('vi-VN')}</strong></p>
+                  <p><span>Giá tại thời điểm:</span> <strong>${result.lumpSum.price.toFixed(2)}</strong></p>
+                  <p><span>Số coin nhận được:</span> <strong>{result.lumpSum.coins.toFixed(8)}</strong></p>
+                </div>
+              </div>
+            )}
 
-            {/* Metadata Details */}
-            <div className={styles.resultMetadata}>
-              <h4>Chi tiết Tính toán:</h4>
-              <ul>
-                <li>Số lần mua thành công: <strong>{result.validBuys}</strong></li>
-                <li>Số lần bỏ qua: <strong>{result.skippedBuys}</strong></li>
-                <li>Tổng số coin: <strong>{result.totalCoins.toFixed(8)}</strong></li>
-                <li>Giá hiện tại: <strong>${result.latestPrice.toFixed(2)}</strong></li>
-                <li>Phí giao dịch: <strong>{(result.feeRate ?? 0).toFixed(4)}%</strong></li>
-              </ul>
-            </div>
-
-            <p className={styles.disclaimer}>
-              *Lưu ý: Kết quả chỉ mang tính chất tham khảo dựa trên dữ liệu lịch sử và không đảm bảo lợi nhuận trong tương lai.
-            </p>
-          </div>
+            {/* ✅ DCA Details */}
+            {result.dca && (
+              <div className={styles.detailsBox}>
+                <h4>📈 Chi tiết DCA</h4>
+                <div className={styles.detailsGrid}>
+                  <p><span>Tiền hàng tháng:</span> <strong>${result.dca.monthlyInvestment.toLocaleString()}</strong></p>
+                  <p><span>Ngày bắt đầu:</span> <strong>{new Date(result.dca.dcaStartDate).toLocaleDateString('vi-VN')}</strong></p>
+                  <p><span>Số tháng:</span> <strong>{result.dca.dcaMonths}</strong></p>
+                  <p><span>Tổng vốn DCA:</span> <strong>${result.dca.totalInvestment.toLocaleString()}</strong></p>
+                  <p><span>Tổng coin DCA:</span> <strong>{result.dca.coins.toFixed(8)}</strong></p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
