@@ -1,20 +1,47 @@
-/* Dàn layout chính của toàn bộ ứng dụng */
-.mainLayout {
-  display: flex;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN LAYOUT - Responsive Layout Container
+   Handles spacing for Sidebar (desktop) and BottomNav (mobile)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Phần nội dung chính (thẻ <main>) */
-.mainContent {
-  flex-grow: 1; /* Cho phép nội dung chính chiếm hết không gian còn lại */
-  padding: 20px;
-  margin-left: 15em; /* Quan trọng: Đẩy nội dung sang phải một khoảng bằng đúng chiều rộng của Sidebar */
-  min-height: 100vh; /* Đảm bảo nội dung luôn cao ít nhất bằng màn hình */
-}
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-  .mainContent {
-    margin: 0 auto !important;
-    padding: 10px;
+   .mainLayout {
+    min-height: 100vh;
+    background: var(--bg-primary);
   }
-}
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     MAIN CONTENT AREA
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  .mainContent {
+    min-height: 100vh;
+    padding: var(--space-4);
+    
+    /* Mobile: Add bottom padding for BottomNav */
+    padding-bottom: calc(var(--bottom-nav-height, 64px) + var(--space-4));
+  }
+  
+  /* Tablet: Slightly more bottom padding */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .mainContent {
+      padding: var(--space-6);
+      padding-bottom: calc(72px + var(--space-6)); /* Taller bottom nav on tablet */
+    }
+  }
+  
+  /* Desktop: Add left margin for Sidebar, remove bottom padding */
+  @media (min-width: 1024px) {
+    .mainContent {
+      margin-left: var(--sidebar-width, 260px);
+      padding: var(--space-8);
+      padding-bottom: var(--space-8); /* No bottom nav on desktop */
+    }
+  }
+  
+  /* Large Desktop */
+  @media (min-width: 1440px) {
+    .mainContent {
+      padding: var(--space-10);
+      max-width: calc(1440px - var(--sidebar-width, 260px));
+    }
+  }
+  

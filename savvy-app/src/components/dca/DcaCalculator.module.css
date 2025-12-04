@@ -301,7 +301,7 @@
   }
 
   .formControls {
-    grid-template-columns: repeat(4, 2fr);
+    grid-template-columns: repeat(4, 4fr);
   }
 
   .strategySelector,

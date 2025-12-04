@@ -1,18 +1,51 @@
-.button {
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADD BUTTON - Primary Action Button
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+   .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-2) var(--spacing-4);
-    background-color: var(--color-primary);
-    color: var(--color-surface);
-    font-size: 1rem;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    
+    /* Gradient background */
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-green) 100%);
+    color: var(--bg-primary);
+    
+    font-family: var(--font-body);
+    font-size: 0.875rem;
     font-weight: 600;
+    white-space: nowrap;
+    
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    
+    transition: all var(--transition-base);
+    box-shadow: 0 2px 8px rgba(0, 245, 255, 0.2);
   }
   
   .button:hover {
-    background-color: #4338ca; /* Một màu tối hơn một chút của --color-primary */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 245, 255, 0.3);
   }
+  
+  .button:active {
+    transform: translateY(0);
+  }
+  
+  .icon {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  /* Responsive */
+  @media (max-width: 480px) {
+    .button {
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.8rem;
+    }
+  }
+  

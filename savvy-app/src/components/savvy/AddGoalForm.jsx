@@ -2,12 +2,8 @@ import { useRef } from 'react';
 import styles from './AddGoalForm.module.css'; // Sẽ tạo style sau
 import { AddButton } from './AddButton';
 
-export function AddGoalForm({ isOpen, onClose, onAddGoal }) {
+export function AddGoalForm({ onClose, onAddGoal }) {
   const formRef = useRef(null);
-
-  if (!isOpen) {
-    return null;
-  }
 
   async function handleSubmit(event) { // 1. Đổi tên và nhận event
     event.preventDefault(); // 2. Ngăn trang tải lại

@@ -1,0 +1,152 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   GOAL HISTORY - Completed Goals
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.goalHistory {
+  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4) 0;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.title::before {
+  content: '🏆';
+  font-size: 1.125rem;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+}
+
+/* ─────────────────────────────────────────
+   HISTORY LIST
+   ───────────────────────────────────────── */
+
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─────────────────────────────────────────
+   HISTORY ITEM
+   ───────────────────────────────────────── */
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.05) 0%, transparent 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.historyItem:hover {
+  background: rgba(57, 255, 20, 0.08);
+  border-color: rgba(57, 255, 20, 0.3);
+}
+
+.historyItemTitle {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  position: relative;
+  padding-left: var(--space-6);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* Checkmark badge */
+.historyItemTitle::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-glow-green);
+}
+
+.historyItemAmount {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-green);
+  white-space: nowrap;
+  text-shadow: 0 0 8px var(--accent-green-dim);
+}
+
+/* ─────────────────────────────────────────
+   DELETE BUTTON
+   ───────────────────────────────────────── */
+
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.historyItem:hover .deleteButton {
+  opacity: 1;
+  border-color: var(--border-default);
+}
+
+.deleteButton:hover {
+  background: var(--accent-pink-dim);
+  color: var(--accent-pink);
+  border-color: var(--accent-pink);
+  transform: scale(1.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAPTOP & DESKTOP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1024px) {
+  .goalHistory {
+    padding: var(--space-6);
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+}

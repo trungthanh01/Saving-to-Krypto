@@ -1,34 +1,43 @@
-import { useContext } from "react";
-import { SavvyContext } from "../../context/SavvyContext.jsx";
-import './GoalHistory.css';
+import { useContext } from 'react';
+import { SavvyContext } from '../../context/SavvyContext';
+import styles from './GoalHistory.module.css';
 
 export function GoalHistory() {
-    const { completedGoals, handleDeleteCompletedGoal } = useContext(SavvyContext);
+  const { completedGoals, handleDeleteCompletedGoal } = useContext(SavvyContext);
 
-    return (
-        <section className="goal-history">
-            <h3>🏆 Lịch sử hoàn thành</h3>
-            {completedGoals.length === 0 ? (
-                <p className="empty-history">Chưa có mục tiêu nào được hoàn thành. Hãy tiếp tục cố gắng nhé!</p>
-            ) : (
-                <ul className="history-list">
-                    {completedGoals.map(goal => (
-                        <li key={goal.id} className="history-item">
-                            <span className="history-item-title">{goal.title}</span>
-                            <span className="history-item-amount">{
-                                new Intl.NumberFormat('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                }).format(goal.targetAmount)
-                            }</span>
-                            <button 
-                                className="deleteButton"
-                                onClick={() => handleDeleteCompletedGoal(goal.id) } >
-                                    &times;</button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </section>
-    );
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(value || 0);
+  };
+
+  if (!completedGoals || completedGoals.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={styles.goalHistory}>
+      <h3 className={styles.title}>Lịch Sử Hoàn Thành</h3>
+      <ul className={styles.historyList}>
+        {completedGoals.map((goal) => (
+          <li key={goal.id} className={styles.historyItem}>
+            <span className={styles.historyItemTitle}>{goal.title}</span>
+            <span className={styles.historyItemAmount}>
+              {formatCurrency(goal.targetAmount)}
+            </span>
+            <button
+              className={styles.deleteButton}
+              onClick={() => handleDeleteCompletedGoal(goal.id)}
+              title="Xóa khỏi lịch sử"
+            >
+              ×
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
+

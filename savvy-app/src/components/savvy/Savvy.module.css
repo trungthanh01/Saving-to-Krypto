@@ -1,0 +1,156 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAVVY - Goals Page Layout
+   Mobile-first responsive design
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────
+   ACTION BAR - Top bar với count + button
+   ───────────────────────────────────────── */
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.goalCount {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────
+   GOALS SECTION
+   ───────────────────────────────────────── */
+
+.goalsSection {
+  min-width: 0;
+}
+
+/* ─────────────────────────────────────────
+   GOALS LIST
+   ───────────────────────────────────────── */
+
+.goalsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ─────────────────────────────────────────
+   EMPTY STATE
+   ───────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-xl);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  opacity: 0.6;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.emptyState h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.emptyState p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 280px;
+}
+
+/* ─────────────────────────────────────────
+   HISTORY SECTION
+   ───────────────────────────────────────── */
+
+.historySection {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-default);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLET (640px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 640px) {
+  .actionBar {
+    padding: var(--space-5);
+  }
+  
+  .goalsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  
+  .emptyState {
+    padding: var(--space-16) var(--space-8);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESKTOP (1024px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1024px) {
+  .container {
+    gap: var(--space-6);
+  }
+  
+  .actionBar {
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .goalCount {
+    font-size: 1rem;
+  }
+  
+  .goalsList {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-5);
+  }
+  
+  .historySection {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+  }
+}

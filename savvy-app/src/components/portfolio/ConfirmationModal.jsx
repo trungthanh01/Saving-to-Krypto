@@ -1,59 +1,35 @@
-import './ConfirmationModal.css';
 import { useContext } from 'react';
-import { AppContext } from '../../context/AppContext.jsx';  // ✅ Add .jsx
+import { AppContext } from '../../context/AppContext';
+import styles from './ConfirmationModal.module.css';
 
 export function ConfirmationModal() {
-  // ─────────────────────────────────────────────────
-  // CONTEXT: AppContext
-  // ─────────────────────────────────────────────────
-  const { 
-    modals, 
-    closeConfirmationModal, 
-    handleConfirm 
-  } = useContext(AppContext);
+  const { modals, closeConfirmationModal, handleConfirm } = useContext(AppContext);
 
-  // ─────────────────────────────────────────────────
-  // DESTRUCTURE: Confirmation modal state
-  // ─────────────────────────────────────────────────
-  const { 
-    isOpen, 
-    message,
-    onConfirm,  // ✅ This exists in AppContext
-  } = modals.confirmation;
+  const { isOpen, message } = modals.confirmation;
 
-  // ─────────────────────────────────────────────────
-  // EARLY RETURN: Modal closed
-  // ─────────────────────────────────────────────────
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
-  // ─────────────────────────────────────────────────
-  // RENDER
-  // ─────────────────────────────────────────────────
   return (
-    <div className="overlay" onClick={closeConfirmationModal}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <header className="header">
-          <h2>Xác nhận</h2>
-        </header>
+    <div className={styles.overlay} onClick={closeConfirmationModal}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <h2>Xác Nhận</h2>
+        </div>
 
-        <div className="content">
+        <div className={styles.content}>
           <span>{message}</span>
         </div>
 
-        <footer className="actions">
-          {/* ✅ Confirm button calls handleConfirm from AppContext */}
-          <button className="confirm-btn" onClick={handleConfirm}>
-            Xác nhận
-          </button>
-
-          {/* ✅ Cancel button just closes the modal */}
-          <button className="cancel-btn" onClick={closeConfirmationModal}>
+        <div className={styles.actions}>
+          <button className={styles.cancelBtn} onClick={closeConfirmationModal}>
             Hủy
           </button>
-        </footer>
+          <button className={styles.confirmBtn} onClick={handleConfirm}>
+            Xác nhận
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+

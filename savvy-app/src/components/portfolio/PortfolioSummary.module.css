@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PORTFOLIO SUMMARY - Hero Card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.portfolioSummary {
+  position: relative;
+  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  overflow: hidden;
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Top accent line */
+.portfolioSummary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0.5;
+}
+
+/* ─────────────────────────────────────────
+   TITLE
+   ───────────────────────────────────────── */
+
+.summaryTitle {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-2) 0;
+}
+
+/* ─────────────────────────────────────────
+   MAIN VALUE
+   ───────────────────────────────────────── */
+
+.summaryValue {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 var(--space-6) 0;
+  
+  /* Gradient text */
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─────────────────────────────────────────
+   DETAILS GRID
+   ───────────────────────────────────────── */
+
+.summaryDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-default);
+}
+
+.summaryDetails > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.summaryDetails p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.summaryDetails p:hover {
+  background: rgba(0, 245, 255, 0.03);
+}
+
+/* Labels & Values */
+.label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Profit/Loss */
+.profit {
+  color: var(--accent-green) !important;
+  text-shadow: 0 0 12px var(--accent-green-dim);
+}
+
+.loss {
+  color: var(--accent-pink) !important;
+  text-shadow: 0 0 12px var(--accent-pink-dim);
+}
+
+/* Loading */
+.summaryLoading {
+  text-align: center;
+  padding: var(--space-10);
+  color: var(--text-muted);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAPTOP & DESKTOP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1024px) {
+  .portfolioSummary {
+    padding: var(--space-8);
+    border-radius: var(--radius-2xl);
+  }
+
+  .summaryValue {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .summaryDetails {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+}

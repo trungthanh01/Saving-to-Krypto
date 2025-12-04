@@ -1,133 +1,74 @@
-import { useContext } from "react";
-import { PortfolioContext } from "../../context/PortfolioContext.jsx";
-import { useNavigate } from 'react-router-dom';
-import './SmartSuggestions.css';
+import { useContext } from 'react';
+import { PortfolioContext } from '../../context/PortfolioContext';
+import styles from './SmartSuggestions.module.css';
 
 export function SmartSuggestions() {
-  // ─────────────────────────────────────────
-  // CONTEXT & HOOKS
-  // ─────────────────────────────────────────
-  const { 
-    smartSuggestions, 
-    handleInitiateGoalCompletion, 
-    totalProfitLoss 
-  } = useContext(PortfolioContext);
+  const { smartSuggestions, totalProfitLoss, handleInitiateGoalCompletion } =
+    useContext(PortfolioContext);
 
-  const navigate = useNavigate();
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value || 0);
+  };
 
-  // ─────────────────────────────────────────
-  // UTILITY FUNCTIONS
-  // ─────────────────────────────────────────
-  const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(value || 0);
-
-  // ─────────────────────────────────────────
-  // EARLY RETURN
-  // ─────────────────────────────────────────
-  if (!smartSuggestions || 
-      (smartSuggestions.completable.length === 0 && 
-       smartSuggestions.incompletable.length === 0)) {
+  if (!smartSuggestions) {
     return null;
   }
 
-  // ─────────────────────────────────────────
-  // TASK 15.4: HANDLER - Complete Goal Click
-  // ─────────────────────────────────────────
-  // ✅ SIMPLIFIED: Chỉ gọi handleInitiateGoalCompletion từ PortfolioContext
-  // ✅ Không cần import AppContext nữa
-  const handleCompleteGoalClick = (goal) => {
-    // Step 1: Gọi PortfolioContext để:
-    //   - Mở modal AddTransaction
-    //   - Set goalCompletionData
-    //   - Pass transaction template
-    handleInitiateGoalCompletion(goal);
-
-    // Step 2: Navigate về dashboard
-    navigate('/');
-  };
-
-  // ─────────────────────────────────────────
-  // DESTRUCTURE & CALCULATE
-  // ─────────────────────────────────────────
   const { completable, incompletable } = smartSuggestions;
 
-  let totalAmountNeeded = 0;
-  let percentageOfProfit = 0;
-  let remainingProfit = 0;
-
-  if (completable.length > 0) {
-    // Tính tổng tiền cần để hoàn thành tất cả mục tiêu
-    totalAmountNeeded = completable.reduce((sum, goal) => {
-      return sum + (goal.targetAmount - goal.currentAmount);
-    }, 0);
-
-    // Tính phần trăm lợi nhuận cần chốt
-    percentageOfProfit = totalProfitLoss > 0 
-      ? (totalAmountNeeded / totalProfitLoss) * 100 
-      : 0;
-
-    // Tính lợi nhuận còn lại sau khi hoàn thành
-    remainingProfit = totalProfitLoss - totalAmountNeeded;
-  }
-
-  // ─────────────────────────────────────────
-  // RENDER
-  // ─────────────────────────────────────────
   return (
-    // ✅ XÓA onClick handler từ container
-    <div className="smart-suggestions-container">
-      <h2>✨ Gợi ý Thông minh</h2>
+    <div className={styles.smartSuggestionsContainer}>
+      <h2>Gợi Ý Thông Minh</h2>
 
-      {/* ─── Khu vực mục tiêu có thể hoàn thành ─── */}
-      {completable.length > 0 && (
-        <div className="suggestions-section completable-section">
+      {completable && completable.length > 0 && (
+        <div className={`${styles.suggestionsSection} ${styles.completableSection}`}>
+          <h4>Có thể hoàn thành ngay!</h4>
           <p>
-            Tuyệt vời! Tổng lợi nhuận <strong>{formatCurrency(totalProfitLoss)}</strong> của bạn đã đủ để hoàn thành các mục tiêu sau:
+            Bạn đang có lợi nhuận <strong>{formatCurrency(totalProfitLoss)}</strong>. 
+            Các mục tiêu sau có thể được hoàn thành:
           </p>
           <ul>
             {completable.map((goal) => {
               const amountNeeded = goal.targetAmount - goal.currentAmount;
               return (
                 <li key={goal.id}>
-                  <span>
-                    <strong>{goal.title}</strong>: chỉ còn thiếu {formatCurrency(amountNeeded)}
-                  </span>
-                  {/* ✅ onClick handler chỉ ở button, không phải container */}
-                  <button onClick={() => handleCompleteGoalClick(goal)}>
-                    Hoàn thành ngay
+                  <strong>{goal.title}</strong> - Cần thêm {formatCurrency(amountNeeded)}
+                  <button onClick={() => handleInitiateGoalCompletion(goal)}>
+                    Hoàn thành
                   </button>
                 </li>
               );
             })}
           </ul>
-          <div className="completable-summary">
-            <p>
-              Để hoàn thành các mục tiêu trên, bạn cần chốt lời <strong>{formatCurrency(totalAmountNeeded)}</strong>, tương đương <strong>{percentageOfProfit.toFixed(1)}%</strong> tổng lợi nhuận.
-              <br />
-              Số lợi nhuận còn lại của bạn sẽ là: <strong>{formatCurrency(remainingProfit)}</strong>.
-            </p>
-          </div>
         </div>
       )}
 
-      {/* ─── Khu vực mục tiêu chưa hoàn thành ─── */}
-      {incompletable.length > 0 && (
-        <div className="suggestions-section incomplete-section">
-          <h4>Các mục tiêu cần cố gắng thêm:</h4>
+      {incompletable && incompletable.length > 0 && (
+        <div className={`${styles.suggestionsSection} ${styles.incompleteSection}`}>
+          <h4>Cần thêm thời gian</h4>
           <ul>
             {incompletable.map((goal) => {
               const amountNeeded = goal.targetAmount - goal.currentAmount;
+              const remaining = amountNeeded - totalProfitLoss;
               return (
                 <li key={goal.id}>
-                  <strong>{goal.title}</strong>: còn thiếu {formatCurrency(amountNeeded)}
+                  <strong>{goal.title}</strong> - Còn thiếu {formatCurrency(remaining > 0 ? remaining : 0)}
                 </li>
               );
             })}
           </ul>
         </div>
       )}
+
+      {(!completable || completable.length === 0) && (!incompletable || incompletable.length === 0) && (
+        <p>Không có gợi ý nào. Hãy tạo mục tiêu mới!</p>
+      )}
     </div>
   );
 }
+

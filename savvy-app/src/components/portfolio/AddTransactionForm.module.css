@@ -1,0 +1,294 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADD TRANSACTION FORM - Modal
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 10, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────── */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.header h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.header h2::before {
+  content: '💰';
+  font-size: 1.125rem;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: var(--accent-pink-dim);
+  border-color: var(--accent-pink);
+  color: var(--accent-pink);
+  transform: rotate(90deg);
+}
+
+/* ─────────────────────────────────────────
+   FORM GROUP
+   ───────────────────────────────────────── */
+
+.formGroup {
+  margin-bottom: var(--space-5);
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.formGroup input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  min-height: 48px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+}
+
+.formGroup input[type="number"] {
+  font-family: var(--font-mono);
+}
+
+/* ─────────────────────────────────────────
+   RADIO GROUP
+   ───────────────────────────────────────── */
+
+.radioGroup {
+  display: flex;
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  border: 1px solid var(--border-default);
+}
+
+.radioGroup input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+  height: 0;
+}
+
+.radioLabel {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-3);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  z-index: 2;
+  border-radius: var(--radius-full);
+}
+
+.radioChecked {
+  color: var(--bg-primary) !important;
+}
+
+.radioPill {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  border-radius: var(--radius-full);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1;
+}
+
+.buyChecked {
+  transform: translateX(0%);
+  background: var(--accent-green);
+  box-shadow: var(--shadow-glow-green);
+}
+
+.sellChecked {
+  transform: translateX(100%);
+  background: var(--accent-pink);
+  box-shadow: var(--shadow-glow-pink);
+}
+
+/* ─────────────────────────────────────────
+   COIN SEARCH
+   ───────────────────────────────────────── */
+
+.suggestionWrapper {
+  position: relative;
+}
+
+.suggestionList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-1) 0 0 0;
+  z-index: 20;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionItem:hover {
+  background: var(--accent-cyan-dim);
+}
+
+.suggestionLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--bg-elevated);
+}
+
+.suggestionText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suggestionName {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.suggestionSymbol {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────
+   FORM ACTIONS
+   ───────────────────────────────────────── */
+
+.formActions {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-default);
+  text-align: right;
+}
+
+.formActions button {
+  padding: var(--space-3) var(--space-8);
+  min-height: 48px;
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 245, 255, 0.2);
+}
+
+.formActions button:hover {
+  background: #4dffff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow-cyan);
+}

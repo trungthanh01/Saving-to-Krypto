@@ -1,46 +1,153 @@
-.bottomNav {
-    display: none; /* Ẩn trên màn hình lớn theo mặc định */
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOTTOM NAVIGATION - Mobile/Tablet Navigation
+   Visible on mobile/tablet (max-width: 1023px), hidden on laptop/desktop
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+   .bottomNav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 50px;
-    background-color: rgba(148, 150, 162, 0.066); /* Màu nền bán trong suốt */
-    backdrop-filter: blur(10px); /* Hiệu ứng blur */
-    -webkit-backdrop-filter: blur(10px); /* Hỗ trợ Safari */
-    border-top: 1px solid #2c2f48;
-    z-index: 1000;
-    justify-content: space-around;
+    height: var(--bottom-nav-height, 64px);
+    z-index: 100;
+    
+    /* Glassmorphism effect */
+    background: rgba(10, 10, 18, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-default);
+    
+    /* Layout */
+    display: flex;
     align-items: center;
-    margin-left: 40px;
-    margin-right: 40px;
-    margin-bottom: 10px;
-    border-radius: 80px;
-}
-
-.link, .active {
+    justify-content: space-around;
+    padding: 0 var(--space-4);
+    
+    /* Safe area for iOS devices */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  /* Hide on laptop and larger screens */
+  @media (min-width: 1024px) {
+    .bottomNav {
+      display: none;
+    }
+  }
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     NAV LINK STYLES
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  .link,
+  .active {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-lg);
     text-decoration: none;
-    color: #a0a0d0;
-    font-size: 0.8rem;
-    transition: color 0.2s;
-}
-
-.link:hover {
-    color: #ffffff;
-}
-
-.active {
-    color: #7b61ff;
-    font-weight: bold;
-}
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-    .bottomNav {
-        display: flex; /* Chỉ hiển thị trên màn hình nhỏ */
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    min-width: 64px;
+    position: relative;
+  }
+  
+  .link {
+    color: var(--text-muted);
+  }
+  
+  .link:hover {
+    color: var(--text-secondary);
+    background: var(--bg-hover);
+  }
+  
+  .link svg {
+    transition: transform var(--transition-fast);
+  }
+  
+  .link:hover svg {
+    transform: translateY(-2px);
+  }
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     ACTIVE STATE
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  .active {
+    color: var(--accent-cyan);
+    background: var(--accent-cyan-dim);
+  }
+  
+  .active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--accent-cyan);
+    border-radius: 0 0 var(--radius-full) var(--radius-full);
+    box-shadow: 0 0 10px var(--accent-cyan);
+  }
+  
+  .active svg {
+    filter: drop-shadow(0 0 8px var(--accent-cyan));
+    animation: iconPulse 2s ease-in-out infinite;
+  }
+  
+  .active span {
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+  }
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     ANIMATIONS
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  @keyframes iconPulse {
+    0%, 100% {
+      transform: scale(1);
     }
-}
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     RESPONSIVE ADJUSTMENTS
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  /* Tablet - slightly larger touch targets */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .bottomNav {
+      height: 72px;
+      padding: 0 var(--space-8);
+    }
+    
+    .link,
+    .active {
+      padding: var(--space-3) var(--space-6);
+      font-size: 0.75rem;
+      min-width: 80px;
+    }
+  }
+  
+  /* Very small screens */
+  @media (max-width: 360px) {
+    .link,
+    .active {
+      padding: var(--space-2) var(--space-2);
+      min-width: 56px;
+      font-size: 0.65rem;
+    }
+    
+    .link span,
+    .active span {
+      display: none;
+    }
+  }
+  

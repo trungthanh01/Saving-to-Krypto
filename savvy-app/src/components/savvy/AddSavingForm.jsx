@@ -2,12 +2,8 @@ import { useRef } from 'react'; // Bước 1: Import useRef
 import styles from './AddSavingForm.module.css';
 import { AddButton } from './AddButton';
 
-export function AddSavingForm({ isOpen, onClose, onAddSaving }) {
-  const formRef = useRef(null); // Bước 2: Tạo ref cho form
-
-  if (!isOpen) {
-    return null;
-  }
+export function AddSavingForm({ onClose, onAddSaving }) {
+  const formRef = useRef(null); // Tạo ref cho form
 
   // Chuyển sang dùng onSubmit
   async function handleSubmit(event) {

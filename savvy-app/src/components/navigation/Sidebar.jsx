@@ -1,8 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-import { DashboardPage } from '../../pages/DashboardPage.jsx';
-import { DcaCalculatorPage } from '../../pages/DcaCalculatorPage.jsx';
-import { GoalsPage } from '../../pages/GoalsPage.jsx';
+import { FiGrid, FiTrendingUp, FiTarget } from 'react-icons/fi';
 
 export function Sidebar() {
     return (
@@ -13,18 +11,36 @@ export function Sidebar() {
             <nav className={styles.nav}>
                 <ul>
                     <li>
-                        <NavLink to="/" className={({ isActive }) => isActive ? styles.active : ''}>
-                            Dashboard
+                        <NavLink 
+                            to="/" 
+                            className={({ isActive }) => 
+                                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                            }
+                        >
+                            <FiGrid size={20} />
+                            <span>Dashboard</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/dca" className={({ isActive }) => isActive ? styles.active : ''}>
-                            DCA Calculator
+                        <NavLink 
+                            to="/dca" 
+                            className={({ isActive }) => 
+                                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                            }
+                        >
+                            <FiTrendingUp size={20} />
+                            <span>DCA Calculator</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/goals" className={({ isActive }) => isActive ? styles.active : ''}>
-                            Goals
+                        <NavLink 
+                            to="/goals" 
+                            className={({ isActive }) => 
+                                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                            }
+                        >
+                            <FiTarget size={20} />
+                            <span>Goals</span>
                         </NavLink>
                     </li>
                 </ul>
@@ -32,3 +48,4 @@ export function Sidebar() {
         </aside>
     );
 }
+

@@ -1,82 +1,85 @@
-import React from 'react';
-import {useContext} from 'react'
-import { GoalCard } from './GoalCard.jsx';
-import { SavingHistoryItem } from './SavingHistoryItem.jsx';
-import { AddButton } from './AddButton.jsx';
-import {AddSavingForm} from './AddSavingForm.jsx'
-import { AddGoalForm } from './AddGoalForm.jsx';
-import { SavvyContext } from '../../context/SavvyContext.jsx';
-import { GoalHistory } from './GoalHistory.jsx';
+import { useContext } from 'react';
+import { SavvyContext } from '../../context/SavvyContext';
+import { GoalCard } from './GoalCard';
+import { GoalHistory } from './GoalHistory';
+import { AddGoalForm } from './AddGoalForm';
+import { AddSavingForm } from './AddSavingForm';
+import { AddButton } from './AddButton';
+import styles from './Savvy.module.css';
 
 export function Savvy() {
-    const {
-        savings,
-        goals,
-        isAddSavingModalOpen,
-        isAddGoalModalOpen,
-        goalMessage,
-        handleOpenAddSavingModal,
-        handleCloseAddSavingModal,
-        handleAddSaving,
-        handleOpenGoalModal,
-        handleCloseAddGoalModal,
-        handleAddGoal,
-        handleDeleteSaving,
-        handleDeleteGoal,
-      } = useContext(SavvyContext);
+  const {
+    goals,
+    completedGoals,
+    isAddGoalModalOpen,
+    isAddSavingModalOpen,
+    handleOpenGoalModal,
+    handleCloseAddGoalModal,
+    handleCloseAddSavingModal,
+    handleAddGoal,
+    handleAddSaving,
+    handleDeleteGoal,
+    handleDeleteSaving,
+    handleOpenAddSavingModal,
+    savings,
+  } = useContext(SavvyContext);
 
-    return(
-        <>
-            <section className='goals-section'>
-          <div className="section-header">
-              <h2>Mục Tiêu Của Bạn</h2>
-              <AddButton onClick={handleOpenGoalModal}>
-                Thêm Mục Tiêu
-              </AddButton>
-            </div>
-            <div className='goals-list'>
-              {goals.map((goal) => 
+  return (
+    <div className={styles.container}>
+      {/* ===== ACTION BAR ===== */}
+      <div className={styles.actionBar}>
+        <p className={styles.goalCount}>
+          {goals.length > 0 
+            ? `${goals.length} mục tiêu đang thực hiện`
+            : 'Chưa có mục tiêu nào'
+          }
+        </p>
+        <AddButton onClick={handleOpenGoalModal} label="Thêm mục tiêu" />
+      </div>
+
+      {/* ===== GOALS LIST ===== */}
+      <section className={styles.goalsSection}>
+        {goals.length === 0 ? (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>🎯</div>
+            <h3>Bắt đầu hành trình tiết kiệm!</h3>
+            <p>Tạo mục tiêu đầu tiên để theo dõi tiến độ của bạn.</p>
+          </div>
+        ) : (
+          <div className={styles.goalsList}>
+            {goals.map((goal) => {
+              const goalSavings = savings.filter((s) => s.goalId === goal.id);
+              return (
                 <GoalCard
                   key={goal.id}
                   goal={goal}
-                  savings={savings}
-                  onAddSavingClick={handleOpenAddSavingModal}
-                  onDelete={handleDeleteGoal}
-                  
+                  savings={goalSavings}
+                  onDelete={() => handleDeleteGoal(goal.id)}
+                  onAddSaving={() => handleOpenAddSavingModal(goal.id)}
+                  onDeleteSaving={handleDeleteSaving}
                 />
-              )}
-            </div>
-          </section>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-
-          <section className="history-section">
-            <div className="section-header">
-              <h2>Lịch sử giao dịch</h2>
-            </div>
-            <div className="history-list"> 
-              {savings.map((transaction) => (
-                <SavingHistoryItem
-                  key={transaction.id}
-                  id={transaction.id}
-                  amount={transaction.amount}
-                  description={transaction.description}
-                  date={transaction.date}
-                  onDelete={handleDeleteSaving}
-                />
-              ))}
-            </div>
-          </section>
-          <AddSavingForm
-            isOpen={isAddSavingModalOpen}
-            onClose={handleCloseAddSavingModal}
-            onAddSaving={handleAddSaving}
-          />
-          <AddGoalForm
-            isOpen={isAddGoalModalOpen}
-            onClose={handleCloseAddGoalModal}
-            onAddGoal={handleAddGoal}
-          />
+      {/* ===== HISTORY SECTION ===== */}
+      {completedGoals.length > 0 && (
+        <section className={styles.historySection}>
           <GoalHistory />
-        </>
-    )
+        </section>
+      )}
+
+      {/* ===== MODALS ===== */}
+      {isAddGoalModalOpen && (
+        <AddGoalForm onClose={handleCloseAddGoalModal} onAddGoal={handleAddGoal} />
+      )}
+
+      {isAddSavingModalOpen && (
+        <AddSavingForm onClose={handleCloseAddSavingModal} onAddSaving={handleAddSaving} />
+      )}
+    </div>
+  );
 }
+

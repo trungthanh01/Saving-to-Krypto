@@ -1,38 +1,26 @@
-import './CelebrationModal.css';
 import { useContext } from 'react';
-import { AppContext } from '../../context/AppContext.jsx';
+import { AppContext } from '../../context/AppContext';
+import styles from './CelebrationModal.module.css';
 
 export function CelebrationModal() {
-    const { 
-        modals, 
-        closeCelebrationModal  
-    } = useContext(AppContext);
+  const { modals, closeCelebrationModal } = useContext(AppContext);
 
-    if (!modals.celebration.isOpen){ 
-        return null; 
-    }
+  const { isOpen, message } = modals.celebration;
 
-    return (
-        <div className="celebration-overlay" 
-            onClick={closeCelebrationModal}>
+  if (!isOpen) return null;
 
-            <div className="celebration-modal" 
-                onClick={(e) => e.stopPropagation()}>
-
-                <div className="celebration-content">
-                    <h2>🎉 Chúc Mừng! 🎉</h2>
-                    <p>
-                        Bạn đã hoàn thành mục tiêu: <br/> 
-                        <strong>{modals.celebration.message}</strong>
-                    </p>
-                    <p>Hãy tiếp tục hành trình tích lũy của mình nhé!</p>
-                </div>
-               <button 
-                    className="celebration-close-btn" 
-                    onClick={closeCelebrationModal}>
-                        &times;
-                </button>
-            </div>
+  return (
+    <div className={styles.celebrationOverlay} onClick={closeCelebrationModal}>
+      <div className={styles.celebrationModal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.celebrationContent}>
+          <h2>🎉 Chúc Mừng! 🎉</h2>
+          <p>{message}</p>
+          <button className={styles.celebrationCloseBtn} onClick={closeCelebrationModal}>
+            Tuyệt vời!
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
+

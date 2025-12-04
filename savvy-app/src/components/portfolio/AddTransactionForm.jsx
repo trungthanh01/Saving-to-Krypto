@@ -1,278 +1,202 @@
-import { useState, useContext, useEffect, memo } from "react";
-import './AddTransactionForm.css';
-import { PortfolioContext } from "../../context/PortfolioContext.jsx";
-import { AppContext } from "../../context/AppContext.jsx";
-import { AddButton } from "../savvy/AddButton.jsx";
+import { useState, useContext, useEffect, useMemo } from 'react';
+import { AppContext } from '../../context/AppContext';
+import { PortfolioContext } from '../../context/PortfolioContext';
+import styles from './AddTransactionForm.module.css';
 
-export const AddTransactionForm = memo(() => {
-  // ─────────────────────────────────────────────────
-  // CONTEXT: AppContext (UI state & modals)
-  // ─────────────────────────────────────────────────
-  const { 
-    coinList,
-    modals,
-    closeAddTransactionModal,  // ✅ Import hàm này
-  } = useContext(AppContext);
+export function AddTransactionForm() {
+  const { coinList, modals, closeAddTransactionModal } = useContext(AppContext);
+  const { addTransaction, editTransaction } = useContext(PortfolioContext);
 
-  // ─────────────────────────────────────────────────
-  // CONTEXT: PortfolioContext (Transaction logic)
-  // ─────────────────────────────────────────────────
-  const { 
-    addTransaction, 
-    editTransaction,  // ✅ Import này để handle edit
-  } = useContext(PortfolioContext);
+  const { isOpen, mode, data } = modals.addTransaction;
 
-  // ─────────────────────────────────────────────────
-  // LOCAL STATE: Form fields
-  // ─────────────────────────────────────────────────
-  const [coinId, setCoinId] = useState('');
-  const [amount, setAmount] = useState('');
   const [type, setType] = useState('buy');
+  const [coinId, setCoinId] = useState('');
+  const [coinSearch, setCoinSearch] = useState('');
+  const [amount, setAmount] = useState('');
   const [pricePerCoin, setPricePerCoin] = useState('');
-  const [suggestions, setSuggestions] = useState(null);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // ─────────────────────────────────────────────────
-  // DERIVED STATE: Check if in edit mode
-  // ─────────────────────────────────────────────────
-  // ✅ Edit mode 
-  const isEditMode = modals.addTransaction.mode === 'edit';
-
-  // ─────────────────────────────────────────────────
-  // EFFECT: Pre-fill form when modal opens/mode changes
-  // ─────────────────────────────────────────────────
   useEffect(() => {
-    // ✅ Kiểm tra modals.addTransaction.data (không phải editTransaction!)
-    if (modals.addTransaction.data) {
-      // Edit mode: pre-fill form with transaction data
-      const data = modals.addTransaction.data;
-      setCoinId(data.coinId || '');
-      setAmount(data.amount || '');
+    if (mode === 'edit' && data) {
       setType(data.type || 'buy');
-      setPricePerCoin(data.pricePerCoin || '');
-      setDate(data.date || '');
-      setSuggestions(null);
+      setCoinId(data.coinId || '');
+      setCoinSearch(data.coinId || '');
+      setAmount(data.amount?.toString() || '');
+      setPricePerCoin(data.pricePerCoin?.toString() || '');
+      setDate(data.date || new Date().toISOString().split('T')[0]);
     } else {
-      // Add mode: reset form to defaults
-      setCoinId('');
-      setAmount('');
       setType('buy');
+      setCoinId('');
+      setCoinSearch('');
+      setAmount('');
       setPricePerCoin('');
-      setSuggestions(null);
       setDate(new Date().toISOString().split('T')[0]);
     }
-  }, [modals.addTransaction.data, modals.addTransaction.mode]);  // ✅ Dependency: modals.addTransaction.data
+  }, [mode, data]);
 
-  // ─────────────────────────────────────────────────
-  // EFFECT: Generate suggestions when user types coin name
-  // ─────────────────────────────────────────────────
-  useEffect(() => {
-    // Skip suggestions in edit mode
-    if (isEditMode || !coinId.trim() || coinList.length === 0) {
-      setSuggestions(null);
-      return;
-    }
+  const filteredCoins = useMemo(() => {
+    if (!coinSearch || coinSearch.length < 2) return [];
+    const searchLower = coinSearch.toLowerCase();
+    return coinList
+      .filter(
+        (coin) =>
+          coin.name.toLowerCase().includes(searchLower) ||
+          coin.symbol.toLowerCase().includes(searchLower)
+      )
+      .slice(0, 10);
+  }, [coinSearch, coinList]);
 
-    // Filter coins by name or symbol
-    const filtered = coinList.filter(coin =>
-      coin.name.toLowerCase().includes(coinId.toLowerCase()) ||
-      coin.symbol.toLowerCase().includes(coinId.toLowerCase())
-    ).slice(0, 10);
+  const handleSelectCoin = (coin) => {
+    setCoinId(coin.id);
+    setCoinSearch(coin.name);
+    setShowSuggestions(false);
+  };
 
-    if (filtered.length === 0) {
-      console.log('No coins found for search:', coinId);
-      console.log('Available coins:', coinList.map(c => ({ name: c.name, symbol: c.symbol })));
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    setSuggestions(filtered.length > 0 ? filtered : null);
-  }, [coinId, coinList, isEditMode]);
-
-  // ─────────────────────────────────────────────────
-  // EARLY RETURN: Modal closed
-  // ─────────────────────────────────────────────────
-  // ✅ Check modals.addTransaction.isOpen (not modals.isOpen!)
-  if (!modals.addTransaction.isOpen) {
-    return null;
-  }
-
-  // ─────────────────────────────────────────────────
-  // HANDLER: Form submit
-  // ─────────────────────────────────────────────────
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    // 1. Find coin from coinList
-    const searchTerm = coinId.toLowerCase();
-    const selectedCoin = coinList.find((c) =>
-      c.name.toLowerCase() === searchTerm ||
-      c.symbol.toLowerCase() === searchTerm
-    );
-
-    // 2. VALIDATE
-    if (!selectedCoin) {
-      alert("Coin không hợp lệ. Vui lòng gõ và chọn một coin từ danh sách gợi ý.");
-      return;
-    }
-
-    if (!amount || !pricePerCoin) {
-      alert("Vui lòng điền đầy đủ thông tin: Số lượng và Giá.");
-      return;
-    }
-
-    // 3. Create transaction object
     const transactionData = {
-      id: isEditMode ? modals.addTransaction.data.id : `t_${new Date().getTime()}`,
-      coinId: selectedCoin.symbol.toUpperCase(),  // Use uppercase symbol
+      id: mode === 'edit' && data ? data.id : `tx_${Date.now()}`,
+      type,
+      coinId,
       amount: parseFloat(amount),
-      type: type,
       pricePerCoin: parseFloat(pricePerCoin),
-      date: date,
+      date,
     };
 
-    // 4. Add or edit transaction
-    if (isEditMode) {
+    if (mode === 'edit') {
       editTransaction(transactionData);
     } else {
       addTransaction(transactionData);
     }
-
-    // 5. Close modal
-    // ✅ PortfolioContext.addTransaction sẽ handle goal completion
-    // ✅ Không nên gọi markGoalAsComplete ở đây!
-    closeAddTransactionModal();
   };
 
-  // ─────────────────────────────────────────────────
-  // RENDER
-  // ─────────────────────────────────────────────────
+  if (!isOpen) return null;
+
   return (
-    <div className="overlay" onClick={closeAddTransactionModal}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <header className="header">
-          <h2>{isEditMode ? 'Sửa Giao Dịch' : 'Thêm Giao Dịch'}</h2>
-          <button className="closeButton" onClick={closeAddTransactionModal}>
-            &times;
+    <div className={styles.overlay} onClick={closeAddTransactionModal}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <h2>{mode === 'edit' ? 'Sửa Giao Dịch' : 'Thêm Giao Dịch'}</h2>
+          <button className={styles.closeButton} onClick={closeAddTransactionModal}>
+            ×
           </button>
-        </header>
+        </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Coin Input with Suggestions */}
-          <div className="formGroup suggestion-wrapper">
-            <label htmlFor="coinId">Coin</label>
-            <input
-              id="coinId"
-              type="text"
-              placeholder="vd: btc, eth, link, sol"
-              value={coinId}
-              onChange={(e) => setCoinId(e.target.value)}
-              autoComplete="off"
-              disabled={isEditMode}
-            />
-            {suggestions && (
-              <ul className="suggestion-list">
-                {suggestions.map((suggestion) => (
-                  <li
-                    key={suggestion.id}
-                    onClick={() => {
-                      setCoinId(suggestion.name);
-                      setSuggestions(null);
-                    }}
-                  >
-                    <img
-                      className="suggestion-logo"
-                      src={suggestion.image}
-                      alt={suggestion.name}
-                    />
-                    <div className="suggestion-text">
-                      <span className="suggestion-name">{suggestion.name}</span>
-                      <span className="suggestion-symbol">
-                        {suggestion.symbol.toUpperCase()}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Date Input */}
-          <div className="formGroup">
-            <label htmlFor="date">Ngày</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-
-          {/* Transaction Type Radio */}
-          <div className="formGroup">
+          <div className={styles.formGroup}>
             <label>Loại giao dịch</label>
-            <div className="radio-group">
+            <div className={styles.radioGroup}>
               <input
                 type="radio"
                 id="buy"
-                name="transactionType"
+                name="type"
                 value="buy"
                 checked={type === 'buy'}
                 onChange={(e) => setType(e.target.value)}
               />
-              <label htmlFor="buy" className="radio-label">
+              <label
+                htmlFor="buy"
+                className={`${styles.radioLabel} ${type === 'buy' ? styles.radioChecked : ''}`}
+              >
                 Mua
               </label>
+
               <input
                 type="radio"
                 id="sell"
-                name="transactionType"
+                name="type"
                 value="sell"
                 checked={type === 'sell'}
                 onChange={(e) => setType(e.target.value)}
               />
-              <label htmlFor="sell" className="radio-label">
+              <label
+                htmlFor="sell"
+                className={`${styles.radioLabel} ${type === 'sell' ? styles.radioChecked : ''}`}
+              >
                 Bán
               </label>
-              <div className="radio-pill"></div>
+
+              <div
+                className={`${styles.radioPill} ${
+                  type === 'buy' ? styles.buyChecked : styles.sellChecked
+                }`}
+              />
             </div>
           </div>
 
-          {/* Price Input */}
-          <div className="formGroup">
-            <label htmlFor="pricePerCoin">Giá mỗi coin (USD)</label>
-            <input
-              id="pricePerCoin"
-              type="number"
-              placeholder="0"
-              value={pricePerCoin}
-              onChange={(e) => setPricePerCoin(e.target.value)}
-              min="0"
-              step="any"
-            />
+          <div className={styles.formGroup}>
+            <label>Chọn Coin</label>
+            <div className={styles.suggestionWrapper}>
+              <input
+                type="text"
+                placeholder="Tìm kiếm coin..."
+                value={coinSearch}
+                onChange={(e) => {
+                  setCoinSearch(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                required
+              />
+              {showSuggestions && filteredCoins.length > 0 && (
+                <ul className={styles.suggestionList}>
+                  {filteredCoins.map((coin) => (
+                    <li
+                      key={coin.id}
+                      className={styles.suggestionItem}
+                      onClick={() => handleSelectCoin(coin)}
+                    >
+                      <img src={coin.thumb} alt={coin.name} className={styles.suggestionLogo} />
+                      <div className={styles.suggestionText}>
+                        <span className={styles.suggestionName}>{coin.name}</span>
+                        <span className={styles.suggestionSymbol}>{coin.symbol.toUpperCase()}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
-          {/* Amount Input */}
-          <div className="formGroup">
-            <label htmlFor="amount">Số lượng</label>
+          <div className={styles.formGroup}>
+            <label>Số lượng</label>
             <input
-              id="amount"
               type="number"
-              placeholder="0"
+              step="any"
+              placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              min="0"
-              step="any"
+              required
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="formActions">
-            <AddButton>{isEditMode ? 'Lưu Thay Đổi' : 'Thêm'}</AddButton>
+          <div className={styles.formGroup}>
+            <label>Giá mỗi coin (USD)</label>
+            <input
+              type="number"
+              step="any"
+              placeholder="0.00"
+              value={pricePerCoin}
+              onChange={(e) => setPricePerCoin(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Ngày giao dịch</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          </div>
+
+          <div className={styles.formActions}>
+            <button type="submit" className="btn btn-primary">
+              {mode === 'edit' ? 'Cập nhật' : 'Thêm giao dịch'}
+            </button>
           </div>
         </form>
       </div>
     </div>
   );
-});
+}
 
-AddTransactionForm.displayName = 'AddTransactionForm';
