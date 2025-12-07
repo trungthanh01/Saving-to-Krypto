@@ -1398,7 +1398,7 @@ console.log(JSON.stringify(logData, null, 2));
 
 *Mục đích: Tích hợp message generator vào component để hiển thị result đẹp.*
 
-|- [ ] **11.8.1: Import message generator**
+|- [x] **11.8.1: Import message generator**
   - **Mục đích:** Lấy function tạo message
   - **Hành động:**
     1. Mở file `src/components/dca/DcaCalculator.jsx`
@@ -1417,7 +1417,7 @@ console.log(JSON.stringify(logData, null, 2));
        const [message, setMessage] = useState('');
        ```
 
-|- [ ] **11.8.3: Generate message trong handleSubmit()**
+|- [x] **11.8.3: Generate message trong handleSubmit()**
   - **Mục đích:** Tạo message khi nhấn Calculate
   - **Hành động:**
     1. Tìm dòng `setResult(dcaResult)` trong `handleSubmit()`
@@ -1635,7 +1635,55 @@ console.log(JSON.stringify(logData, null, 2));
 - [ ] Ready for production! 🚀
 
 ---
-</rewritten_file>
 
+### **Giai đoạn 16: Khôi phục và Cải thiện UI (UI Restoration & Enhancement)**
+*Mục tiêu: Khôi phục các component bị mất trong quá trình refactor CSS và nâng cấp aesthetic theo front-end-design.md.*
+
+- [x] **Task 16.1: Khôi phục TransactionHistory.jsx**
+  - Tái tạo component hiển thị lịch sử giao dịch dạng bảng
+  - Sử dụng CSS Module classes từ `TransactionHistory.module.css`
+  - Import `PortfolioContext` để lấy transactions, deleteTransaction, handleOpenEditModal
+
+- [x] **Task 16.2: Khôi phục Savvy.jsx**
+  - Tái tạo component chính cho Goals page
+  - Sử dụng CSS Module classes từ `Savvy.module.css`
+  - Import `SavvyContext` và render GoalCard, SavingHistoryItem, GoalHistory
+
+- [x] **Task 16.3: Khôi phục AddTransactionForm.jsx**
+  - Tái tạo modal form thêm/sửa giao dịch
+  - Sử dụng CSS Module classes từ `AddTransactionForm.module.css`
+  - Import `AppContext` và `PortfolioContext`
+
+- [x] **Task 16.4: Khôi phục SmartSuggestions.jsx**
+  - Tái tạo component gợi ý thông minh
+  - Sử dụng CSS Module classes từ `SmartSuggestions.module.css`
+  - Import `PortfolioContext` để lấy smartSuggestions
+
+- [x] **Task 16.5: Khôi phục ConfirmationModal.jsx**
+  - Tái tạo modal xác nhận
+  - Sử dụng CSS Module classes từ `ConfirmationModal.module.css`
+  - Import `AppContext` để lấy modals.confirmation
+
+- [x] **Task 16.6: Khôi phục GoalHistory.jsx**
+  - Tái tạo component lịch sử hoàn thành mục tiêu
+  - Sử dụng CSS Module classes từ `GoalHistory.module.css`
+  - Import `SavvyContext` để lấy completedGoals
+
+- [x] **Task 16.7: Khôi phục CelebrationModal.jsx**
+  - Tái tạo modal chúc mừng
+  - Sử dụng CSS Module classes từ `CelebrationModal.module.css`
+  - Import `AppContext` để lấy modals.celebration
+
+- [x] **Task 16.8: Cập nhật index.css với Design Tokens mới**
+  - Thêm Google Fonts (Outfit, JetBrains Mono)
+  - Thêm gradient variables
+  - Thêm shadow variables cho depth
+  - Cập nhật color palette theo "Refined Dark Fintech" aesthetic
+
+- [x] **Task 16.9: Nâng cấp CSS Module aesthetic**
+  - PortfolioSummary.module.css: Glass card effect, gradient text
+  - GoalCard.module.css: Subtle glow effect, progress bar animation
+  - TransactionHistory.module.css: Striped rows, hover highlight
+  - SmartSuggestions.module.css: Gradient border, icon styling
 
 ---
