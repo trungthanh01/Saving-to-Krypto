@@ -6,5 +6,6 @@ export function AddButton({ children, label, onClick }) {
       <span className={styles.icon}>+</span>
       {children || label}
     </button>
+    //test
   );
 }
